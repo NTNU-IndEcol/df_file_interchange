@@ -25,7 +25,12 @@ Pandas issues:
 * There's issues with ordering when using CategoricalIndex in a Multiindex. See
   https://stackoverflow.com/questions/71837659/trying-to-sort-multiindex-index-using-categorical-index
   and https://github.com/pandas-dev/pandas/issues/47607
-* assert_frame_equal() fails when it shouldn't. I'm really tired of this nonsense now.
+
+Pandas sorted issues:
+
+* assert_frame_equal() fails when it shouldn't. I'm really tired of this
+  nonsense now. See ttps://github.com/pandas-dev/pandas/issues/57644
+
 
 Discussion:
 
@@ -237,6 +242,42 @@ def _serialize_element(el) -> dict:
     elif type(el) == np.int64:
         loc_el = int(el)
         loc_type = "np.int64"
+    elif type(el) == np.longlong:
+        loc_el = int(el)
+        loc_type = "np.longlong"
+    elif type(el) == np.uint8:
+        loc_el = int(el)    # DO NOT use abs() here as we don't want to modify (error would be detected on deserialize)
+        loc_type = "np.uint8"
+    elif type(el) == np.uint16:
+        loc_el = int(el)    # DO NOT use abs() here as we don't want to modify (error would be detected on deserialize)
+        loc_type = "np.uint16"
+    elif type(el) == np.uint32:
+        loc_el = int(el)    # DO NOT use abs() here as we don't want to modify (error would be detected on deserialize)
+        loc_type = "np.uint32"
+    elif type(el) == np.uint64:
+        loc_el = int(el)    # DO NOT use abs() here as we don't want to modify (error would be detected on deserialize)
+        loc_type = "np.uint64"
+    elif type(el) == np.ulonglong:
+        loc_el = int(el)
+        loc_type = "np.ulonglong"
+    elif type(el) == np.float16:
+        loc_el = float(el)
+        loc_type = "np.float16"
+    elif type(el) == np.float32:
+        loc_el = float(el)
+        loc_type = "np.float32"
+    elif type(el) == np.float64:
+        loc_el = float(el)
+        loc_type = "np.float64"
+    elif type(el) == np.complex64:
+        loc_el = complex(el)
+        loc_type = "np.complex64"
+    elif type(el) == np.complex64:
+        loc_el = complex(el)
+        loc_type = "np.complex128"
+    elif type(el) == np.clongdouble:
+        loc_el = complex(el)
+        loc_type = "np.clongdouble"
     else:
         warning_msg = (
             f"Serializing element got unexpected type: el={el}, type={type(el)}"
@@ -305,6 +346,31 @@ def _deserialize_element(serialized_element: dict):
         return np.int32(el)
     elif eltype == "np.int64":
         return np.int64(el)
+    elif eltype == "np.longong":
+        return np.longlong(el)
+    elif eltype == "np.uint8":
+        return np.uint8(el)
+    elif eltype == "np.uint16":
+        return np.uint16(el)
+    elif eltype == "np.uint32":
+        return np.uint32(el)
+    elif eltype == "np.uint64":
+        return np.uint64(el)
+    elif eltype == "np.ulongong":
+        return np.ulonglong(el)
+    elif eltype == "np.float16":
+        return np.float16(el)
+    elif eltype == "np.float32":
+        return np.float32(el)
+    elif eltype == "np.float64":
+        return np.float64(el)
+    elif eltype == "np.complex64":
+        return np.complex64(el)
+    elif eltype == "np.complex128":
+        return np.complex128(el)
+    elif eltype == "np.clongdouble":
+        return np.clongdouble(el)
+    
     else:
         return el
 
@@ -1665,7 +1731,7 @@ def read_fi_to_df_generic(
     return (df, metainfo)
 
 
-def generate_test_indices():
+def _generate_example_indices():
 
     fi_index_1 = pd.Index(
         [
@@ -1776,7 +1842,7 @@ def generate_test_indices():
     }
 
 
-def generate_test_dfs_from_indices(test_indices):
+def _generate_dfs_from_indices(test_indices):
 
     dfs = {}
     for k, v in test_indices.items():
