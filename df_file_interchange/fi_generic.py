@@ -68,8 +68,14 @@ from pandas._libs.tslibs import BaseOffset
 # from pandas._typing import ArrayLike, AnyArrayLike, Frequency
 from pandas._typing import Dtype, ArrayLike, AnyArrayLike, IntervalClosedType, DtypeObj
 
+# DO NOT try to remove these. It's required by Pydantic to resolve forward
+# references, I think. Anyway, it complains without this.
+from pandas.api.extensions import ExtensionArray, ExtensionDtype
+from pandas import Index, Series
 
 from loguru import logger
+
+
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -1585,9 +1591,9 @@ def write_df_to_fi_generic(
     return loc_metafile
 
 
-def load_fi_to_df_generic(
+def read_fi_to_df_generic(
     metafile: Path, strict_hash_check: bool = True
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, FIMetainfo]:
     """Load a dataframe from file
 
     Supply the metainfo filename, not the datafilename.
@@ -1601,8 +1607,8 @@ def load_fi_to_df_generic(
 
     Returns
     -------
-    pd.DataFrame
-
+    tuple[pd.DataFrame, FIMetainfo]:
+        A tuple with the dataframe and the metainfo object.
     """
 
     # Load metainfo
@@ -1656,7 +1662,7 @@ def load_fi_to_df_generic(
     # Apply dtypes
     _apply_serialized_dtypes(df, metainfo.serialized_dtypes)
 
-    return df
+    return (df, metainfo)
 
 
 def generate_test_indices():
@@ -1843,10 +1849,16 @@ def generate_test_df_static_1():
     # Pandas extended data types
     # ----------
 
+    # Careful with syntax! See, https://github.com/pandas-dev/pandas/issues/57644
+    # df["F_pd_DatetimeTZDtype"] = pd.array(
+    #     ["2010/01/31 10:23:01", "1990", "2025/01/01 00:00+1", 1, None],
+    #     dtype=pd.DatetimeTZDtype(tz=ZoneInfo("Europe/Paris")),
+    # 
     df["F_pd_DatetimeTZDtype"] = pd.array(
         ["2010/01/31 10:23:01", "1990", "2025/01/01 00:00+1", 1, None],
-        dtype=pd.DatetimeTZDtype(tz=ZoneInfo("Europe/Paris")),
+        dtype="datetime64[ns, Europe/Paris]",
     )
+
 
     # Missing: Timedeltas
     # Missing: PeriodDtype
@@ -1900,7 +1912,7 @@ def test_save_load_indices(test_path: Path):
         )
 
         # Reload
-        df_reload = load_fi_to_df_generic(metafile)
+        (df_reload, metainfo_reload) = read_fi_to_df_generic(metafile)
 
         # Compare
         pd.testing.assert_frame_equal(df, df_reload)
