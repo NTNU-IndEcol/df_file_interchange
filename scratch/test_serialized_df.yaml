@@ -2,66 +2,272 @@
 ---
 
 columns:
-  data:
-    el:
-    - el: A
-      eltype: str
-    - el: B
-      eltype: str
-    - el: C
-      eltype: str
-    - el: F_np_int8
-      eltype: str
-    - el: F_np_int16
-      eltype: str
-    - el: F_np_int32
-      eltype: str
-    - el: F_np_int64
-      eltype: str
-    - el: F_np_longlong
-      eltype: str
-    - el: F_np_uint8
-      eltype: str
-    - el: F_np_uint16
-      eltype: str
-    - el: F_np_uint32
-      eltype: str
-    - el: F_np_uint64
-      eltype: str
-    - el: F_np_ulonglong
-      eltype: str
-    - el: F_np_float16
-      eltype: str
-    - el: F_np_float32
-      eltype: str
-    - el: F_np_float64
-      eltype: str
-    - el: F_np_complex64
-      eltype: str
-    - el: F_np_complex128
-      eltype: str
-    - el: F_np_clongdouble
-      eltype: str
-    - el: F_np_bool
-      eltype: str
-    - el: F_np_datetime64
-      eltype: str
-    - el: F_pd_DatetimeTZDtype
-      eltype: str
-    - el: F_pd_Int64Dtype
-      eltype: str
-    - el: F_pd_Float64Dtype
-      eltype: str
-    - el: F_pd_CategoricalDtype
-      eltype: str
-    - el: F_pd_StringDtype
-      eltype: str
-    - el: F_pd_BooleanDtype
-      eltype: str
-    eltype: list
-  dtype: object
-  index_type: idx
-  name: null
+  codes:
+  - el:
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    eltype: np.ndarray
+  - el:
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    eltype: np.ndarray
+  - el:
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    eltype: np.ndarray
+  dtypes:
+  - int64
+  - object
+  - object
+  index_type: multi
+  levels:
+  - el:
+      dtype: int64
+      elements:
+      - el: 1
+        eltype: int
+      - el: 2
+        eltype: int
+      - el: 3
+        eltype: int
+      - el: 4
+        eltype: int
+    eltype: pd.Index
+  - el:
+      dtype: object
+      elements:
+      - el: a
+        eltype: str
+      - el: b
+        eltype: str
+      - el: c
+        eltype: str
+    eltype: pd.Index
+  - el:
+      dtype: object
+      elements:
+      - el: one
+        eltype: str
+      - el: three
+        eltype: str
+      - el: two
+        eltype: str
+    eltype: pd.Index
+  names:
+  - null
+  - null
+  - null
+  sortorder: null
 datafile: test_serialized_df.csv
 encoding:
   auto_convert_int_to_intna: true
@@ -78,95 +284,344 @@ encoding:
     engine: pyarrow
     index: null
 file_format: csv
-hash: 72e11e461cc41029a7e68d8766411f471d505453d21b46d4ba3e694b62ae75ac
+hash: eac4e41b1c4b840fb5fcee5b1914f72db5e505af367b6ec5d5fbe20a2089cd03
 index:
-  data:
-    el:
-      dtype: datetime64[ns]
+  codes:
+  - el:
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    eltype: np.ndarray
+  - el:
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    eltype: np.ndarray
+  - el:
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    eltype: np.ndarray
+  dtypes:
+  - int64
+  - object
+  - object
+  index_type: multi
+  levels:
+  - el:
+      dtype: int64
       elements:
-      - el:
-          isoformat: '2000-01-01T00:00:00'
-          tz: ''
-        eltype: pd.Timestamp
-      - el:
-          isoformat: '2000-01-02T00:00:00'
-          tz: ''
-        eltype: pd.Timestamp
-      - el:
-          isoformat: '2000-01-03T00:00:00'
-          tz: ''
-        eltype: pd.Timestamp
-      - el:
-          isoformat: '2000-01-04T00:00:00'
-          tz: ''
-        eltype: pd.Timestamp
-      - el:
-          isoformat: '2000-01-05T00:00:00'
-          tz: ''
-        eltype: pd.Timestamp
-    eltype: pd.arrays.DatetimeArray
-  dtype: datetime64[ns]
-  freq: D
-  index_type: datetime
-  name: Date
-  tz: null
+      - el: 1
+        eltype: int
+      - el: 2
+        eltype: int
+      - el: 3
+        eltype: int
+      - el: 4
+        eltype: int
+    eltype: pd.Index
+  - el:
+      dtype: object
+      elements:
+      - el: a
+        eltype: str
+      - el: b
+        eltype: str
+      - el: c
+        eltype: str
+    eltype: pd.Index
+  - el:
+      dtype: object
+      elements:
+      - el: one
+        eltype: str
+      - el: three
+        eltype: str
+      - el: two
+        eltype: str
+    eltype: pd.Index
+  names:
+  - null
+  - null
+  - null
+  sortorder: null
 serialized_dtypes:
-  '{"el": "A", "eltype": "str"}':
+  '{"el": [{"el": 1, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
     dtype_str: float64
-  '{"el": "B", "eltype": "str"}':
+  '{"el": [{"el": 1, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
     dtype_str: float64
-  '{"el": "C", "eltype": "str"}':
+  '{"el": [{"el": 1, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
     dtype_str: float64
-  '{"el": "F_np_bool", "eltype": "str"}':
-    dtype_str: bool
-  '{"el": "F_np_clongdouble", "eltype": "str"}':
-    dtype_str: complex256
-  '{"el": "F_np_complex128", "eltype": "str"}':
-    dtype_str: complex128
-  '{"el": "F_np_complex64", "eltype": "str"}':
-    dtype_str: complex64
-  '{"el": "F_np_datetime64", "eltype": "str"}':
-    dtype_str: datetime64[ns]
-  '{"el": "F_np_float16", "eltype": "str"}':
-    dtype_str: float16
-  '{"el": "F_np_float32", "eltype": "str"}':
-    dtype_str: float32
-  '{"el": "F_np_float64", "eltype": "str"}':
+  '{"el": [{"el": 1, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
     dtype_str: float64
-  '{"el": "F_np_int16", "eltype": "str"}':
-    dtype_str: int16
-  '{"el": "F_np_int32", "eltype": "str"}':
-    dtype_str: int32
-  '{"el": "F_np_int64", "eltype": "str"}':
-    dtype_str: int64
-  '{"el": "F_np_int8", "eltype": "str"}':
-    dtype_str: int8
-  '{"el": "F_np_longlong", "eltype": "str"}':
-    dtype_str: int64
-  '{"el": "F_np_uint16", "eltype": "str"}':
-    dtype_str: uint16
-  '{"el": "F_np_uint32", "eltype": "str"}':
-    dtype_str: uint32
-  '{"el": "F_np_uint64", "eltype": "str"}':
-    dtype_str: uint64
-  '{"el": "F_np_uint8", "eltype": "str"}':
-    dtype_str: uint8
-  '{"el": "F_np_ulonglong", "eltype": "str"}':
-    dtype_str: uint64
-  '{"el": "F_pd_BooleanDtype", "eltype": "str"}':
-    dtype_str: boolean
-  '{"el": "F_pd_CategoricalDtype", "eltype": "str"}':
-    categories:
-    - a
-    - b
-    - c
-    dtype_str: category
-    ordered: 'True'
-  '{"el": "F_pd_DatetimeTZDtype", "eltype": "str"}':
-    dtype_str: datetime64[ns, Europe/Paris]
-  '{"el": "F_pd_Float64Dtype", "eltype": "str"}':
-    dtype_str: Float64
-  '{"el": "F_pd_Int64Dtype", "eltype": "str"}':
-    dtype_str: Int64
-  '{"el": "F_pd_StringDtype", "eltype": "str"}':
-    dtype_str: string
+  '{"el": [{"el": 1, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 1, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 1, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 1, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 1, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 2, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 2, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 2, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 2, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 2, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 2, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 2, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 2, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 2, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 3, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 3, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 3, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 3, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 3, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 3, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 3, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 3, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 3, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 4, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 4, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 4, "eltype": "int"}, {"el": "a", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 4, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 4, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 4, "eltype": "int"}, {"el": "b", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 4, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "one", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 4, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "three", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64
+  '{"el": [{"el": 4, "eltype": "int"}, {"el": "c", "eltype": "str"}, {"el": "two", "eltype": "str"}], "eltype": "tuple"}':
+    dtype_str: float64

@@ -185,7 +185,6 @@ def _serialize_element(el) -> dict:
         # This isn't idea since it's replicating functionality that's in FIIndex
         # but we're only using a subset of that here and it's only for use with
         # MultiIndex encoding.
-        print(f"index serialise: {el}, {type(el)}")
         loc_el = {
             "dtype": str(el.dtype),
             "elements": _serialize_list_with_types(list(el)),
@@ -1217,23 +1216,38 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame):
 
     serialized_dtypes = {}
 
+    col_ctr = 0
+
     # Loop through and just append to serialized_dtypes unless we get a special
     # type we must manually serialize, e.g. category.
     for col_name, dtype in df.dtypes.to_dict().items():
 
-        # TODO change JSON encoding to be YAML that encodes in the main write/read
-        loc_col_name = json.dumps(_serialize_element(col_name))
+        # # TODO change JSON encoding to be YAML that encodes in the main write/read
+        # loc_col_name = json.dumps(_serialize_element(col_name))
+
+        # if dtype == "category":
+        #     dtype_full = df.dtypes[col_name]
+        #     assert isinstance(dtype_full, pd.CategoricalDtype)
+        #     serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
+        #     serialized_dtypes[loc_col_name][
+        #         "categories"
+        #     ] = dtype_full.categories.to_list()
+        #     serialized_dtypes[loc_col_name]["ordered"] = str(dtype_full.ordered)
+        # else:
+        #     serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
+
 
         if dtype == "category":
             dtype_full = df.dtypes[col_name]
             assert isinstance(dtype_full, pd.CategoricalDtype)
-            serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
-            serialized_dtypes[loc_col_name][
+            serialized_dtypes[col_name] = {"dtype_str": str(dtype)}
+            serialized_dtypes[col_name][
                 "categories"
             ] = dtype_full.categories.to_list()
-            serialized_dtypes[loc_col_name]["ordered"] = str(dtype_full.ordered)
+            serialized_dtypes[col_name]["ordered"] = str(dtype_full.ordered)
         else:
-            serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
+            serialized_dtypes[col_name] = {"dtype_str": str(dtype)}
+
 
     return serialized_dtypes
 
@@ -1244,7 +1258,8 @@ def _deserialize_df_types(serialized_dtypes: dict):
     deserialized_dtypes = {}
     for col in serialized_dtypes:
         # Get col name
-        loc_col_name = _deserialize_element(json.loads(col))
+        # loc_col_name = _deserialize_element(json.loads(col))
+        loc_col_name = col
 
         # Get string representation of dtype
         dtype_str = serialized_dtypes[col].get("dtype_str", None)
