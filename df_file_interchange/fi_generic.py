@@ -17,6 +17,13 @@ Warning: We set CoW semantics (will be in Pandas 3.0 anyway)!
 Note to self:
 
 * pandas.Float64Dtype converts np.NaN and np.Inf to <NA>.
+* Test to show why we're doing this (compare indexes with raw CSV save):
+
+```python
+df = pd.DataFrame(np.ones((5, 2)), index=pd.RangeIndex(0, 5), columns=[pd.Timestamp("2024-01-01T10:00:01+5"), pd.Timestamp("2024-01-02T10:00:01+5")])
+df[pd.Timestamp("2024-01-03T10:00:01+5")] = pd.Series(["a", "b", "c", "d", "e"], dtype=str)
+df.columns.freq = pd.infer_freq(df.columns)
+```
 
 Pandas issues:
 
