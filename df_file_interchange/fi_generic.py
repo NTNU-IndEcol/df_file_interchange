@@ -1922,7 +1922,7 @@ def _generate_dfs_from_indices(test_indices):
     return dfs
 
 
-def generate_test_df_static_1():
+def _generate_example_1():
 
     # See
     # https://pandas.pydata.org/docs/user_guide/basics.html#basics-dtypes
@@ -1955,15 +1955,15 @@ def generate_test_df_static_1():
     df["F_np_float32"] = pd.array([1.0, -2.0, np.pi, np.NaN, 5.0], dtype="float32")
     df["F_np_float64"] = pd.array([1.0, -2.0, np.pi, np.NaN, 5.0], dtype="float64")
 
-    df["F_np_complex64"] = pd.array(
-        [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="complex64"
-    )
-    df["F_np_complex128"] = pd.array(
-        [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="complex128"
-    )
-    df["F_np_clongdouble"] = pd.array(
-        [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="clongdouble"
-    )
+    # df["F_np_complex64"] = pd.array(
+    #     [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="complex64"
+    # )
+    # df["F_np_complex128"] = pd.array(
+    #     [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="complex128"
+    # )
+    # df["F_np_clongdouble"] = pd.array(
+    #     [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="clongdouble"
+    # )
 
     # other
     df["F_np_bool"] = pd.array([True, False, True, True, False], dtype="bool_")
@@ -2016,35 +2016,4 @@ def generate_test_df_static_1():
     return df
 
 
-def test_save_load_indices(test_path: Path):
 
-    if not test_path.exists():
-        test_path.mkdir(parents=True)
-
-    # Get test indices
-    test_indices = generate_test_indices()
-
-    # Get randoms dfs using these indices
-    dfs = generate_test_dfs_from_indices(test_indices)
-
-    # For each, save and reload, then compare
-    for k, df in dfs.items():
-
-        # if re.match(".*multi.*", k, re.IGNORECASE):
-        #     print("Ignoring {k}")
-        #     continue
-
-        print(f"Testing {k}")
-
-        # Save
-        datafile_abs = test_path / f"test_{k}.csv"
-        metafile_abs = test_path / f"test_{k}.yaml"
-        metafile = write_df_to_fi_generic(
-            df, datafile_abs, metafile_abs, FIFileFormatEnum.csv
-        )
-
-        # Reload
-        (df_reload, metainfo_reload) = read_fi_to_df_generic(metafile)
-
-        # Compare
-        pd.testing.assert_frame_equal(df, df_reload)

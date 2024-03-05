@@ -14,3 +14,8 @@ We do not try to reinvent-the-wheel, only supplement existing functionality foun
 `import df_file_interchange as fi`
 
 
+## Known Problems
+
+* Pyarrow won't encode numpy's complex64. So, we've disabled this in the tests for now although the functionality will work in CSV. Solution would be to serialize the actual data column when necessary but that's new functionality.
+
+

@@ -31,5 +31,4 @@ from .fi_generic import (
     FIMetainfo,
     write_df_to_fi_generic,
     read_fi_to_df_generic,
-    generate_test_df_static_1,
 )
