@@ -38,6 +38,10 @@ Pandas sorted issues:
 * assert_frame_equal() fails when it shouldn't. I'm really tired of this
   nonsense now. See ttps://github.com/pandas-dev/pandas/issues/57644
 
+Parquet issues:
+
+* Pyarrow doesn't permit different types within a column, which also applies to
+  the row index (it fails). It complains if one tries similar with column index.
 
 Discussion:
 
@@ -56,6 +60,7 @@ import copy
 import yaml
 import json
 import hashlib, hmac
+import re
 
 from enum import Enum
 from pathlib import Path
@@ -1198,11 +1203,25 @@ def _check_metafile_name(
     return loc_metafile
 
 
+
+def _preprocess_common(df: pd.DataFrame, encoding: FIEncoding):
+
+    # Check column index has unique elements
+    if not df.columns.is_unique:
+        error_msg = "Column names must be unique! (This is a tighter restriction than Pandas but avoids a lot of stupid mistakes, so we enforce it)"
+        logger.error(error_msg)
+        raise Exception(error_msg)
+
+
+
 def _preprocess_inplace(df: pd.DataFrame, encoding: FIEncoding):
-    pass
+
+    _preprocess_common(df, encoding)
 
 
 def _preprocess_safe(df: pd.DataFrame, encoding: FIEncoding):
+
+    _preprocess_common(df, encoding)
 
     # Make a copy of the dataframe
     loc_df = copy.deepcopy(df)
@@ -1542,16 +1561,37 @@ def _read_from_csv(
 def _write_to_parquet(df: pd.DataFrame, datafile: Path, encoding: FIEncoding):
     """Write to Parquet datafile using supplied options
 
+    Parquet does not permit columns with different dtypes, i.e. it'll bork on
+    the row index if it's not the same dtype in each entry. It complains if one
+    does similar with the column index. So we don't write these, i.e. set
+    `index=False` option.
+    
     Parameters
     ----------
     df : pd.DataFrame
     datafile : Path
     encoding : FIEncoding
     """
-    df.to_parquet(datafile, engine="pyarrow", index=True)
+    df.to_parquet(datafile, engine="pyarrow", index=False)
 
 
 def _read_from_parquet(input_datafile: Path, encoding: FIEncoding) -> pd.DataFrame:
+    """Read from Parquet file
+
+    This shouldn't have column index or row index, as we don't save them (see
+    above).
+
+    Parameters
+    ----------
+    input_datafile : Path
+    encoding : FIEncoding
+
+    Returns
+    -------
+    pd.DataFrame
+        _description_
+    """
+
     df = pd.read_parquet(input_datafile, engine="pyarrow")
     return df
 
@@ -1870,8 +1910,12 @@ def _generate_dfs_from_indices(test_indices):
     for k, v in test_indices.items():
         idx_len = len(v)
 
-        # Create a dataframe with index used both as row index and column index
-        df = pd.DataFrame(np.random.randn(idx_len, idx_len), index=v, columns=v)
+        # Create a dataframe with index used both as row index and column index.
+        # Except for categorical, which would not be unique.
+        if re.match(".*categorical.*", k):            
+            df = pd.DataFrame(np.random.randn(idx_len, idx_len), index=v, columns=pd.RangeIndex(0, idx_len))
+        else:
+            df = pd.DataFrame(np.random.randn(idx_len, idx_len), index=v, columns=v)
 
         dfs[k] = df
 

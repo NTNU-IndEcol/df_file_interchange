@@ -2,24 +2,12 @@
 ---
 
 columns:
-  data:
-    el:
-      dtype: datetime64[ns, UTC+05:00]
-      elements:
-      - el:
-          isoformat: '2024-01-01T10:00:01+05:00'
-          tz: UTC+05:00
-        eltype: pd.Timestamp
-      - el:
-          isoformat: '2024-01-02T10:00:01+05:00'
-          tz: UTC+05:00
-        eltype: pd.Timestamp
-    eltype: pd.arrays.DatetimeArray
-  dtype: datetime64[ns, UTC+05:00]
-  freq: null
-  index_type: datetime
+  dtype: int64
+  index_type: range
   name: null
-  tz: UTC+05:00
+  start: 0
+  step: 1
+  stop: 6
 datafile: test_serialized_df.parq
 encoding:
   auto_convert_int_to_intna: true
@@ -36,28 +24,46 @@ encoding:
     engine: pyarrow
     index: null
 file_format: parquet
-hash: c76eba8fd7d6e3b2bb037056fc236d747d6f999e161e70760e2b1b237e39146d
+hash: 0c4627f623429ab6c55e9ab4060fa4dc1b12f2e4dc0eaa05fc7a6cab10bcbc73
 index:
-  dtype: int64
-  index_type: range
+  categories:
+    el:
+    - el: a
+      eltype: str
+    - el: b
+      eltype: str
+    - el: c
+      eltype: str
+    eltype: list
+  data:
+    el:
+    - el: a
+      eltype: str
+    - el: b
+      eltype: str
+    - el: c
+      eltype: str
+    - el: a
+      eltype: str
+    - el: b
+      eltype: str
+    - el: c
+      eltype: str
+    eltype: list
+  dtype: category
+  index_type: categorical
   name: null
-  start: 0
-  step: 1
-  stop: 5
+  ordered: false
 serialized_dtypes:
-  ? !!python/object/apply:pandas._libs.tslibs.timestamps._unpickle_timestamp
-  - 1704085201000000000
-  - null
-  - &id001 !!python/object/apply:datetime.timezone
-    - !!python/object/apply:datetime.timedelta
-      - 0
-      - 18000
-      - 0
-  - 10
-  : dtype_str: float64
-  ? !!python/object/apply:pandas._libs.tslibs.timestamps._unpickle_timestamp
-  - 1704171601000000000
-  - null
-  - *id001
-  - 10
-  : dtype_str: float64
+  0:
+    dtype_str: float64
+  1:
+    dtype_str: float64
+  2:
+    dtype_str: float64
+  3:
+    dtype_str: float64
+  4:
+    dtype_str: float64
+  5:
+    dtype_str: float64
