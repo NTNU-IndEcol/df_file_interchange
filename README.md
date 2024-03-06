@@ -14,8 +14,21 @@ We do not try to reinvent-the-wheel, only supplement existing functionality foun
 `import df_file_interchange as fi`
 
 
+
 ## Known Problems
 
 * Pyarrow won't encode numpy's complex64. So, we've disabled this in the tests for now although the functionality will work in CSV. Solution would be to serialize the actual data column when necessary but that's new functionality.
+
+
+
+## Technical Reasonings
+
+### Storing Index and Columns (also an Index) in the YAML File
+
+This sounds unwise at first. However, consider that Pandas has several types of `Index` including `Index`, `RangeIndex`, `DatetimeIndex`, `MultiIndex`, `CategoricalIndex`, etc. Some of these, such as `Index`, represent the index explicitly with list(s) of elements. Others represent the index in a shorthand way, using only a few parameters needed to reconstruct the index, e.g. `RangeIndex`. The former could fit nicely as an additional column or row in the tabluar data but the latter cannot and is better stored in the YAML file.
+
+Ok, so we could, and may eventually, do just that but it adds complexity to the code. Also, the `columns` function as the unique identifier for the columns and, unfortuantely, the columns need not be a simple list of str or ints: it can be a `MultiIndex` or such, i.e. something that requires deserialization and instantiation (this has to happen before applying dtypes, for example).
+
+It's not ideal but, for now at least, storing the serialized row index and column index in the YAML file seems a reasonably "clean" way to resolve the problem even if this means a much bigger file. We're not storing massive DataFrames --at most about 10k x 10k-- so this should be fine since the files are written+read programatically.
 
 

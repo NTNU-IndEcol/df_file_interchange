@@ -5,13 +5,6 @@ KST requested that this code should be generic. So it's agnostic in the sense
 that it saves/loads according to predefined Pydantic Models or dictionaries that
 are supplied. There are no imports used from the rest of datamanager.
 
-The datamanager layer on top of this is in fi_dm.py.
-
-Note to self: make sure that functionality is split into methods so that can
-override in descendent classes, e.g. processing paths from the metafile pointing
-to the data file should be overridable according to datamanager semantics at a
-later point.
-
 Warning: We set CoW semantics (will be in Pandas 3.0 anyway)!
 
 Note to self:
@@ -36,7 +29,8 @@ Pandas issues:
 Pandas sorted issues:
 
 * assert_frame_equal() fails when it shouldn't. I'm really tired of this
-  nonsense now. See ttps://github.com/pandas-dev/pandas/issues/57644
+  nonsense now. See https://github.com/pandas-dev/pandas/issues/57644 for
+  description/resolution of sorts.
 
 Parquet issues:
 
@@ -46,8 +40,7 @@ Parquet issues:
 Discussion:
 
 Code must be able to write out and read in exactly the same dataframe. This
-turns out to be a fair but more tricky with Pandas than it should be: they've
-been too smart for their own good, and there's a few bugs in annoying places. So
+turns out to be a fair but more tricky with Pandas than it should be. So
 instead of an elegant solution, have had to manually write code to properly
 serialise column dtype information.
 
@@ -58,7 +51,6 @@ import numpy as np
 import pandas as pd
 import copy
 import yaml
-import json
 import hashlib, hmac
 import re
 
@@ -81,8 +73,8 @@ from pandas._libs.tslibs import BaseOffset
 
 # Pylance complains about Frequency, presumably because it uses a ForwardRef.
 # It's not striclty wrong but will redefine locally for now: see _Frequency
-# later on.
-# from pandas._typing import ArrayLike, AnyArrayLike, Frequency
+# later on. Can probably fix this with TYPE_CHECKING stuff but will need to read
+# up on it.
 from pandas._typing import Dtype, ArrayLike, AnyArrayLike, IntervalClosedType, DtypeObj
 
 # DO NOT try to remove these. It's required by Pydantic to resolve forward
@@ -408,6 +400,16 @@ def _serialize_list_with_types(data: list) -> list:
 
 
 def _deserialize_list_with_types(serialized_data: list[dict]) -> list:
+    """Counterpart to `_serialize_list_with_types()` (again, don't call this directly)
+
+    Parameters
+    ----------
+    serialized_data : list[dict]
+
+    Returns
+    -------
+    list
+    """
 
     loc_data = []
     for item in serialized_data:
@@ -1047,6 +1049,19 @@ class FIPeriodIndex(FIBaseIndex):
         return data
 
 
+
+
+
+class FICustomInfo(BaseModel):
+    
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    # For now, do what you want!
+    custom_fields: dict = {}
+
+    # TODO extra custom info for columns/rows
+
+
 class FIMetainfo(BaseModel):
     """All the collected metadata we use when saving or loading"""
 
@@ -1072,6 +1087,9 @@ class FIMetainfo(BaseModel):
 
     # Columns, again, as an FIIndex object
     columns: FIBaseIndex
+
+    # Custom info (user defined metainfo)
+    custom_info: FICustomInfo = FICustomInfo()
 
     @field_serializer("datafile", when_used="always")
     def serialize_datafile(self, datafile: Path):
