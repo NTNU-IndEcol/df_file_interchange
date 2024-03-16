@@ -175,7 +175,7 @@ def _serialize_element(el) -> dict:
         loc_el = _serialize_list_with_types(list(el))
         loc_type = "np.ndarray"
     elif isinstance(el, pd.Index):
-        # This isn't idea since it's replicating functionality that's in FIIndex
+        # This isn't ideal since it's replicating functionality that's in FIIndex
         # but we're only using a subset of that here and it's only for use with
         # MultiIndex encoding.
         loc_el = {
@@ -238,19 +238,47 @@ def _serialize_element(el) -> dict:
         loc_el = int(el)
         loc_type = "np.longlong"
     elif type(el) == np.uint8:
-        loc_el = int(el)    # DO NOT use abs() here as we don't want to modify (error would be detected on deserialize)
+        # DO NOT use abs() here as we don't want to modify (error would be
+        # detected on deserialize but we warn here)
+        loc_el = int(el)
+        if loc_el != el:
+            warning_msg = f"For uint8 encode. Weirdness when encoding int, probably a sign issue: {el} -> {loc_el}"
+            logger.warning(warning_msg)
+            raise Exception(warning_msg)
         loc_type = "np.uint8"
     elif type(el) == np.uint16:
-        loc_el = int(el)    # DO NOT use abs() here as we don't want to modify (error would be detected on deserialize)
+        # DO NOT use abs() here as we don't want to modify (error would be
+        # detected on deserialize but we warn here)
+        loc_el = int(el)
+        if loc_el != el:
+            warning_msg = f"For uint16 encode. Weirdness when encoding int, probably a sign issue: {el} -> {loc_el}"
+            logger.warning(warning_msg)
+            raise Exception(warning_msg)
         loc_type = "np.uint16"
     elif type(el) == np.uint32:
-        loc_el = int(el)    # DO NOT use abs() here as we don't want to modify (error would be detected on deserialize)
+        # DO NOT use abs() here as we don't want to modify (error would be
+        # detected on deserialize but we warn here)
+        loc_el = int(el)
+        if loc_el != el:
+            warning_msg = f"For uint32 encode. Weirdness when encoding int, probably a sign issue: {el} -> {loc_el}"
+            logger.warning(warning_msg)
+            raise Exception(warning_msg)
         loc_type = "np.uint32"
     elif type(el) == np.uint64:
-        loc_el = int(el)    # DO NOT use abs() here as we don't want to modify (error would be detected on deserialize)
+        # DO NOT use abs() here as we don't want to modify (error would be
+        # detected on deserialize but we warn here)
+        loc_el = int(el)
+        if loc_el != el:
+            warning_msg = f"For uint64 encode. Weirdness when encoding int, probably a sign issue: {el} -> {loc_el}"
+            logger.warning(warning_msg)
+            raise Exception(warning_msg)
         loc_type = "np.uint64"
     elif type(el) == np.ulonglong:
         loc_el = int(el)
+        if loc_el != el:
+            warning_msg = f"For ulonglong encode. Weirdness when encoding int, probably a sign issue: {el} -> {loc_el}"
+            logger.warning(warning_msg)
+            raise Exception(warning_msg)
         loc_type = "np.ulonglong"
     elif type(el) == np.float16:
         loc_el = float(el)
@@ -362,7 +390,7 @@ def _deserialize_element(serialized_element: dict):
         return np.complex128(el)
     elif eltype == "np.clongdouble":
         return np.clongdouble(el)
-    
+
     else:
         return el
 
@@ -1038,11 +1066,8 @@ class FIPeriodIndex(FIBaseIndex):
         return data
 
 
-
-
-
 class FICustomInfo(BaseModel):
-    
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # For now, do what you want!
@@ -1210,8 +1235,12 @@ def _check_metafile_name(
     return loc_metafile
 
 
-
 def _preprocess_common(df: pd.DataFrame, encoding: FIEncoding):
+    """Preprocess checks that do not alter the dataframe
+
+    Preprocess alterations have to happen in either `_preprocess_inplace()` or
+    `_preprocess_safe()`.
+    """
 
     # Check column index has unique elements
     if not df.columns.is_unique:
@@ -1220,13 +1249,36 @@ def _preprocess_common(df: pd.DataFrame, encoding: FIEncoding):
         raise Exception(error_msg)
 
 
-
 def _preprocess_inplace(df: pd.DataFrame, encoding: FIEncoding):
+    """Pre-process dataframe inplace, i.e. notionally 'unsafe'
+
+    In practice though, we put all the alterations in here and if running in
+    safe mode we'd be fed a copy.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+    encoding : FIEncoding
+    """
 
     _preprocess_common(df, encoding)
 
 
-def _preprocess_safe(df: pd.DataFrame, encoding: FIEncoding):
+def _preprocess_safe(df: pd.DataFrame, encoding: FIEncoding) -> pd.DataFrame:
+    """Pre-process dataframe safely, i.e. make a copy first
+
+    This actually just calls `_preprocess_inplace()` to run on a copy, so put
+    any actual logic in there. This is just a copy operation.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+    encoding : FIEncoding
+
+    Returns
+    -------
+    pd.DataFrame
+    """
 
     _preprocess_common(df, encoding)
 
@@ -1239,7 +1291,7 @@ def _preprocess_safe(df: pd.DataFrame, encoding: FIEncoding):
     return loc_df
 
 
-def _serialize_df_dtypes_to_dict(df: pd.DataFrame):
+def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
     """Serializes the dtypes from a data from into a dictionary
 
     This isn't quite as obvious as it seems because the column label isn't
@@ -1249,38 +1301,17 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame):
 
     serialized_dtypes = {}
 
-    col_ctr = 0
-
     # Loop through and just append to serialized_dtypes unless we get a special
     # type we must manually serialize, e.g. category.
     for col_name, dtype in df.dtypes.to_dict().items():
-
-        # # TODO change JSON encoding to be YAML that encodes in the main write/read
-        # loc_col_name = json.dumps(_serialize_element(col_name))
-
-        # if dtype == "category":
-        #     dtype_full = df.dtypes[col_name]
-        #     assert isinstance(dtype_full, pd.CategoricalDtype)
-        #     serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
-        #     serialized_dtypes[loc_col_name][
-        #         "categories"
-        #     ] = dtype_full.categories.to_list()
-        #     serialized_dtypes[loc_col_name]["ordered"] = str(dtype_full.ordered)
-        # else:
-        #     serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
-
-
         if dtype == "category":
             dtype_full = df.dtypes[col_name]
             assert isinstance(dtype_full, pd.CategoricalDtype)
             serialized_dtypes[col_name] = {"dtype_str": str(dtype)}
-            serialized_dtypes[col_name][
-                "categories"
-            ] = dtype_full.categories.to_list()
+            serialized_dtypes[col_name]["categories"] = dtype_full.categories.to_list()
             serialized_dtypes[col_name]["ordered"] = str(dtype_full.ordered)
         else:
             serialized_dtypes[col_name] = {"dtype_str": str(dtype)}
-
 
     return serialized_dtypes
 
@@ -1572,7 +1603,7 @@ def _write_to_parquet(df: pd.DataFrame, datafile: Path, encoding: FIEncoding):
     the row index if it's not the same dtype in each entry. It complains if one
     does similar with the column index. So we don't write these, i.e. set
     `index=False` option.
-    
+
     Parameters
     ----------
     df : pd.DataFrame
@@ -1919,8 +1950,12 @@ def _generate_dfs_from_indices(test_indices):
 
         # Create a dataframe with index used both as row index and column index.
         # Except for categorical, which would not be unique.
-        if re.match(".*categorical.*", k):            
-            df = pd.DataFrame(np.random.randn(idx_len, idx_len), index=v, columns=pd.RangeIndex(0, idx_len))
+        if re.match(".*categorical.*", k):
+            df = pd.DataFrame(
+                np.random.randn(idx_len, idx_len),
+                index=v,
+                columns=pd.RangeIndex(0, idx_len),
+            )
         else:
             df = pd.DataFrame(np.random.randn(idx_len, idx_len), index=v, columns=v)
 
@@ -1992,12 +2027,11 @@ def _generate_example_1():
     # df["F_pd_DatetimeTZDtype"] = pd.array(
     #     ["2010/01/31 10:23:01", "1990", "2025/01/01 00:00+1", 1, None],
     #     dtype=pd.DatetimeTZDtype(tz=ZoneInfo("Europe/Paris")),
-    # 
+    #
     df["F_pd_DatetimeTZDtype"] = pd.array(
         ["2010/01/31 10:23:01", "1990", "2025/01/01 00:00+1", 1, None],
         dtype="datetime64[ns, Europe/Paris]",
     )
-
 
     # Missing: Timedeltas
     # Missing: PeriodDtype
@@ -2021,6 +2055,3 @@ def _generate_example_1():
     # Missing: ArrowDtype
 
     return df
-
-
-
