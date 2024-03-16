@@ -1,10 +1,6 @@
 """
 Generic version of the File Interchange code.
 
-KST requested that this code should be generic. So it's agnostic in the sense
-that it saves/loads according to predefined Pydantic Models or dictionaries that
-are supplied. There are no imports used from the rest of datamanager.
-
 Warning: We set CoW semantics (will be in Pandas 3.0 anyway)!
 
 Note to self:
@@ -12,16 +8,9 @@ Note to self:
 * pandas.Float64Dtype converts np.NaN and np.Inf to <NA>.
 * Test to show why we're doing this (compare indexes with raw CSV save):
 
-```python
-df = pd.DataFrame(np.ones((5, 2)), index=pd.RangeIndex(0, 5), columns=[pd.Timestamp("2024-01-01T10:00:01+5"), pd.Timestamp("2024-01-02T10:00:01+5")])
-df[pd.Timestamp("2024-01-03T10:00:01+5")] = pd.Series(["a", "b", "c", "d", "e"], dtype=str)
-df.columns.freq = pd.infer_freq(df.columns)
-```
-
 Pandas issues:
 
 * Generally unable to use to_json() with the dtype: it's broken in several places.
-* Weird bug when creating dataframe with single categorical column.
 * There's issues with ordering when using CategoricalIndex in a Multiindex. See
   https://stackoverflow.com/questions/71837659/trying-to-sort-multiindex-index-using-categorical-index
   and https://github.com/pandas-dev/pandas/issues/47607
@@ -32,17 +21,17 @@ Pandas sorted issues:
   nonsense now. See https://github.com/pandas-dev/pandas/issues/57644 for
   description/resolution of sorts.
 
-Parquet issues:
+Parquet issues / properties:
 
 * Pyarrow doesn't permit different types within a column, which also applies to
   the row index (it fails). It complains if one tries similar with column index.
 
 Discussion:
 
-Code must be able to write out and read in exactly the same dataframe. This
-turns out to be a fair but more tricky with Pandas than it should be. So
-instead of an elegant solution, have had to manually write code to properly
-serialise column dtype information.
+Code must be able to write out and read in exactly the same dataframe. This is a
+a fair requirement but turns out to be more tricky with Pandas than it should
+be. So instead of an elegant solution, have had to manually write code to
+properly serialise column dtype information.
 
 """
 
