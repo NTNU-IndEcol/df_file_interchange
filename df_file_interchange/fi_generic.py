@@ -5,6 +5,15 @@ Warning: We set CoW semantics (will be in Pandas 3.0 anyway)!
 
 Note to self:
 
+* Should version the file format!
+
+* Was going to allow user to derive from a FICustomInfo class to make
+  serialization possible but this gets difficult:
+  https://blog.devgenius.io/deserialize-child-classes-with-pydantic-that-gonna-work-784230e1cf83
+  (there's no obvious way to allow users to define the union type) So, we'd be
+  left with having to store the class name and we're not guaranteed that'll
+  exist again on deserialize. Basically, not worth the effort so will use a
+  plain dict.
 * pandas.Float64Dtype converts np.NaN and np.Inf to <NA>.
 * Test to show why we're doing this (compare indexes with raw CSV save):
 
@@ -32,6 +41,8 @@ Code must be able to write out and read in exactly the same dataframe. This is a
 a fair requirement but turns out to be more tricky with Pandas than it should
 be. So instead of an elegant solution, have had to manually write code to
 properly serialise column dtype information.
+
+
 
 """
 
@@ -153,17 +164,16 @@ def str_n(in_str):
         return str(in_str)
 
 
-
 def _check_valid_scalar_generic_cast(val, dtype):
     if dtype(val) != val:
-        error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"        
+        error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"
         logger.error(error_msg)
         raise InvalidValueForFieldError(error_msg)
 
 
 def _check_valid_scalar_np_cast(val, dtype):
     if not np.can_cast(val, dtype):
-        error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"        
+        error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"
         logger.error(error_msg)
         raise InvalidValueForFieldError(error_msg)
 
@@ -307,7 +317,11 @@ def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
     return {"el": loc_el, "eltype": loc_type}
 
 
-def _deserialize_element(serialized_element: dict, b_chk_correctness: bool = True, b_only_known_types: bool = True):
+def _deserialize_element(
+    serialized_element: dict,
+    b_chk_correctness: bool = True,
+    b_only_known_types: bool = True,
+):
     """Deserialize a dict created by `_serialize_element()`
 
     Parameters
@@ -439,7 +453,7 @@ def _deserialize_element(serialized_element: dict, b_chk_correctness: bool = Tru
         if b_chk_correctness:
             _check_valid_scalar_np_cast(el, np.clongdouble)
         return np.clongdouble(el)
-    
+
     else:
         if b_only_known_types:
             error_msg = f"We only deserialize types we know. Got eltype={eltype}"
@@ -1119,18 +1133,40 @@ class FIPeriodIndex(FIBaseIndex):
         return data
 
 
-class FICustomInfo(BaseModel):
+class FICustomInfoWrapper(BaseModel):
+    """Wrapper class to store user custom info
+
+    We store in the `ci` attribute (dict). Later, we can add some extra code to
+    help with serialization/deserialization but will rely on defaults for now.
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    # For now, do what you want!
-    custom_fields: dict = {}
+    custom_info: dict = {}
 
     # TODO extra custom info for columns/rows
 
 
+class FIUndefinedCustomInfo(BaseModel):
+    """This is for user-supplied custom info that was in a dictionary
+
+    There is an assumption that the dictionary can be serialized without problem
+    with default method(s).
+    """
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    ci: dict = {}
+
+
 class FIMetainfo(BaseModel):
-    """All the collected metadata we use when saving or loading"""
+    """All the collected metadata we use when saving or loading
+
+    N.B. The _order_ of the attributes is important in the sense that the
+    serialization automatically preserves the order, and then `yaml.dump()` does
+    too. This means we can make the YAML file a little easier to read/parse by a
+    human.
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -1146,6 +1182,9 @@ class FIMetainfo(BaseModel):
     # Encoding
     encoding: FIEncoding
 
+    # Custom info (user defined metainfo)
+    custom_info: FICustomInfoWrapper
+
     # Serialized dtypes
     serialized_dtypes: dict
 
@@ -1154,9 +1193,6 @@ class FIMetainfo(BaseModel):
 
     # Columns, again, as an FIIndex object
     columns: FIBaseIndex
-
-    # Custom info (user defined metainfo)
-    custom_info: FICustomInfo = FICustomInfo()
 
     @field_serializer("datafile", when_used="always")
     def serialize_datafile(self, datafile: Path):
@@ -1180,8 +1216,13 @@ class FIMetainfo(BaseModel):
     @classmethod
     def pre_process(cls, data: Any) -> Any:
         if isinstance(data, dict):
-            # Need to ensure the index and columns is created as the correct
-            # object type, not just instantiating the base class.
+            # Need to ensure the index and columns and custominfo are created as
+            # the correct object type, not just instantiating the base class.
+            if "custom_info" in data.keys() and isinstance(data["custom_info"], dict):
+                data["custom_info"] = FICustomInfoWrapper(
+                    custom_info=data["custom_info"]
+                )
+
             if "index" in data.keys() and isinstance(data["index"], dict):
                 data["index"] = _deserialize_index_dict_to_fi_index(data["index"])
 
@@ -1548,6 +1589,7 @@ def _compile_metainfo(
     file_format: FIFileFormatEnum,
     hash: str,
     encoding: FIEncoding,
+    custom_info_dict: dict,
     df: pd.DataFrame,
 ) -> FIMetainfo:
     """Creates an FIMetainfo object from supplied metainfo
@@ -1579,12 +1621,16 @@ def _compile_metainfo(
     # Get columns as an FIIndex object
     columns = _serialize_index_to_metainfo_index(df.columns)
 
+    # Process custom info into pydantic object
+    custom_info = FICustomInfoWrapper(custom_info=custom_info_dict)
+
     # Now shove it all into a FIMetainfo object...
     metainfo = FIMetainfo(
         datafile=Path(datafile.name),
         file_format=file_format,
         hash=hash,
         encoding=encoding,
+        custom_info=custom_info,
         serialized_dtypes=serialized_dtypes,
         index=index,
         columns=columns,
@@ -1735,6 +1781,7 @@ def write_df_to_fi_generic(
     metafile: Path | None = None,
     file_format: FIFileFormatEnum | None = None,
     encoding: FIEncoding | None = None,
+    custom_info_dict: dict = {},
     preprocess_inplace=True,
 ) -> Path:
     """Writes a dataframe to file
@@ -1751,6 +1798,8 @@ def write_df_to_fi_generic(
         The file format. If not supplied will be determined automatically.
     encoding : FIEncoding | None, optional
         Datafile encoding options.
+    custom_info_dict : dict
+        Custom user metadata to be stored.
     preprocess_inplace : bool, optional
 
     Returns
@@ -1801,6 +1850,7 @@ def write_df_to_fi_generic(
         file_format=loc_file_format,
         hash=hash,
         encoding=encoding,
+        custom_info_dict=custom_info_dict,
         df=loc_df,
     )
 
@@ -2062,7 +2112,7 @@ def _generate_example_1(b_include_complex: bool = False):
     df["F_np_float32"] = pd.array([1.0, -2.0, np.pi, np.NaN, 5.0], dtype="float32")
     df["F_np_float64"] = pd.array([1.0, -2.0, np.pi, np.NaN, 5.0], dtype="float64")
 
-    # Shouldn't do this if writing Parquet with Arrow engine    
+    # Shouldn't do this if writing Parquet with Arrow engine
     if b_include_complex:
         df["F_np_complex64"] = pd.array(
             [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="complex64"
