@@ -130,6 +130,10 @@ TArrayThing: TypeAlias = list | tuple | np.ndarray
 #     column_name: description
 
 
+class InvalidValueForFieldError(Exception):
+    pass
+
+
 def str_n(in_str):
     """Does a simple str cast but if None converts to empty str
 
@@ -149,12 +153,24 @@ def str_n(in_str):
         return str(in_str)
 
 
-def _serialize_element(el) -> dict:
+
+def _check_valid_scalar_cast(val, dtype):
+    if dtype(val) != val:
+        error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"        
+        logger.error(error_msg)
+        raise InvalidValueForFieldError(error_msg)
+
+
+def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
     """Serialize something
+
+    This is used primarily to encode indexes.
 
     Parameters
     ----------
     el : list, tuple, array, int, str, etc.
+    b_chk_correctness : bool
+        Whether to check correctness of (some) of the fields. Default is True.
 
     Returns
     -------
@@ -214,88 +230,103 @@ def _serialize_element(el) -> dict:
         loc_el = str(el)
         loc_type = "pd.Period"
     elif isinstance(el, str):
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, str)
         loc_el = el
         loc_type = "str"
     elif isinstance(el, int):
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, int)
         loc_el = el
         loc_type = "int"
     elif isinstance(el, float):
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, float)
         loc_el = el
         loc_type = "float"
     elif type(el) == np.int8:
-        loc_el = int(el)
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.int8)
+        loc_el = el
         loc_type = "np.int8"
     elif type(el) == np.int16:
-        loc_el = int(el)
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.int16)
+        loc_el = el
         loc_type = "np.int16"
     elif type(el) == np.int32:
-        loc_el = int(el)
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.int32)
+        loc_el = el
         loc_type = "np.int32"
     elif type(el) == np.int64:
-        loc_el = int(el)
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.int64)
+        loc_el = el
         loc_type = "np.int64"
     elif type(el) == np.longlong:
-        loc_el = int(el)
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.longlong)
+        loc_el = el
         loc_type = "np.longlong"
     elif type(el) == np.uint8:
-        # DO NOT use abs() here as we don't want to modify (error would be
-        # detected on deserialize but we warn here)
-        loc_el = int(el)
-        if loc_el != el:
-            warning_msg = f"For uint8 encode. Weirdness when encoding int, probably a sign issue: {el} -> {loc_el}"
-            logger.warning(warning_msg)
-            raise Exception(warning_msg)
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.uint8)
+        loc_el = el
         loc_type = "np.uint8"
     elif type(el) == np.uint16:
-        # DO NOT use abs() here as we don't want to modify (error would be
-        # detected on deserialize but we warn here)
-        loc_el = int(el)
-        if loc_el != el:
-            warning_msg = f"For uint16 encode. Weirdness when encoding int, probably a sign issue: {el} -> {loc_el}"
-            logger.warning(warning_msg)
-            raise Exception(warning_msg)
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.uint16)
+        loc_el = el
         loc_type = "np.uint16"
     elif type(el) == np.uint32:
-        # DO NOT use abs() here as we don't want to modify (error would be
-        # detected on deserialize but we warn here)
-        loc_el = int(el)
-        if loc_el != el:
-            warning_msg = f"For uint32 encode. Weirdness when encoding int, probably a sign issue: {el} -> {loc_el}"
-            logger.warning(warning_msg)
-            raise Exception(warning_msg)
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.uint32)
+        loc_el = el
         loc_type = "np.uint32"
     elif type(el) == np.uint64:
-        # DO NOT use abs() here as we don't want to modify (error would be
-        # detected on deserialize but we warn here)
-        loc_el = int(el)
-        if loc_el != el:
-            warning_msg = f"For uint64 encode. Weirdness when encoding int, probably a sign issue: {el} -> {loc_el}"
-            logger.warning(warning_msg)
-            raise Exception(warning_msg)
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.uint64)
+        loc_el = el
         loc_type = "np.uint64"
     elif type(el) == np.ulonglong:
-        loc_el = int(el)
-        if loc_el != el:
-            warning_msg = f"For ulonglong encode. Weirdness when encoding int, probably a sign issue: {el} -> {loc_el}"
-            logger.warning(warning_msg)
-            raise Exception(warning_msg)
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.ulonglong)
+        loc_el = el
         loc_type = "np.ulonglong"
     elif type(el) == np.float16:
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.float16)
         loc_el = float(el)
         loc_type = "np.float16"
     elif type(el) == np.float32:
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.float32)
         loc_el = float(el)
         loc_type = "np.float32"
     elif type(el) == np.float64:
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.float64)
         loc_el = float(el)
         loc_type = "np.float64"
     elif type(el) == np.complex64:
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.complex64)
         loc_el = complex(el)
         loc_type = "np.complex64"
-    elif type(el) == np.complex64:
+    elif type(el) == np.complex128:
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.complex128)
         loc_el = complex(el)
         loc_type = "np.complex128"
+    elif type(el) == np.complex256:
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.complex256)
+        loc_el = complex(el)
+        loc_type = "np.complex256"
     elif type(el) == np.clongdouble:
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.clongdouble)
         loc_el = complex(el)
         loc_type = "np.clongdouble"
     else:
@@ -388,6 +419,8 @@ def _deserialize_element(serialized_element: dict):
         return np.complex64(el)
     elif eltype == "np.complex128":
         return np.complex128(el)
+    elif eltype == "np.complex256":
+        return np.complex256(el)
     elif eltype == "np.clongdouble":
         return np.clongdouble(el)
 
@@ -1964,7 +1997,19 @@ def _generate_dfs_from_indices(test_indices):
     return dfs
 
 
-def _generate_example_1():
+def _generate_example_1(b_include_complex: bool = False):
+    """Generate an example dataframe for test purposes
+
+    Parameters
+    ----------
+    b_include_complex : bool, optional
+        Whether to include complex number examples, which fail when writing to
+        Parquet using the Arrow engine. It's fine for CSV though.
+
+    Returns
+    -------
+    pd.DataFrame
+    """
 
     # See
     # https://pandas.pydata.org/docs/user_guide/basics.html#basics-dtypes
@@ -1997,15 +2042,17 @@ def _generate_example_1():
     df["F_np_float32"] = pd.array([1.0, -2.0, np.pi, np.NaN, 5.0], dtype="float32")
     df["F_np_float64"] = pd.array([1.0, -2.0, np.pi, np.NaN, 5.0], dtype="float64")
 
-    # df["F_np_complex64"] = pd.array(
-    #     [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="complex64"
-    # )
-    # df["F_np_complex128"] = pd.array(
-    #     [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="complex128"
-    # )
-    # df["F_np_clongdouble"] = pd.array(
-    #     [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="clongdouble"
-    # )
+    # Shouldn't do this if writing Parquet with Arrow engine    
+    if b_include_complex:
+        df["F_np_complex64"] = pd.array(
+            [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="complex64"
+        )
+        df["F_np_complex128"] = pd.array(
+            [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="complex128"
+        )
+        df["F_np_clongdouble"] = pd.array(
+            [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="clongdouble"
+        )
 
     # other
     df["F_np_bool"] = pd.array([True, False, True, True, False], dtype="bool_")
@@ -2024,10 +2071,6 @@ def _generate_example_1():
     # ----------
 
     # Careful with syntax! See, https://github.com/pandas-dev/pandas/issues/57644
-    # df["F_pd_DatetimeTZDtype"] = pd.array(
-    #     ["2010/01/31 10:23:01", "1990", "2025/01/01 00:00+1", 1, None],
-    #     dtype=pd.DatetimeTZDtype(tz=ZoneInfo("Europe/Paris")),
-    #
     df["F_pd_DatetimeTZDtype"] = pd.array(
         ["2010/01/31 10:23:01", "1990", "2025/01/01 00:00+1", 1, None],
         dtype="datetime64[ns, Europe/Paris]",
@@ -2036,6 +2079,7 @@ def _generate_example_1():
     # Missing: Timedeltas
     # Missing: PeriodDtype
     # Missing: IntervalDtype
+
     df["F_pd_Int64Dtype"] = pd.array(
         [1, None, -50, -1000000000, 1000000000], dtype=pd.Int64Dtype()
     )
