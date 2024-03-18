@@ -230,103 +230,63 @@ def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
         loc_el = str(el)
         loc_type = "pd.Period"
     elif isinstance(el, str):
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, str)
         loc_el = el
         loc_type = "str"
     elif isinstance(el, int):
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, int)
         loc_el = el
         loc_type = "int"
     elif isinstance(el, float):
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, float)
         loc_el = el
         loc_type = "float"
     elif type(el) == np.int8:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.int8)
         loc_el = el
         loc_type = "np.int8"
     elif type(el) == np.int16:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.int16)
         loc_el = el
         loc_type = "np.int16"
     elif type(el) == np.int32:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.int32)
         loc_el = el
         loc_type = "np.int32"
     elif type(el) == np.int64:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.int64)
         loc_el = el
         loc_type = "np.int64"
     elif type(el) == np.longlong:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.longlong)
         loc_el = el
         loc_type = "np.longlong"
     elif type(el) == np.uint8:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.uint8)
         loc_el = el
         loc_type = "np.uint8"
     elif type(el) == np.uint16:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.uint16)
         loc_el = el
         loc_type = "np.uint16"
     elif type(el) == np.uint32:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.uint32)
         loc_el = el
         loc_type = "np.uint32"
     elif type(el) == np.uint64:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.uint64)
         loc_el = el
         loc_type = "np.uint64"
     elif type(el) == np.ulonglong:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.ulonglong)
         loc_el = el
         loc_type = "np.ulonglong"
     elif type(el) == np.float16:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.float16)
         loc_el = float(el)
         loc_type = "np.float16"
     elif type(el) == np.float32:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.float32)
         loc_el = float(el)
         loc_type = "np.float32"
     elif type(el) == np.float64:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.float64)
         loc_el = float(el)
         loc_type = "np.float64"
     elif type(el) == np.complex64:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.complex64)
         loc_el = complex(el)
         loc_type = "np.complex64"
     elif type(el) == np.complex128:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.complex128)
         loc_el = complex(el)
         loc_type = "np.complex128"
     elif type(el) == np.complex256:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.complex256)
         loc_el = complex(el)
         loc_type = "np.complex256"
     elif type(el) == np.clongdouble:
-        if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.clongdouble)
         loc_el = complex(el)
         loc_type = "np.clongdouble"
     else:
