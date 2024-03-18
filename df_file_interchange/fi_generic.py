@@ -340,7 +340,7 @@ def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
     return {"el": loc_el, "eltype": loc_type}
 
 
-def _deserialize_element(serialized_element: dict):
+def _deserialize_element(serialized_element: dict, b_chk_correctness: bool = True):
     """Deserialize a dict created by `_serialize_element()`
 
     Parameters
@@ -384,46 +384,85 @@ def _deserialize_element(serialized_element: dict):
     elif eltype == "pd.Period":
         return pd.Period(el)
     elif eltype == "str":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, str)
         return str(el)
     elif eltype == "int":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, int)
         return int(el)
     elif eltype == "float":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, float)
         return float(el)
     elif eltype == "np.int8":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.int8)
         return np.int8(el)
     elif eltype == "np.int16":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.int16)
         return np.int16(el)
     elif eltype == "np.int32":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.int32)
         return np.int32(el)
     elif eltype == "np.int64":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.int64)
         return np.int64(el)
     elif eltype == "np.longong":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.longlong)
         return np.longlong(el)
     elif eltype == "np.uint8":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.uint8)
         return np.uint8(el)
     elif eltype == "np.uint16":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.uint8)
         return np.uint16(el)
     elif eltype == "np.uint32":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.uint16)
         return np.uint32(el)
     elif eltype == "np.uint64":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.uint32)
         return np.uint64(el)
     elif eltype == "np.ulongong":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.uint64)
         return np.ulonglong(el)
     elif eltype == "np.float16":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.float16)
         return np.float16(el)
     elif eltype == "np.float32":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.float32)
         return np.float32(el)
     elif eltype == "np.float64":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.float64)
         return np.float64(el)
     elif eltype == "np.complex64":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.complex64)
         return np.complex64(el)
     elif eltype == "np.complex128":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.complex128)
         return np.complex128(el)
     elif eltype == "np.complex256":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.complex256)
         return np.complex256(el)
     elif eltype == "np.clongdouble":
+        if b_chk_correctness:
+            _check_valid_scalar_cast(el, np.clongdouble)
         return np.clongdouble(el)
-
     else:
         return el
 
