@@ -154,8 +154,15 @@ def str_n(in_str):
 
 
 
-def _check_valid_scalar_cast(val, dtype):
+def _check_valid_scalar_generic_cast(val, dtype):
     if dtype(val) != val:
+        error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"        
+        logger.error(error_msg)
+        raise InvalidValueForFieldError(error_msg)
+
+
+def _check_valid_scalar_np_cast(val, dtype):
+    if not np.can_cast(val, dtype):
         error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"        
         logger.error(error_msg)
         raise InvalidValueForFieldError(error_msg)
@@ -300,7 +307,7 @@ def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
     return {"el": loc_el, "eltype": loc_type}
 
 
-def _deserialize_element(serialized_element: dict, b_chk_correctness: bool = True):
+def _deserialize_element(serialized_element: dict, b_chk_correctness: bool = True, b_only_known_types: bool = True):
     """Deserialize a dict created by `_serialize_element()`
 
     Parameters
@@ -314,6 +321,14 @@ def _deserialize_element(serialized_element: dict, b_chk_correctness: bool = Tru
     el = serialized_element["el"]
     eltype = serialized_element["eltype"]
 
+    # Basic sanity checks. This shouldn't happen in normal operation but have
+    # done stupid stuff when writing tests, debugging, etc.
+    if not isinstance(eltype, str):
+        error_msg = f"Need eltype to be a string. Got type(eltype)={type(eltype)}, eltype={eltype}"
+        logger.error(error_msg)
+        raise TypeError(error_msg)
+
+    # Do the deserialize
     if eltype == "list":
         return _deserialize_list_with_types(el)
     elif eltype == "tuple":
@@ -345,85 +360,91 @@ def _deserialize_element(serialized_element: dict, b_chk_correctness: bool = Tru
         return pd.Period(el)
     elif eltype == "str":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, str)
+            _check_valid_scalar_generic_cast(el, str)
         return str(el)
     elif eltype == "int":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, int)
+            _check_valid_scalar_generic_cast(el, int)
         return int(el)
     elif eltype == "float":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, float)
+            _check_valid_scalar_generic_cast(el, float)
         return float(el)
     elif eltype == "np.int8":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.int8)
+            _check_valid_scalar_np_cast(el, np.int8)
         return np.int8(el)
     elif eltype == "np.int16":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.int16)
+            _check_valid_scalar_np_cast(el, np.int16)
         return np.int16(el)
     elif eltype == "np.int32":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.int32)
+            _check_valid_scalar_np_cast(el, np.int32)
         return np.int32(el)
     elif eltype == "np.int64":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.int64)
+            _check_valid_scalar_np_cast(el, np.int64)
         return np.int64(el)
-    elif eltype == "np.longong":
+    elif eltype == "np.longlong":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.longlong)
+            _check_valid_scalar_np_cast(el, np.longlong)
         return np.longlong(el)
     elif eltype == "np.uint8":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.uint8)
+            print("about to check uint8 correctness")
+            _check_valid_scalar_np_cast(el, np.uint8)
         return np.uint8(el)
     elif eltype == "np.uint16":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.uint8)
+            _check_valid_scalar_np_cast(el, np.uint16)
         return np.uint16(el)
     elif eltype == "np.uint32":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.uint16)
+            _check_valid_scalar_np_cast(el, np.uint32)
         return np.uint32(el)
     elif eltype == "np.uint64":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.uint32)
+            _check_valid_scalar_np_cast(el, np.uint64)
         return np.uint64(el)
-    elif eltype == "np.ulongong":
+    elif eltype == "np.ulonglong":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.uint64)
+            _check_valid_scalar_np_cast(el, np.ulonglong)
         return np.ulonglong(el)
     elif eltype == "np.float16":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.float16)
+            _check_valid_scalar_np_cast(el, np.float16)
         return np.float16(el)
     elif eltype == "np.float32":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.float32)
+            _check_valid_scalar_np_cast(el, np.float32)
         return np.float32(el)
     elif eltype == "np.float64":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.float64)
+            _check_valid_scalar_np_cast(el, np.float64)
         return np.float64(el)
     elif eltype == "np.complex64":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.complex64)
+            _check_valid_scalar_np_cast(el, np.complex64)
         return np.complex64(el)
     elif eltype == "np.complex128":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.complex128)
+            _check_valid_scalar_np_cast(el, np.complex128)
         return np.complex128(el)
     elif eltype == "np.complex256":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.complex256)
+            _check_valid_scalar_np_cast(el, np.complex256)
         return np.complex256(el)
     elif eltype == "np.clongdouble":
         if b_chk_correctness:
-            _check_valid_scalar_cast(el, np.clongdouble)
+            _check_valid_scalar_np_cast(el, np.clongdouble)
         return np.clongdouble(el)
+    
     else:
+        if b_only_known_types:
+            error_msg = f"We only deserialize types we know. Got eltype={eltype}"
+            logger.error(error_msg)
+            raise TypeError(error_msg)
         return el
 
 
