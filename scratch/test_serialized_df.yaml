@@ -4,9 +4,55 @@
 columns:
   data:
     el:
-    - el: F_np_timedelta64
+    - el: A
+      eltype: str
+    - el: B
+      eltype: str
+    - el: C
       eltype: str
     - el: F_np_int8
+      eltype: str
+    - el: F_np_int16
+      eltype: str
+    - el: F_np_int32
+      eltype: str
+    - el: F_np_int64
+      eltype: str
+    - el: F_np_longlong
+      eltype: str
+    - el: F_np_uint8
+      eltype: str
+    - el: F_np_uint16
+      eltype: str
+    - el: F_np_uint32
+      eltype: str
+    - el: F_np_uint64
+      eltype: str
+    - el: F_np_ulonglong
+      eltype: str
+    - el: F_np_float16
+      eltype: str
+    - el: F_np_float32
+      eltype: str
+    - el: F_np_float64
+      eltype: str
+    - el: F_np_bool
+      eltype: str
+    - el: F_np_datetime64
+      eltype: str
+    - el: F_np_timedelta64
+      eltype: str
+    - el: F_pd_DatetimeTZDtype
+      eltype: str
+    - el: F_pd_Int64Dtype
+      eltype: str
+    - el: F_pd_Float64Dtype
+      eltype: str
+    - el: F_pd_CategoricalDtype
+      eltype: str
+    - el: F_pd_StringDtype
+      eltype: str
+    - el: F_pd_BooleanDtype
       eltype: str
     eltype: list
   dtype: object
@@ -30,7 +76,7 @@ encoding:
     engine: pyarrow
     index: null
 file_format: csv
-hash: 8b12c33a5a8891379cfc3353d37f9c16dd6e558f38fb845cf1d5d67c2529071a
+hash: e42e4c4c2a0c9fe967511a063f73cea44186a50fad54aed4aa62be370dffbd5e
 index:
   data:
     el:
@@ -63,7 +109,58 @@ index:
   name: Date
   tz: null
 serialized_dtypes:
+  A:
+    dtype_str: float64
+  B:
+    dtype_str: float64
+  C:
+    dtype_str: float64
+  F_np_bool:
+    dtype_str: bool
+  F_np_datetime64:
+    dtype_str: datetime64[ns]
+  F_np_float16:
+    dtype_str: float16
+  F_np_float32:
+    dtype_str: float32
+  F_np_float64:
+    dtype_str: float64
+  F_np_int16:
+    dtype_str: int16
+  F_np_int32:
+    dtype_str: int32
+  F_np_int64:
+    dtype_str: int64
   F_np_int8:
     dtype_str: int8
+  F_np_longlong:
+    dtype_str: int64
   F_np_timedelta64:
     dtype_str: timedelta64[ns]
+  F_np_uint16:
+    dtype_str: uint16
+  F_np_uint32:
+    dtype_str: uint32
+  F_np_uint64:
+    dtype_str: uint64
+  F_np_uint8:
+    dtype_str: uint8
+  F_np_ulonglong:
+    dtype_str: uint64
+  F_pd_BooleanDtype:
+    dtype_str: boolean
+  F_pd_CategoricalDtype:
+    categories:
+    - a
+    - b
+    - c
+    dtype_str: category
+    ordered: 'True'
+  F_pd_DatetimeTZDtype:
+    dtype_str: datetime64[ns, Europe/Paris]
+  F_pd_Float64Dtype:
+    dtype_str: Float64
+  F_pd_Int64Dtype:
+    dtype_str: Int64
+  F_pd_StringDtype:
+    dtype_str: string

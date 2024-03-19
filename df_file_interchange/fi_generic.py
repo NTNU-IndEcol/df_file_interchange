@@ -1405,7 +1405,11 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
             serialized_dtypes[col_name]["categories"] = dtype_full.categories.to_list()
             serialized_dtypes[col_name]["ordered"] = str(dtype_full.ordered)
         else:
+            print(dtype)
             serialized_dtypes[col_name] = {"dtype_str": str(dtype)}
+
+    print("\n\nIn serialized_dtypes:")
+    pprint(serialized_dtypes)
 
     return serialized_dtypes
 
@@ -1445,12 +1449,11 @@ def _deserialize_df_types(serialized_dtypes: dict) -> dict:
 
 def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
 
+    print("\n\nIn desrialize df types fo read csv.")
+    pprint(serialized_dtypes)
+
     deserialized_dtypes = {}
     for col in serialized_dtypes:
-        # Get col name
-        # loc_col_name = _deserialize_element(json.loads(col))
-        loc_col_name = col
-
         # Get string representation of dtype
         dtype_str = serialized_dtypes[col].get("dtype_str", None)
         if dtype_str is None:
@@ -1460,13 +1463,15 @@ def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
             logger.error(error_msg)
             raise Exception(error_msg)
         
-        # Do a safe default, is _doesn't_ need to be perfect in all cases, just
-        # enough so that we don't lose information. Categorical dtypes are
-        # applied later.
+        # Try to apply dtypes. Usually we just "pass through" but there are some
+        # that need a more permissive default (str or object) so that the column
+        # can then be manually converted later.
         if dtype_str == "category":
-            deserialized_dtypes[loc_col_name] = "object"
+            deserialized_dtypes[col] = "object"
+        elif dtype_str == "timedelta64[ns]":
+            deserialized_dtypes[col] = "str"
         else:
-            deserialized_dtypes[loc_col_name] = "str"
+            deserialized_dtypes[col] = dtype_str
 
     return deserialized_dtypes
 
@@ -1486,6 +1491,9 @@ def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
 
     deserialized_dtypes = _deserialize_df_types(serialized_dtypes)
 
+    print("\n\ndf dtypes:")
+    print(df.dtypes)
+
     for col, dtype_info in deserialized_dtypes.items():
         # Set the dtype for the column
         if dtype_info["dtype_str"] == "category":
@@ -1497,7 +1505,10 @@ def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
             df[col] = df[col].astype(cat_type)
         else:
             print(f"about to convert column ({col}) to type ({dtype_info['dtype_str']})")
-            df[col] = df[col].astype(dtype_info["dtype_str"])
+            if dtype_info["dtype_str"] == "timedelta64[ns]":
+                df[col] = df[col].astype(dtype_info["dtype_str"])
+            else:
+                df[col] = df[col].astype(dtype_info["dtype_str"])
 
     return None
 
@@ -2207,15 +2218,25 @@ def _generate_example_1(b_include_complex: bool = False):
             np.datetime64("2010-12-31T15:00"),
         ],
         dtype="datetime64[ns]",
-    )
+    )    
 
     # timedeltas
+    # df["F_np_timedelta64"] = pd.array(
+    #     [
+    #         np.timedelta64(1, "D"),
+    #         np.timedelta64("nAt"),
+    #         np.timedelta64(2**63 - 1, "ns"),
+    #         np.timedelta64(-(2**63) + 1, "ns"),
+    #         np.timedelta64(0, "s"),
+    #     ],
+    #     dtype="timedelta64[ns]",
+    # )
     df["F_np_timedelta64"] = pd.array(
         [
             np.timedelta64(1, "D"),
-            np.timedelta64("nAt"),
-            np.timedelta64(2**63 - 1, "ns"),
-            np.timedelta64(-(2**63) + 1, "ns"),
+            np.timedelta64(1000, "s"),
+            np.timedelta64(1000, "ns"),
+            np.timedelta64(-1000, "ns"),
             np.timedelta64(0, "s"),
         ],
         dtype="timedelta64[ns]",
