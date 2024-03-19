@@ -1,4 +1,4 @@
-# Metadata for scratch/test_serialized_df.parq
+# Metadata for scratch/test_serialized_df.csv
 ---
 
 columns:
@@ -14,7 +14,7 @@ columns:
   name: null
 custom_info:
   custom_info: {}
-datafile: test_serialized_df.parq
+datafile: test_serialized_df.csv
 encoding:
   auto_convert_int_to_intna: true
   csv:
@@ -29,8 +29,8 @@ encoding:
   parq:
     engine: pyarrow
     index: null
-file_format: parquet
-hash: ad1faa7f67094617f8fbd9854841eb8bea25188cc2d41cfe688e1466058cbc84
+file_format: csv
+hash: 8b12c33a5a8891379cfc3353d37f9c16dd6e558f38fb845cf1d5d67c2529071a
 index:
   data:
     el:

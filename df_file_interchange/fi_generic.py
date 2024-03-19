@@ -1410,7 +1410,7 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
     return serialized_dtypes
 
 
-def _deserialize_df_types(serialized_dtypes: dict):
+def _deserialize_df_types(serialized_dtypes: dict) -> dict:
     """Deserializes output from `_serialize_df_dtypes_to_dict()`"""
 
     deserialized_dtypes = {}
@@ -1443,6 +1443,36 @@ def _deserialize_df_types(serialized_dtypes: dict):
     return deserialized_dtypes
 
 
+def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
+
+    deserialized_dtypes = {}
+    for col in serialized_dtypes:
+        # Get col name
+        # loc_col_name = _deserialize_element(json.loads(col))
+        loc_col_name = col
+
+        # Get string representation of dtype
+        dtype_str = serialized_dtypes[col].get("dtype_str", None)
+        if dtype_str is None:
+            error_msg = (
+                f"Got column in serialized dtypes without a dtype_str field. col={col}"
+            )
+            logger.error(error_msg)
+            raise Exception(error_msg)
+        
+        # Do a safe default, is _doesn't_ need to be perfect in all cases, just
+        # enough so that we don't lose information. Categorical dtypes are
+        # applied later.
+        if dtype_str == "category":
+            deserialized_dtypes[loc_col_name] = "object"
+        else:
+            deserialized_dtypes[loc_col_name] = "str"
+
+    return deserialized_dtypes
+
+
+
+
 def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
     """Apply dtypes to dataframe _inplace_
 
@@ -1466,6 +1496,7 @@ def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
             )
             df[col] = df[col].astype(cat_type)
         else:
+            print(f"about to convert column ({col}) to type ({dtype_info['dtype_str']})")
             df[col] = df[col].astype(dtype_info["dtype_str"])
 
     return None
@@ -1667,6 +1698,7 @@ def _read_from_csv(
     encoding: FIEncoding,
     num_index_cols: int = 1,
     num_index_rows: int = 1,
+    dtypes: dict | None = None,
 ) -> pd.DataFrame:
     """Read from CSV file using supplied options"""
 
@@ -1680,6 +1712,13 @@ def _read_from_csv(
     else:
         index_row = list(range(0, num_index_rows))
 
+    pprint(dtypes)
+
+    deserialized_dtypes = _deserialize_df_types_for_read_csv(dtypes)
+
+    print("\n\n")
+    pprint(deserialized_dtypes)
+
     df = pd.read_csv(
         input_datafile,
         header=index_row,
@@ -1687,7 +1726,8 @@ def _read_from_csv(
         float_precision=encoding.csv.float_precision,
         doublequote=encoding.csv.doublequote,
         sep=encoding.csv.sep,
-        dtype=None,
+        dtype=deserialized_dtypes,
+        # dtype=None,
         keep_default_na=encoding.csv.keep_default_na,
         na_values=encoding.csv.csv_allowed_na,
     )
@@ -1916,6 +1956,7 @@ def read_fi_to_df_generic(
             metainfo.encoding,
             num_index_cols=num_index_cols,
             num_index_rows=num_index_rows,
+            dtypes=metainfo.serialized_dtypes,
         )
     elif metainfo.file_format == FIFileFormatEnum.parquet:
         df = _read_from_parquet(datafile_abs, metainfo.encoding)
