@@ -2089,30 +2089,59 @@ def _generate_example_1(b_include_complex: bool = False):
     df = pd.DataFrame(np.random.randn(5, 3), index=dates, columns=["A", "B", "C"])
 
     # NumPy data types
-    # ----------
+    # ----------------
 
-    df["F_np_int8"] = pd.array([1, 0, -50, -127, 127], dtype="int8")
-    df["F_np_int16"] = pd.array([1, 0, -50, -32000, 32000], dtype="int16")
-    df["F_np_int32"] = pd.array([1, 0, -50, -2000000000, 2000000000], dtype="int32")
-    df["F_np_int64"] = pd.array([1, 0, -50, -4000000000, 4000000000], dtype="int64")
+    # Signed ints
+    df["F_np_int8"] = pd.array(
+        [1, 0, -50, np.iinfo(np.int8).min, np.iinfo(np.int8).max], dtype="int8"
+    )
+    df["F_np_int16"] = pd.array(
+        [1, 0, -50, np.iinfo(np.int16).min, np.iinfo(np.int16).max], dtype="int16"
+    )
+    df["F_np_int32"] = pd.array(
+        [1, 0, -50, np.iinfo(np.int32).min, np.iinfo(np.int32).max], dtype="int32"
+    )
+    df["F_np_int64"] = pd.array(
+        [1, 0, -50, np.iinfo(np.int64).min, np.iinfo(np.int64).max], dtype="int64"
+    )
     df["F_np_longlong"] = pd.array(
-        [1, 0, -50, -4000000000, 4000000000], dtype="longlong"
+        [1, 0, -50, np.iinfo(np.longlong).min, np.iinfo(np.longlong).max],
+        dtype="longlong",
     )
-    # df["F_np_timedelta64"]  = pd.array([1, 0, -50, -4000000000, 4000000000], dtype=np.timedelta64)
 
-    df["F_np_uint8"] = pd.array([1, 0, 50, 240, 127], dtype="uint8")
-    df["F_np_uint16"] = pd.array([1, 0, 50, 3200, 32000], dtype="uint16")
-    df["F_np_uint32"] = pd.array([1, 0, 50, 2000000000, 2000000000], dtype="uint32")
-    df["F_np_uint64"] = pd.array([1, 0, 50, 4000000000, 4000000000], dtype="uint64")
+    # Unsigned ints
+    df["F_np_uint8"] = pd.array(
+        [1, 0, 50, np.iinfo(np.uint8).min, np.iinfo(np.uint8).max], dtype="uint8"
+    )
+    df["F_np_uint16"] = pd.array(
+        [1, 0, 50, np.iinfo(np.uint16).min, np.iinfo(np.uint16).max], dtype="uint16"
+    )
+    df["F_np_uint32"] = pd.array(
+        [1, 0, 50, np.iinfo(np.uint32).min, np.iinfo(np.uint32).max], dtype="uint32"
+    )
+    df["F_np_uint64"] = pd.array(
+        [1, 0, 50, np.iinfo(np.uint64).min, np.iinfo(np.uint64).max], dtype="uint64"
+    )
     df["F_np_ulonglong"] = pd.array(
-        [1, 0, 50, 4000000000, 4000000000], dtype="ulonglong"
+        [1, 0, 50, np.iinfo(np.ulonglong).min, np.iinfo(np.ulonglong).max],
+        dtype="ulonglong",
     )
 
-    df["F_np_float16"] = pd.array([1.0, -2.0, np.pi, np.NaN, 5.0], dtype="float16")
-    df["F_np_float32"] = pd.array([1.0, -2.0, np.pi, np.NaN, 5.0], dtype="float32")
-    df["F_np_float64"] = pd.array([1.0, -2.0, np.pi, np.NaN, 5.0], dtype="float64")
+    # Floats
+    df["F_np_float16"] = pd.array(
+        [1.0, -np.pi, np.NaN, np.finfo(np.float16).min, np.finfo(np.float16).max],
+        dtype="float16",
+    )
+    df["F_np_float32"] = pd.array(
+        [1.0, -np.pi, np.NaN, np.finfo(np.float32).min, np.finfo(np.float32).max],
+        dtype="float32",
+    )
+    df["F_np_float64"] = pd.array(
+        [1.0, -np.pi, np.NaN, np.finfo(np.float64).min, np.finfo(np.float64).max],
+        dtype="float64",
+    )
 
-    # Shouldn't do this if writing Parquet with Arrow engine
+    # Complex (shouldn't do this if writing Parquet with Arrow engine)
     if b_include_complex:
         df["F_np_complex64"] = pd.array(
             [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="complex64"
@@ -2124,8 +2153,10 @@ def _generate_example_1(b_include_complex: bool = False):
             [1.0 + 1.0j, -2.0 - 1j, np.pi * 1j, np.NaN, 5.0 - 800j], dtype="clongdouble"
         )
 
-    # other
-    df["F_np_bool"] = pd.array([True, False, True, True, False], dtype="bool_")
+    # bools
+    df["F_np_bool"] = pd.array([True, False, True, True, False], dtype="bool")
+
+    # datetimes
     df["F_np_datetime64"] = pd.array(
         [
             np.datetime64("2010-01-31T10:23:01"),
@@ -2135,6 +2166,18 @@ def _generate_example_1(b_include_complex: bool = False):
             np.datetime64("2010-12-31T15:00"),
         ],
         dtype="datetime64[ns]",
+    )
+
+    # timedeltas
+    df["F_np_timedelta64"] = pd.array(
+        [
+            np.timedelta64(1, "D"),
+            np.timedelta64("nAt"),
+            np.timedelta64(2**63 - 1, "ns"),
+            np.timedelta64(-(2**63) + 1, "ns"),
+            np.timedelta64(0, "s"),
+        ],
+        dtype="timedelta64[ns]",
     )
 
     # Pandas extended data types
