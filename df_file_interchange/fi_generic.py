@@ -1474,6 +1474,9 @@ def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
         elif dtype_str[0:11] == "timedelta64":
             # Catching all timedelta64
             deserialized_dtypes[col] = "object"
+        elif dtype_str[0:8].lower() == "interval":
+            # Catching all interval variations: https://pandas.pydata.org/docs/user_guide/basics.html#basics-dtypes
+            deserialized_dtypes[col] = "object"
         else:
             deserialized_dtypes[col] = dtype_str
 
@@ -2186,7 +2189,9 @@ def _generate_example_1(b_include_complex: bool = False):
         dtype="ulonglong",
     )
 
-    # Floats TODO doesn't work with float16
+    # Floats
+
+    # Apparently float16 isn't supported in Pandas. See https://github.com/pandas-dev/pandas/issues/56361
     # df["F_np_float16"] = pd.array(
     #     [1.0, -np.pi, np.NaN, np.finfo(np.float16).min, np.finfo(np.float16).max],
     #     dtype="float16",
@@ -2219,10 +2224,10 @@ def _generate_example_1(b_include_complex: bool = False):
     df["F_np_datetime64"] = pd.array(
         [
             np.datetime64("2010-01-31T10:23:01"),
-            np.datetime64("1990"),
-            np.datetime64("2025-01-01T00:00"),
-            1,
-            np.datetime64("2010-12-31T15:00"),
+            np.datetime64("nAt"),
+            np.datetime64(0, "ns"),
+            np.datetime64(2**63-1, "ns"),
+            np.datetime64(-2**63+1, "ns"),
         ],
         dtype="datetime64[ns]",
     )    
@@ -2241,43 +2246,73 @@ def _generate_example_1(b_include_complex: bool = False):
     df["F_np_timedelta64"] = pd.array(
         [
             np.timedelta64(1, "D"),
-            np.timedelta64(1000, "s"),
-            np.timedelta64(1000, "ns"),
-            np.timedelta64(-1000, "ns"),
+            np.timedelta64("nAt"),
+            np.timedelta64(2**63 - 1, "ns"),
+            np.timedelta64(-(2**62), "ns"),     # TODO: this should work with -(2**63)+1 but it doesn't. Don't know why.
             np.timedelta64(0, "s"),
         ],
         dtype="timedelta64[ns]",
     )
 
-    # Pandas extended data types
+    # Pandas types / pandas extended data types
+    # Note so can find later: https://pandas.pydata.org/docs/user_guide/basics.html#basics-dtypes
+    # https://pandas.pydata.org/docs/reference/arrays.html
     # ----------
 
     # Careful with syntax! See, https://github.com/pandas-dev/pandas/issues/57644
     df["F_pd_DatetimeTZDtype"] = pd.array(
-        ["2010/01/31 10:23:01", "1990", "2025/01/01 00:00+1", 1, None],
+        ["2010/01/31 10:23:01", None, 0, np.datetime64(2**63-1, "ns"), np.datetime64(-2**62+1, "ns")],  # TODO again, the lower limit is using 62 instead of 63
         dtype="datetime64[ns, Europe/Paris]",
     )
 
-    # Missing: Timedeltas
-    # Missing: PeriodDtype
-    # Missing: IntervalDtype
+    # This is probably redunant
+    df["F_pd_Timestamp"] = pd.array(
+        [pd.Timestamp("2010/01/31 10:23:01"), pd.Timestamp("NaT"), pd.Timestamp(0), pd.Timestamp(2**63-1), pd.Timestamp(-2**62+1)],
+    )
 
+    # Timedeltas (again, probably redundant)
+    df["F_pd_Timedelta"] = pd.array(
+        [
+            "1 days",
+            np.timedelta64("nAt"),
+            np.timedelta64(2**63 - 1, "ns"),
+            np.timedelta64(-(2**62), "ns"),     # TODO: this should work with -(2**63)+1 but it doesn't. Don't know why.
+            np.timedelta64(0, "s"),
+        ],
+    )
+
+    # Missing: PeriodDtype
+
+    # IntervalDtype
+    df["F_pd_IntervalDtype"] = pd.arrays.IntervalArray([pd.Interval(0, 1), pd.Interval(1, 5), pd.Interval(2, 5), pd.Interval(3, 5), pd.Interval(4, 5)])
+
+    # Int64Dtype
     df["F_pd_Int64Dtype"] = pd.array(
-        [1, None, -50, -1000000000, 1000000000], dtype=pd.Int64Dtype()
+        [1, None, 0, np.iinfo(np.int64).min, np.iinfo(np.int64).max], dtype=pd.Int64Dtype()
     )
+
+    # Float64Dtype
     df["F_pd_Float64Dtype"] = pd.array(
-        [1.0, -2.0, np.pi, None, 5.0], dtype=pd.Float64Dtype()
+        [1.0, np.pi, None, np.finfo(np.float64).min, np.finfo(np.float64).max], dtype=pd.Float64Dtype()
     )
+
+    # CategoricalDtype
     df["F_pd_CategoricalDtype"] = pd.Categorical(
         ["a", "b", "c", "a", "a"], categories=["a", "b", "c"], ordered=True
     )
+
+    # StringDtype
     df["F_pd_StringDtype"] = pd.array(
         ["this", "col", "is string", "based", "!"], dtype=pd.StringDtype()
     )
+
     # Missing: Sparse
+
+    # BooleanDtype
     df["F_pd_BooleanDtype"] = pd.array(
         [True, False, None, True, False], dtype=pd.BooleanDtype()
     )
+
     # Missing: ArrowDtype
 
     return df

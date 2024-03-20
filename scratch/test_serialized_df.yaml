@@ -42,6 +42,10 @@ columns:
       eltype: str
     - el: F_pd_DatetimeTZDtype
       eltype: str
+    - el: F_pd_Timestamp
+      eltype: str
+    - el: F_pd_Timedelta
+      eltype: str
     - el: F_pd_Int64Dtype
       eltype: str
     - el: F_pd_Float64Dtype
@@ -74,7 +78,7 @@ encoding:
     engine: pyarrow
     index: null
 file_format: csv
-hash: f3dcd3ad577773e18acf5ad7f0e667f5710ea8e1748cf533bbbbdb8d75e0ff3b
+hash: e15cfb1aa2397aafe4c67095959ea7f94ff46d0fd6d68606843105287c2a33fc
 index:
   data:
     el:
@@ -160,3 +164,7 @@ serialized_dtypes:
     dtype_str: Int64
   F_pd_StringDtype:
     dtype_str: string
+  F_pd_Timedelta:
+    dtype_str: object
+  F_pd_Timestamp:
+    dtype_str: datetime64[ns]
