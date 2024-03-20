@@ -1404,12 +1404,12 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
             serialized_dtypes[col_name]["categories"] = dtype_full.categories.to_list()
             serialized_dtypes[col_name]["ordered"] = str(dtype_full.ordered)
         else:
-            print("In _serialize_df_dtypes_to_dict, if clause, printing dtype")
-            print(dtype)
+            # print("In _serialize_df_dtypes_to_dict, if clause, printing dtype")
+            # print(dtype)
             serialized_dtypes[col_name] = {"dtype_str": str(dtype)}
 
-    print("\n\nIn _serialize_df_dtypes_to_dict, printing serialized_dtypes:")
-    pprint(serialized_dtypes)
+    # print("\n\nIn _serialize_df_dtypes_to_dict, printing serialized_dtypes:")
+    # pprint(serialized_dtypes)
 
     return serialized_dtypes
 
@@ -1449,8 +1449,8 @@ def _deserialize_df_types(serialized_dtypes: dict) -> dict:
 
 def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
 
-    print("\n\nIn _deserialize_df_types_for_read_csv, printing serialized_dtypes.")
-    pprint(serialized_dtypes)
+    # print("\n\nIn _deserialize_df_types_for_read_csv, printing serialized_dtypes.")
+    # pprint(serialized_dtypes)
 
     deserialized_dtypes = {}
     for col in serialized_dtypes:
@@ -1476,7 +1476,8 @@ def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
             deserialized_dtypes[col] = "object"
         elif dtype_str[0:8].lower() == "interval":
             # Catching all interval variations: https://pandas.pydata.org/docs/user_guide/basics.html#basics-dtypes
-            deserialized_dtypes[col] = "object"
+            # deserialized_dtypes[col] = "Interval"
+            pass
         else:
             deserialized_dtypes[col] = dtype_str
 
@@ -1498,8 +1499,8 @@ def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
 
     deserialized_dtypes = _deserialize_df_types(serialized_dtypes)
 
-    print("\n\nIn _apply_serialized_dtypes, printing df.dtypes:")
-    print(df.dtypes)
+    # print("\n\nIn _apply_serialized_dtypes, printing df.dtypes:")
+    # print(df.dtypes)
 
     for col, dtype_info in deserialized_dtypes.items():
         # Set the dtype for the column
@@ -1511,7 +1512,7 @@ def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
             )
             df[col] = df[col].astype(cat_type)
         else:
-            print(f"In _apply_serialized_dtypes, about to convert column ({col}) to type ({dtype_info['dtype_str']})")
+            # print(f"In _apply_serialized_dtypes, about to convert column ({col}) to type ({dtype_info['dtype_str']})")
             if dtype_info["dtype_str"] == "timedelta64[ns]":
                 df[col] = df[col].astype(dtype_info["dtype_str"])
             else:
@@ -1714,9 +1715,9 @@ def _write_to_csv(df: pd.DataFrame, datafile: Path, encoding: FIEncoding):
 def _read_from_csv(
     input_datafile: Path,
     encoding: FIEncoding,
+    dtypes: dict,
     num_index_cols: int = 1,
     num_index_rows: int = 1,
-    dtypes: dict | None = None,
 ) -> pd.DataFrame:
     """Read from CSV file using supplied options"""
 
@@ -1730,13 +1731,13 @@ def _read_from_csv(
     else:
         index_row = list(range(0, num_index_rows))
 
-    print("\n\nIn _read_from_csv before deserialize, printing dtypes:")
-    pprint(dtypes)
+    # print("\n\nIn _read_from_csv before deserialize, printing dtypes:")
+    # pprint(dtypes)
 
     deserialized_dtypes = _deserialize_df_types_for_read_csv(dtypes)
 
-    print("\n\nIn _read_from_csv after deserialize, printing deserialized_dtypes:")
-    pprint(deserialized_dtypes)
+    # print("\n\nIn _read_from_csv after deserialize, printing deserialized_dtypes:")
+    # pprint(deserialized_dtypes)
 
     df = pd.read_csv(
         input_datafile,
@@ -1975,9 +1976,9 @@ def read_fi_to_df_generic(
         df = _read_from_csv(
             datafile_abs,
             metainfo.encoding,
-            num_index_cols=num_index_cols,
-            num_index_rows=num_index_rows,
             dtypes=metainfo.serialized_dtypes,
+            num_index_cols=num_index_cols,
+            num_index_rows=num_index_rows,            
         )
     elif metainfo.file_format == FIFileFormatEnum.parquet:
         df = _read_from_parquet(datafile_abs, metainfo.encoding)
@@ -2273,7 +2274,7 @@ def _generate_example_1(b_include_complex: bool = False):
     # Timedeltas (again, probably redundant)
     df["F_pd_Timedelta"] = pd.array(
         [
-            "1 days",
+            np.timedelta64(1, "D"),
             np.timedelta64("nAt"),
             np.timedelta64(2**63 - 1, "ns"),
             np.timedelta64(-(2**62), "ns"),     # TODO: this should work with -(2**63)+1 but it doesn't. Don't know why.
@@ -2284,7 +2285,7 @@ def _generate_example_1(b_include_complex: bool = False):
     # Missing: PeriodDtype
 
     # IntervalDtype
-    df["F_pd_IntervalDtype"] = pd.arrays.IntervalArray([pd.Interval(0, 1), pd.Interval(1, 5), pd.Interval(2, 5), pd.Interval(3, 5), pd.Interval(4, 5)])
+    # df["F_pd_IntervalDtype"] = pd.arrays.IntervalArray([pd.Interval(0, 1), pd.Interval(1, 5), pd.Interval(2, 5), pd.Interval(3, 5), pd.Interval(4, 5)])
 
     # Int64Dtype
     df["F_pd_Int64Dtype"] = pd.array(
