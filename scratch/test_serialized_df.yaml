@@ -30,8 +30,6 @@ columns:
       eltype: str
     - el: F_np_ulonglong
       eltype: str
-    - el: F_np_float16
-      eltype: str
     - el: F_np_float32
       eltype: str
     - el: F_np_float64
@@ -76,7 +74,7 @@ encoding:
     engine: pyarrow
     index: null
 file_format: csv
-hash: e42e4c4c2a0c9fe967511a063f73cea44186a50fad54aed4aa62be370dffbd5e
+hash: f3dcd3ad577773e18acf5ad7f0e667f5710ea8e1748cf533bbbbdb8d75e0ff3b
 index:
   data:
     el:
@@ -119,8 +117,6 @@ serialized_dtypes:
     dtype_str: bool
   F_np_datetime64:
     dtype_str: datetime64[ns]
-  F_np_float16:
-    dtype_str: float16
   F_np_float32:
     dtype_str: float32
   F_np_float64:

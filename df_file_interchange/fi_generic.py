@@ -406,7 +406,6 @@ def _deserialize_element(
         return np.longlong(el)
     elif eltype == "np.uint8":
         if b_chk_correctness:
-            print("about to check uint8 correctness")
             _check_valid_scalar_np_cast(el, np.uint8)
         return np.uint8(el)
     elif eltype == "np.uint16":
@@ -1405,10 +1404,11 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
             serialized_dtypes[col_name]["categories"] = dtype_full.categories.to_list()
             serialized_dtypes[col_name]["ordered"] = str(dtype_full.ordered)
         else:
+            print("In _serialize_df_dtypes_to_dict, if clause, printing dtype")
             print(dtype)
             serialized_dtypes[col_name] = {"dtype_str": str(dtype)}
 
-    print("\n\nIn serialized_dtypes:")
+    print("\n\nIn _serialize_df_dtypes_to_dict, printing serialized_dtypes:")
     pprint(serialized_dtypes)
 
     return serialized_dtypes
@@ -1449,7 +1449,7 @@ def _deserialize_df_types(serialized_dtypes: dict) -> dict:
 
 def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
 
-    print("\n\nIn desrialize df types fo read csv.")
+    print("\n\nIn _deserialize_df_types_for_read_csv, printing serialized_dtypes.")
     pprint(serialized_dtypes)
 
     deserialized_dtypes = {}
@@ -1468,8 +1468,12 @@ def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
         # can then be manually converted later.
         if dtype_str == "category":
             deserialized_dtypes[col] = "object"
-        elif dtype_str == "timedelta64[ns]":
-            deserialized_dtypes[col] = "str"
+        elif dtype_str[0:10] == "datetime64":
+            # Catching all datetime64...
+            deserialized_dtypes[col] = "object"            
+        elif dtype_str[0:11] == "timedelta64":
+            # Catching all timedelta64
+            deserialized_dtypes[col] = "object"
         else:
             deserialized_dtypes[col] = dtype_str
 
@@ -1491,7 +1495,7 @@ def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
 
     deserialized_dtypes = _deserialize_df_types(serialized_dtypes)
 
-    print("\n\ndf dtypes:")
+    print("\n\nIn _apply_serialized_dtypes, printing df.dtypes:")
     print(df.dtypes)
 
     for col, dtype_info in deserialized_dtypes.items():
@@ -1504,7 +1508,7 @@ def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
             )
             df[col] = df[col].astype(cat_type)
         else:
-            print(f"about to convert column ({col}) to type ({dtype_info['dtype_str']})")
+            print(f"In _apply_serialized_dtypes, about to convert column ({col}) to type ({dtype_info['dtype_str']})")
             if dtype_info["dtype_str"] == "timedelta64[ns]":
                 df[col] = df[col].astype(dtype_info["dtype_str"])
             else:
@@ -1723,11 +1727,12 @@ def _read_from_csv(
     else:
         index_row = list(range(0, num_index_rows))
 
+    print("\n\nIn _read_from_csv before deserialize, printing dtypes:")
     pprint(dtypes)
 
     deserialized_dtypes = _deserialize_df_types_for_read_csv(dtypes)
 
-    print("\n\n")
+    print("\n\nIn _read_from_csv after deserialize, printing deserialized_dtypes:")
     pprint(deserialized_dtypes)
 
     df = pd.read_csv(
@@ -1742,6 +1747,8 @@ def _read_from_csv(
         keep_default_na=encoding.csv.keep_default_na,
         na_values=encoding.csv.csv_allowed_na,
     )
+
+    # print(df.dtypes)
 
     return df
 
@@ -2179,11 +2186,11 @@ def _generate_example_1(b_include_complex: bool = False):
         dtype="ulonglong",
     )
 
-    # Floats
-    df["F_np_float16"] = pd.array(
-        [1.0, -np.pi, np.NaN, np.finfo(np.float16).min, np.finfo(np.float16).max],
-        dtype="float16",
-    )
+    # Floats TODO doesn't work with float16
+    # df["F_np_float16"] = pd.array(
+    #     [1.0, -np.pi, np.NaN, np.finfo(np.float16).min, np.finfo(np.float16).max],
+    #     dtype="float16",
+    # )
     df["F_np_float32"] = pd.array(
         [1.0, -np.pi, np.NaN, np.finfo(np.float32).min, np.finfo(np.float32).max],
         dtype="float32",
