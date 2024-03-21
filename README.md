@@ -13,6 +13,25 @@ We do not try to reinvent-the-wheel, only supplement existing functionality foun
 
 `import df_file_interchange as fi`
 
+Then do something like:
+
+(for CSV)
+
+`metafile = fi.write_df_to_fi_generic(df, datafile_path, yamlfile_path, fi.FIFileFormatEnum.csv, custom_info_dict=custom_info_dict)`
+
+(for Parquet)
+
+`metafile = fi.write_df_to_fi_generic(df, datafile_path, yamlfile_path, fi.FIFileFormatEnum.parquet, custom_info_dict=custom_info_dict)`
+
+where `metafile` will return a `Path` object that is just `yamlfile_path`.
+
+TODO: allow literal specification in place of `fi.FIFileFormatEnum`.
+
+To read:
+
+`(df, metainfo) = fi.read_fi_to_df_generic(yamlfile_path)`
+
+the `df` is of course the dataframe and `metainfo` is a Pydantic object containing all the metainfo associated with the file encoding, indexes, dtypes, etc, and also the user-supplied custom info.
 
 
 ## Known Problems
