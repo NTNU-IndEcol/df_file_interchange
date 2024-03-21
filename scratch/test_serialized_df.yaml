@@ -9,7 +9,7 @@ columns:
   step: 1
   stop: -5
 custom_info:
-  custom_info:
+  data:
     a: 1
     b: 2
     c: hello

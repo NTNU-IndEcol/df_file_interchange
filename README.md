@@ -13,19 +13,16 @@ We do not try to reinvent-the-wheel, only supplement existing functionality foun
 
 `import df_file_interchange as fi`
 
-Then do something like:
+Then do something like (autodetect of target file format from `datafile_path` extension):
 
-(for CSV)
+`metafile = fi.write_df_to_fi_generic(df, datafile_path, yamlfile_path, custom_info_dict=custom_info_dict)`
 
-`metafile = fi.write_df_to_fi_generic(df, datafile_path, yamlfile_path, fi.FIFileFormatEnum.csv, custom_info_dict=custom_info_dict)`
+or to specify the datafile format explicitly:
 
-(for Parquet)
+`metafile = fi.write_df_to_fi_generic(df, datafile_path, yamlfile_path, 'csv', custom_info=custom_info)`
+`metafile = fi.write_df_to_fi_generic(df, datafile_path, yamlfile_path, 'parquet', custom_info=custom_info)`
 
-`metafile = fi.write_df_to_fi_generic(df, datafile_path, yamlfile_path, fi.FIFileFormatEnum.parquet, custom_info_dict=custom_info_dict)`
-
-where `metafile` will return a `Path` object that is just `yamlfile_path`.
-
-TODO: allow literal specification in place of `fi.FIFileFormatEnum`.
+where `metafile` will return a `Path` object that is just `yamlfile_path`, `datafile_path` and `yamlfile_path` are `Path` objects, and `custom_info` is a dictionary.
 
 To read:
 

@@ -1853,7 +1853,7 @@ def write_df_to_fi_generic(
     datafile: Path,
     metafile: Path | None = None,
     file_format: FIFileFormatEnum | None = None,
-    encoding: FIEncoding | None = None,
+    encoding: FIEncoding | Literal['csv', 'parquet'] | None = None,
     custom_info: dict = {},
     preprocess_inplace=True,
 ) -> Path:
@@ -1867,7 +1867,7 @@ def write_df_to_fi_generic(
         The datafile to save the dataframe to.
     metafile : Path | None, optional
         Metafile name. If not supplied will be determined automatically.
-    file_format : FIFileFormatEnum | None, optional
+    file_format : FIFileFormatEnum | Literal['csv', 'parquet'] | None
         The file format. If not supplied will be determined automatically.
     encoding : FIEncoding | None, optional
         Datafile encoding options.
