@@ -9,7 +9,10 @@ columns:
   step: 1
   stop: -5
 custom_info:
-  custom_info: {}
+  custom_info:
+    a: 1
+    b: 2
+    c: hello
 datafile: test_serialized_df.csv
 encoding:
   auto_convert_int_to_intna: true

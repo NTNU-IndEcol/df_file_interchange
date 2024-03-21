@@ -1141,7 +1141,7 @@ class FICustomInfoWrapper(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    custom_info: dict = {}
+    data: dict = {}
 
     # TODO extra custom info for columns/rows
 
@@ -1219,7 +1219,7 @@ class FIMetainfo(BaseModel):
             # the correct object type, not just instantiating the base class.
             if "custom_info" in data.keys() and isinstance(data["custom_info"], dict):
                 data["custom_info"] = FICustomInfoWrapper(
-                    custom_info=data["custom_info"]
+                    data=data["custom_info"]
                 )
 
             if "index" in data.keys() and isinstance(data["index"], dict):
@@ -1648,7 +1648,7 @@ def _compile_metainfo(
     file_format: FIFileFormatEnum,
     hash: str,
     encoding: FIEncoding,
-    custom_info_dict: dict,
+    custom_info: dict,
     df: pd.DataFrame,
 ) -> FIMetainfo:
     """Creates an FIMetainfo object from supplied metainfo
@@ -1681,7 +1681,7 @@ def _compile_metainfo(
     columns = _serialize_index_to_metainfo_index(df.columns)
 
     # Process custom info into pydantic object
-    custom_info = FICustomInfoWrapper(custom_info=custom_info_dict)
+    custom_info_obj = FICustomInfoWrapper(data=custom_info)
 
     # Now shove it all into a FIMetainfo object...
     metainfo = FIMetainfo(
@@ -1689,7 +1689,7 @@ def _compile_metainfo(
         file_format=file_format,
         hash=hash,
         encoding=encoding,
-        custom_info=custom_info,
+        custom_info=custom_info_obj,
         serialized_dtypes=serialized_dtypes,
         index=index,
         columns=columns,
@@ -1854,7 +1854,7 @@ def write_df_to_fi_generic(
     metafile: Path | None = None,
     file_format: FIFileFormatEnum | None = None,
     encoding: FIEncoding | None = None,
-    custom_info_dict: dict = {},
+    custom_info: dict = {},
     preprocess_inplace=True,
 ) -> Path:
     """Writes a dataframe to file
@@ -1871,7 +1871,7 @@ def write_df_to_fi_generic(
         The file format. If not supplied will be determined automatically.
     encoding : FIEncoding | None, optional
         Datafile encoding options.
-    custom_info_dict : dict
+    custom_info : dict
         Custom user metadata to be stored.
     preprocess_inplace : bool, optional
 
@@ -1923,7 +1923,7 @@ def write_df_to_fi_generic(
         file_format=loc_file_format,
         hash=hash,
         encoding=encoding,
-        custom_info_dict=custom_info_dict,
+        custom_info=custom_info,
         df=loc_df,
     )
 
