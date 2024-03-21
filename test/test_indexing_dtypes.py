@@ -55,6 +55,8 @@ def test_save_load_indices(tmp_path: Path, std_indices):
         assert_frame_equal(df, df_reload_csv)
         assert_frame_equal(df, df_reload_parquet)
 
+        print(f"Done with {idx}")
+
 
 def test_save_load_examples(tmp_path: Path):
 

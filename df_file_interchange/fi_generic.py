@@ -1454,6 +1454,15 @@ def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
 
     deserialized_dtypes = {}
     for col in serialized_dtypes:
+        # There appears to be serious difficulties when referring to columns. We
+        # can try to deal with this here. N.B. This seems necessary to make it
+        # work!
+        if False:
+            pass
+        else:                 
+            # By default make it a string   
+            loc_col = str(col)
+
         # Get string representation of dtype
         dtype_str = serialized_dtypes[col].get("dtype_str", None)
         if dtype_str is None:
@@ -1467,19 +1476,19 @@ def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
         # that need a more permissive default (str or object) so that the column
         # can then be manually converted later.
         if dtype_str == "category":
-            deserialized_dtypes[col] = "object"
+            deserialized_dtypes[loc_col] = "object"
         elif dtype_str[0:10] == "datetime64":
             # Catching all datetime64...
-            deserialized_dtypes[col] = "object"            
+            deserialized_dtypes[loc_col] = "object"            
         elif dtype_str[0:11] == "timedelta64":
             # Catching all timedelta64
-            deserialized_dtypes[col] = "object"
+            deserialized_dtypes[loc_col] = "object"
         elif dtype_str[0:8].lower() == "interval":
             # Catching all interval variations: https://pandas.pydata.org/docs/user_guide/basics.html#basics-dtypes
             # deserialized_dtypes[col] = "Interval"
             pass
         else:
-            deserialized_dtypes[col] = dtype_str
+            deserialized_dtypes[loc_col] = dtype_str
 
     return deserialized_dtypes
 
@@ -1739,6 +1748,8 @@ def _read_from_csv(
     # print("\n\nIn _read_from_csv after deserialize, printing deserialized_dtypes:")
     # pprint(deserialized_dtypes)
 
+    # print(f"index_row={index_row}, index_col={index_col}")
+
     df = pd.read_csv(
         input_datafile,
         header=index_row,
@@ -1752,7 +1763,7 @@ def _read_from_csv(
         na_values=encoding.csv.csv_allowed_na,
     )
 
-    # print(df.dtypes)
+#   print(df.dtypes)
 
     return df
 
@@ -2025,7 +2036,7 @@ def _generate_example_indices():
         name="index2",
     )
 
-    fi_rangeindex_1 = pd.RangeIndex(start=-1000, stop=1000, step=10)
+    fi_rangeindex_1 = pd.RangeIndex(start=-10, stop=-5, step=1)
     fi_rangeindex_2 = pd.RangeIndex(
         start=-10000, stop=-5123, step=11, name="rangeindex2"
     )
