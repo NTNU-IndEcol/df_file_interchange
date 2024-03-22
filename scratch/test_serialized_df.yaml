@@ -77,8 +77,8 @@ encoding:
   parq:
     engine: pyarrow
     index: null
-file_format: csv
-hash: 13d8cbff363c237c88414e7829a85f705849b726607df15dffa05cf6c202abdf
+file_format: parquet
+hash: ac82898627106a610113dec77a7060e4ab6dce113444368ca8cf96c54e4032d0
 index:
   data:
     el:
