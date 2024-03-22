@@ -26,7 +26,7 @@ where `metafile` will return a `Path` object that is just `yamlfile_path`, `data
 
 To read:
 
-`(df, metainfo) = fi.read_fi_to_df_generic(yamlfile_path)`
+`(df, metainfo) = fi.read_df(yamlfile_path)`
 
 the `df` is of course the dataframe and `metainfo` is a Pydantic object containing all the metainfo associated with the file encoding, indexes, dtypes, etc, and also the user-supplied custom info.
 

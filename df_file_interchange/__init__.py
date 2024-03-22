@@ -30,5 +30,7 @@ from .fi_generic import (
     FIPeriodIndex,
     FIMetainfo,
     write_df_to_file,
-    read_fi_to_df_generic,
+    read_df,
 )
+
+from . import fi_examples
