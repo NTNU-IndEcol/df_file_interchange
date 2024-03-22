@@ -20,6 +20,7 @@ Then do something like (autodetect of target file format from `datafile_path` ex
 or to specify the datafile format explicitly:
 
 `metafile = fi.write_df_to_csv(df, datafile_path, custom_info=custom_info)`
+
 `metafile = fi.write_df_to_parquet(df, datafile_path, custom_info=custom_info)`
 
 where `metafile` will return a `Path` object that is just `yamlfile_path`, `datafile_path` and `yamlfile_path` are `Path` objects, and `custom_info` is a dictionary.
