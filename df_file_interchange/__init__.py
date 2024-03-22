@@ -30,6 +30,8 @@ from .fi_generic import (
     FIPeriodIndex,
     FIMetainfo,
     write_df_to_file,
+    write_df_to_csv,
+    write_df_to_parquet,
     read_df,
 )
 

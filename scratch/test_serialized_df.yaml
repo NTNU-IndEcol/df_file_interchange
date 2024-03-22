@@ -2,17 +2,66 @@
 ---
 
 columns:
-  dtype: int64
-  index_type: range
-  name: null
-  start: -10
-  step: 1
-  stop: -5
-custom_info:
   data:
-    a: 1
-    b: 2
-    c: hello
+    el:
+    - el: A
+      eltype: str
+    - el: B
+      eltype: str
+    - el: C
+      eltype: str
+    - el: F_np_int8
+      eltype: str
+    - el: F_np_int16
+      eltype: str
+    - el: F_np_int32
+      eltype: str
+    - el: F_np_int64
+      eltype: str
+    - el: F_np_longlong
+      eltype: str
+    - el: F_np_uint8
+      eltype: str
+    - el: F_np_uint16
+      eltype: str
+    - el: F_np_uint32
+      eltype: str
+    - el: F_np_uint64
+      eltype: str
+    - el: F_np_ulonglong
+      eltype: str
+    - el: F_np_float32
+      eltype: str
+    - el: F_np_float64
+      eltype: str
+    - el: F_np_bool
+      eltype: str
+    - el: F_np_datetime64
+      eltype: str
+    - el: F_np_timedelta64
+      eltype: str
+    - el: F_pd_DatetimeTZDtype
+      eltype: str
+    - el: F_pd_Timestamp
+      eltype: str
+    - el: F_pd_Timedelta
+      eltype: str
+    - el: F_pd_Int64Dtype
+      eltype: str
+    - el: F_pd_Float64Dtype
+      eltype: str
+    - el: F_pd_CategoricalDtype
+      eltype: str
+    - el: F_pd_StringDtype
+      eltype: str
+    - el: F_pd_BooleanDtype
+      eltype: str
+    eltype: list
+  dtype: object
+  index_type: idx
+  name: null
+custom_info:
+  data: {}
 datafile: test_serialized_df.csv
 encoding:
   auto_convert_int_to_intna: true
@@ -29,22 +78,93 @@ encoding:
     engine: pyarrow
     index: null
 file_format: csv
-hash: 7216d0e383a0ad30f5a10b1a77257f82a1c554bab8ef72545acf153bd556e074
+hash: 13d8cbff363c237c88414e7829a85f705849b726607df15dffa05cf6c202abdf
 index:
-  dtype: int64
-  index_type: range
-  name: null
-  start: -10
-  step: 1
-  stop: -5
+  data:
+    el:
+      dtype: datetime64[ns]
+      elements:
+      - el:
+          isoformat: '2000-01-01T00:00:00'
+          tz: ''
+        eltype: pd.Timestamp
+      - el:
+          isoformat: '2000-01-02T00:00:00'
+          tz: ''
+        eltype: pd.Timestamp
+      - el:
+          isoformat: '2000-01-03T00:00:00'
+          tz: ''
+        eltype: pd.Timestamp
+      - el:
+          isoformat: '2000-01-04T00:00:00'
+          tz: ''
+        eltype: pd.Timestamp
+      - el:
+          isoformat: '2000-01-05T00:00:00'
+          tz: ''
+        eltype: pd.Timestamp
+    eltype: pd.arrays.DatetimeArray
+  dtype: datetime64[ns]
+  freq: D
+  index_type: datetime
+  name: Date
+  tz: null
 serialized_dtypes:
-  -10:
+  A:
     dtype_str: float64
-  -9:
+  B:
     dtype_str: float64
-  -8:
+  C:
     dtype_str: float64
-  -7:
+  F_np_bool:
+    dtype_str: bool
+  F_np_datetime64:
+    dtype_str: datetime64[ns]
+  F_np_float32:
+    dtype_str: float32
+  F_np_float64:
     dtype_str: float64
-  -6:
-    dtype_str: float64
+  F_np_int16:
+    dtype_str: int16
+  F_np_int32:
+    dtype_str: int32
+  F_np_int64:
+    dtype_str: int64
+  F_np_int8:
+    dtype_str: int8
+  F_np_longlong:
+    dtype_str: int64
+  F_np_timedelta64:
+    dtype_str: timedelta64[ns]
+  F_np_uint16:
+    dtype_str: uint16
+  F_np_uint32:
+    dtype_str: uint32
+  F_np_uint64:
+    dtype_str: uint64
+  F_np_uint8:
+    dtype_str: uint8
+  F_np_ulonglong:
+    dtype_str: uint64
+  F_pd_BooleanDtype:
+    dtype_str: boolean
+  F_pd_CategoricalDtype:
+    categories:
+    - a
+    - b
+    - c
+    dtype_str: category
+    ordered: 'True'
+  F_pd_DatetimeTZDtype:
+    dtype_str: datetime64[ns, Europe/Paris]
+  F_pd_Float64Dtype:
+    dtype_str: Float64
+  F_pd_Int64Dtype:
+    dtype_str: Int64
+  F_pd_StringDtype:
+    dtype_str: string
+  F_pd_Timedelta:
+    dtype_str: timedelta64[ns]
+  F_pd_Timestamp:
+    dtype_str: datetime64[ns]
