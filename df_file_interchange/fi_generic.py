@@ -1852,8 +1852,8 @@ def write_df_to_fi_generic(
     df: pd.DataFrame,
     datafile: Path,
     metafile: Path | None = None,
-    file_format: FIFileFormatEnum | None = None,
-    encoding: FIEncoding | Literal['csv', 'parquet'] | None = None,
+    file_format: FIFileFormatEnum | Literal['csv', 'parquet'] | None = None,
+    encoding: FIEncoding | None = None,
     custom_info: dict = {},
     preprocess_inplace=True,
 ) -> Path:
