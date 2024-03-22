@@ -29,6 +29,6 @@ from .fi_generic import (
     FITimedeltaIndex,
     FIPeriodIndex,
     FIMetainfo,
-    write_df_to_fi_generic,
+    write_df_to_file,
     read_fi_to_df_generic,
 )

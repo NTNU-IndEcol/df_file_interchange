@@ -33,7 +33,7 @@ def test_save_load_indices(tmp_path: Path, std_indices):
         # Generate and save CSV
         target_datafile_csv = tmp_path / f"test_df_{idx}__csv.csv"
         target_metafile_csv = tmp_path / f"test_df_{idx}__csv.yaml"
-        metafile_csv = fi.write_df_to_fi_generic(
+        metafile_csv = fi.write_df_to_file(
             df, target_datafile_csv, target_metafile_csv, fi.FIFileFormatEnum.csv
         )
         (df_reload_csv, metainfo_reload_csv) = fi.read_fi_to_df_generic(metafile_csv)
@@ -41,7 +41,7 @@ def test_save_load_indices(tmp_path: Path, std_indices):
         # Generate and save parquet
         target_datafile_parquet = tmp_path / f"test_df_{idx}__parquet.parq"
         target_metafile_parquet = tmp_path / f"test_df_{idx}__parquet.yaml"
-        metafile_parquet = fi.write_df_to_fi_generic(
+        metafile_parquet = fi.write_df_to_file(
             df,
             target_datafile_parquet,
             target_metafile_parquet,
@@ -66,7 +66,7 @@ def test_save_load_examples(tmp_path: Path):
     # Generate and save CSV
     target_datafile1_csv = tmp_path / f"test_df_example_1__csv.csv"
     target_metafile1_csv = tmp_path / f"test_df_example_1__csv.yaml"
-    metafile1_csv = fi.write_df_to_fi_generic(
+    metafile1_csv = fi.write_df_to_file(
         df1, target_datafile1_csv, target_metafile1_csv, fi.FIFileFormatEnum.csv
     )
     (df1_reload_csv, metainfo1_reload_csv) = fi.read_fi_to_df_generic(metafile1_csv)
@@ -74,7 +74,7 @@ def test_save_load_examples(tmp_path: Path):
     # Generate and save parquet
     target_datafile1_parquet = tmp_path / f"test_df_example_1__parquet.parq"
     target_metafile1_parquet = tmp_path / f"test_df_example_1__parquet.yaml"
-    metafile1_parquet = fi.write_df_to_fi_generic(
+    metafile1_parquet = fi.write_df_to_file(
         df1,
         target_datafile1_parquet,
         target_metafile1_parquet,

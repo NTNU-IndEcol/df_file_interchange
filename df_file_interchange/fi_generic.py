@@ -1847,8 +1847,7 @@ def _read_metafile(metafile: Path) -> FIMetainfo:
     return metainfo
 
 
-# need to specify output format
-def write_df_to_fi_generic(
+def write_df_to_file(
     df: pd.DataFrame,
     datafile: Path,
     metafile: Path | None = None,
@@ -1931,6 +1930,70 @@ def write_df_to_fi_generic(
     _write_metafile(datafile, loc_metafile, metainfo)
 
     return loc_metafile
+
+
+
+def write_df_to_csv(
+    df: pd.DataFrame,
+    datafile: Path,
+    encoding: FIEncoding | None = None,
+    custom_info: dict = {},
+    preprocess_inplace=True,
+) -> Path:
+    """Simplified wrapper around `write_df_to_file()` to write dataframe to CSV
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The dataframe.
+    datafile : Path
+        Target datafile.
+    encoding : FIEncoding | None, optional
+        Encoding specs, can be left None for defaults.
+    custom_info : dict, optional
+        Any custom meta data.
+    preprocess_inplace : bool, optional
+        Whether to do preprocessing inplace (might modify original), by default True
+
+    Returns
+    -------
+    Path
+    """
+
+    return write_df_to_file(df=df, datafile=datafile, metafile=None, file_format=FIFileFormatEnum.csv, encoding=encoding, custom_info=custom_info, preprocess_inplace=preprocess_inplace)
+
+
+
+def write_df_to_parquet(
+    df: pd.DataFrame,
+    datafile: Path,
+    encoding: FIEncoding | None = None,
+    custom_info: dict = {},
+    preprocess_inplace=True,
+) -> Path:
+    """Simplified wrapper around `write_df_to_file()` to write dataframe to CSV
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The dataframe.
+    datafile : Path
+        Target datafile.
+    encoding : FIEncoding | None, optional
+        Encoding specs, can be left None for defaults.
+    custom_info : dict, optional
+        Any custom meta data.
+    preprocess_inplace : bool, optional
+        Whether to do preprocessing inplace (might modify original), by default True
+
+    Returns
+    -------
+    Path
+    """
+
+    return write_df_to_file(df=df, datafile=datafile, metafile=None, file_format=FIFileFormatEnum.parquet, encoding=encoding, custom_info=custom_info, preprocess_inplace=preprocess_inplace)
+
+
 
 
 def read_fi_to_df_generic(

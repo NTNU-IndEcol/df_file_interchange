@@ -15,12 +15,12 @@ We do not try to reinvent-the-wheel, only supplement existing functionality foun
 
 Then do something like (autodetect of target file format from `datafile_path` extension):
 
-`metafile = fi.write_df_to_fi_generic(df, datafile_path, yamlfile_path, custom_info_dict=custom_info_dict)`
+`metafile = fi.write_df_to_file(df, datafile_path, yamlfile_path, custom_info_dict=custom_info_dict)`
 
 or to specify the datafile format explicitly:
 
-`metafile = fi.write_df_to_fi_generic(df, datafile_path, yamlfile_path, 'csv', custom_info=custom_info)`
-`metafile = fi.write_df_to_fi_generic(df, datafile_path, yamlfile_path, 'parquet', custom_info=custom_info)`
+`metafile = fi.write_df_to_csv(df, datafile_path, custom_info=custom_info)`
+`metafile = fi.write_df_to_parquet(df, datafile_path, custom_info=custom_info)`
 
 where `metafile` will return a `Path` object that is just `yamlfile_path`, `datafile_path` and `yamlfile_path` are `Path` objects, and `custom_info` is a dictionary.
 
