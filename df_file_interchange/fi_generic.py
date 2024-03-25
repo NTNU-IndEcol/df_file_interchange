@@ -255,34 +255,34 @@ def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
         loc_el = el
         loc_type = "float"
     elif type(el) == np.int8:
-        loc_el = el
+        loc_el = int(el)    # See #6
         loc_type = "np.int8"
     elif type(el) == np.int16:
-        loc_el = el
+        loc_el = int(el)    # See #6
         loc_type = "np.int16"
     elif type(el) == np.int32:
-        loc_el = el
+        loc_el = int(el)    # See #6
         loc_type = "np.int32"
     elif type(el) == np.int64:
-        loc_el = el
+        loc_el = int(el)    # See #6
         loc_type = "np.int64"
     elif type(el) == np.longlong:
-        loc_el = el
+        loc_el = int(el)    # See #6
         loc_type = "np.longlong"
     elif type(el) == np.uint8:
-        loc_el = el
+        loc_el = int(el)    # See #6
         loc_type = "np.uint8"
     elif type(el) == np.uint16:
-        loc_el = el
+        loc_el = int(el)    # See #6
         loc_type = "np.uint16"
     elif type(el) == np.uint32:
-        loc_el = el
+        loc_el = int(el)    # See #6
         loc_type = "np.uint32"
     elif type(el) == np.uint64:
-        loc_el = el
+        loc_el = int(el)    # See #6
         loc_type = "np.uint64"
     elif type(el) == np.ulonglong:
-        loc_el = el
+        loc_el = int(el)    # See #6
         loc_type = "np.ulonglong"
     elif type(el) == np.float16:
         loc_el = float(el)
@@ -306,12 +306,13 @@ def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
         loc_el = complex(el)
         loc_type = "np.clongdouble"
     else:
-        warning_msg = (
+        error_msg = (
             f"Serializing element got unexpected type: el={el}, type={type(el)}"
         )
-        logger.warning(warning_msg)
-        loc_el = el
-        loc_type = ""
+        logger.error(error_msg)
+        raise NotImplementedError(error_msg)
+        # loc_el = el
+        # loc_type = ""
 
     return {"el": loc_el, "eltype": loc_type}
 
@@ -460,7 +461,7 @@ def _deserialize_element(
         return el
 
 
-def _serialize_list_with_types(data: list) -> list:
+def _serialize_list_with_types(data: list | tuple | np.ndarray) -> list:
     """Serialize a list (don't call this directly, use `_serialize_element()` instead)
 
     Serializes list elementwise.
@@ -1384,7 +1385,7 @@ def _preprocess_safe(df: pd.DataFrame, encoding: FIEncoding) -> pd.DataFrame:
 
 
 def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
-    """Serializes the dtypes from a data from into a dictionary
+    """Serializes the dtypes from a dataframe into a dictionary
 
     This isn't quite as obvious as it seems because the column label isn't
     necessarily a string. Indeed, it can be a tuple (if a MultiIndex is used for
@@ -1403,12 +1404,7 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
             serialized_dtypes[col_name]["categories"] = dtype_full.categories.to_list()
             serialized_dtypes[col_name]["ordered"] = str(dtype_full.ordered)
         else:
-            # print("In _serialize_df_dtypes_to_dict, if clause, printing dtype")
-            # print(dtype)
             serialized_dtypes[col_name] = {"dtype_str": str(dtype)}
-
-    # print("\n\nIn _serialize_df_dtypes_to_dict, printing serialized_dtypes:")
-    # pprint(serialized_dtypes)
 
     return serialized_dtypes
 
@@ -1447,9 +1443,6 @@ def _deserialize_df_types(serialized_dtypes: dict) -> dict:
 
 
 def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
-
-    # print("\n\nIn _deserialize_df_types_for_read_csv, printing serialized_dtypes.")
-    # pprint(serialized_dtypes)
 
     deserialized_dtypes = {}
     for col in serialized_dtypes:
@@ -1507,9 +1500,6 @@ def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
 
     deserialized_dtypes = _deserialize_df_types(serialized_dtypes)
 
-    # print("\n\nIn _apply_serialized_dtypes, printing df.dtypes:")
-    # print(df.dtypes)
-
     for col, dtype_info in deserialized_dtypes.items():
         # Set the dtype for the column
         if dtype_info["dtype_str"] == "category":
@@ -1520,7 +1510,6 @@ def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
             )
             df[col] = df[col].astype(cat_type)
         else:
-            # print(f"In _apply_serialized_dtypes, about to convert column ({col}) to type ({dtype_info['dtype_str']})")
             if dtype_info["dtype_str"] == "timedelta64[ns]":
                 df[col] = df[col].astype(dtype_info["dtype_str"])
             else:
@@ -1739,15 +1728,7 @@ def _read_from_csv(
     else:
         index_row = list(range(0, num_index_rows))
 
-    # print("\n\nIn _read_from_csv before deserialize, printing dtypes:")
-    # pprint(dtypes)
-
     deserialized_dtypes = _deserialize_df_types_for_read_csv(dtypes)
-
-    # print("\n\nIn _read_from_csv after deserialize, printing deserialized_dtypes:")
-    # pprint(deserialized_dtypes)
-
-    # print(f"index_row={index_row}, index_col={index_col}")
 
     df = pd.read_csv(
         input_datafile,
@@ -1757,12 +1738,9 @@ def _read_from_csv(
         doublequote=encoding.csv.doublequote,
         sep=encoding.csv.sep,
         dtype=deserialized_dtypes,
-        # dtype=None,
         keep_default_na=encoding.csv.keep_default_na,
         na_values=encoding.csv.csv_allowed_na,
     )
-
-#   print(df.dtypes)
 
     return df
 
