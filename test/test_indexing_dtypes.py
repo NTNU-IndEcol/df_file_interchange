@@ -52,8 +52,8 @@ def test_save_load_indices(tmp_path: Path, std_indices):
         )
 
         # Compare
-        assert_frame_equal(df, df_reload_csv)
-        assert_frame_equal(df, df_reload_parquet)
+        assert_frame_equal(df, df_reload_csv, check_index_type=True, check_column_type=True, check_exact=True, check_categorical=True)
+        assert_frame_equal(df, df_reload_parquet, check_index_type=True, check_column_type=True, check_exact=True, check_categorical=True)
 
         print(f"Done with {idx}")
 
@@ -85,5 +85,5 @@ def test_save_load_examples(tmp_path: Path):
     )
 
     # Compare
-    assert_frame_equal(df1, df1_reload_csv)
-    assert_frame_equal(df1, df1_reload_parquet)
+    assert_frame_equal(df1, df1_reload_csv, check_index_type=True, check_column_type=True, check_exact=True, check_categorical=True)
+    assert_frame_equal(df1, df1_reload_parquet, check_index_type=True, check_column_type=True, check_exact=True, check_categorical=True)
