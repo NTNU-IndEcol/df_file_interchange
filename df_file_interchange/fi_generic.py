@@ -1199,6 +1199,9 @@ class FIMetainfo(BaseModel):
     # File format
     file_format: FIFileFormatEnum
 
+    # Format version
+    format_version: int = 1
+
     # SHA256 hash
     hash: str | None = None
 
