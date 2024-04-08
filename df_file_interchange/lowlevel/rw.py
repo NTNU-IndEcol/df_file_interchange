@@ -5,8 +5,6 @@ Warning: We set CoW semantics (will be in Pandas 3.0 anyway)!
 
 Note to self:
 
-* Should version the file format!
-
 * Was going to allow user to derive from a FICustomInfo class to make
   serialization possible but this gets difficult:
   https://blog.devgenius.io/deserialize-child-classes-with-pydantic-that-gonna-work-784230e1cf83
@@ -15,7 +13,9 @@ Note to self:
   exist again on deserialize. Basically, not worth the effort so will use a
   plain dict.
 * pandas.Float64Dtype converts np.NaN and np.Inf to <NA>.
-* Test to show why we're doing this (compare indexes with raw CSV save):
+* Have two deserialize for dtypes: one that's used for applying dtypes using
+  `.astype()` used after all reads; and, the other, used only for CSV when
+  calling `read_csv()`.
 
 Pandas issues:
 
@@ -46,58 +46,47 @@ properly serialise column dtype information.
 
 """
 
-import csv
-import numpy as np
-import pandas as pd
 import copy
-import yaml
-import hashlib, hmac
-
+import csv
+import hashlib
+import hmac
+from datetime import tzinfo
 from enum import Enum
 from pathlib import Path
 from pprint import pprint
-from typing import (
-    Any,
-    Literal,
-    Union,
-    TypeAlias,
-)
+from typing import Any, Literal, TypeAlias, Union
+from zoneinfo import ZoneInfo
 
-from datetime import (
-    tzinfo,
-)
-
-
+import numpy as np
+import pandas as pd
+import yaml
+from loguru import logger
+from pandas import Index, Series
 from pandas._libs.tslibs import BaseOffset
 
 # Pylance complains about Frequency, presumably because it uses a ForwardRef.
 # It's not striclty wrong but will redefine locally for now: see _Frequency
 # later on. Can probably fix this with TYPE_CHECKING stuff but will need to read
 # up on it.
-from pandas._typing import Dtype, ArrayLike, AnyArrayLike, IntervalClosedType, DtypeObj
+from pandas._typing import AnyArrayLike, ArrayLike, Dtype, DtypeObj, IntervalClosedType
 
 # DO NOT try to remove these. It's required by Pydantic to resolve forward
 # references, I think. Anyway, it complains without this.
 from pandas.api.extensions import ExtensionArray, ExtensionDtype
-from pandas import Index, Series
-
-from loguru import logger
-
-
 from pydantic import (
     BaseModel,
     ConfigDict,
-    model_validator,
     computed_field,
     field_serializer,
+    model_validator,
 )
 from typing_extensions import Annotated
-from zoneinfo import ZoneInfo
 
 try:
-    from yaml import CLoader as Loader, CDumper as Dumper
+    from yaml import CDumper as Dumper
+    from yaml import CLoader as Loader
 except ImportError:
-    from yaml import Loader, Dumper
+    from yaml import Dumper, Loader
 
 # Set CoW semantics
 pd.set_option("mode.copy_on_write", True)
@@ -163,7 +152,6 @@ def str_n(in_str):
         return str(in_str)
 
 
-
 def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
     """Check whether two dataframes are equal, ignoring NaNs
 
@@ -181,10 +169,21 @@ def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
     loc_df1 = df1.fillna(const_float)
     loc_df2 = df2.fillna(const_float)
 
-    pd._testing.assert_frame_equal(loc_df1, loc_df2, check_dtype=True, check_index_type=True, check_column_type=True, check_categorical=True, check_frame_type=True, check_names=True, check_exact=True, check_freq=True, check_flags=True)
+    pd._testing.assert_frame_equal(
+        loc_df1,
+        loc_df2,
+        check_dtype=True,
+        check_index_type=True,
+        check_column_type=True,
+        check_categorical=True,
+        check_frame_type=True,
+        check_names=True,
+        check_exact=True,
+        check_freq=True,
+        check_flags=True,
+    )
 
     return True
-
 
 
 def _check_valid_scalar_generic_cast(val, dtype):
@@ -201,7 +200,7 @@ def _check_valid_scalar_np_cast(val, dtype):
         raise InvalidValueForFieldError(error_msg)
 
 
-def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
+def _serialize_element(el, b_chk_correctness: bool = True, b_only_known_types: bool = True) -> dict:
     """Serialize something
 
     This is used primarily to encode indexes.
@@ -211,6 +210,9 @@ def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
     el : list, tuple, array, int, str, etc.
     b_chk_correctness : bool
         Whether to check correctness of (some) of the fields. Default is True.
+    b_only_known_types : bool
+        Default True. If True will raise exception if we encounter a type we
+        don't know about.
 
     Returns
     -------
@@ -279,34 +281,34 @@ def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
         loc_el = el
         loc_type = "float"
     elif type(el) == np.int8:
-        loc_el = int(el)    # See #6
+        loc_el = int(el)  # See #6
         loc_type = "np.int8"
     elif type(el) == np.int16:
-        loc_el = int(el)    # See #6
+        loc_el = int(el)  # See #6
         loc_type = "np.int16"
     elif type(el) == np.int32:
-        loc_el = int(el)    # See #6
+        loc_el = int(el)  # See #6
         loc_type = "np.int32"
     elif type(el) == np.int64:
-        loc_el = int(el)    # See #6
+        loc_el = int(el)  # See #6
         loc_type = "np.int64"
     elif type(el) == np.longlong:
-        loc_el = int(el)    # See #6
+        loc_el = int(el)  # See #6
         loc_type = "np.longlong"
     elif type(el) == np.uint8:
-        loc_el = int(el)    # See #6
+        loc_el = int(el)  # See #6
         loc_type = "np.uint8"
     elif type(el) == np.uint16:
-        loc_el = int(el)    # See #6
+        loc_el = int(el)  # See #6
         loc_type = "np.uint16"
     elif type(el) == np.uint32:
-        loc_el = int(el)    # See #6
+        loc_el = int(el)  # See #6
         loc_type = "np.uint32"
     elif type(el) == np.uint64:
-        loc_el = int(el)    # See #6
+        loc_el = int(el)  # See #6
         loc_type = "np.uint64"
     elif type(el) == np.ulonglong:
-        loc_el = int(el)    # See #6
+        loc_el = int(el)  # See #6
         loc_type = "np.ulonglong"
     elif type(el) == np.float16:
         loc_el = float(el)
@@ -330,13 +332,15 @@ def _serialize_element(el, b_chk_correctness: bool = True) -> dict:
         loc_el = complex(el)
         loc_type = "np.clongdouble"
     else:
-        error_msg = (
-            f"Serializing element got unexpected type: el={el}, type={type(el)}"
-        )
-        logger.error(error_msg)
-        raise NotImplementedError(error_msg)
-        # loc_el = el
-        # loc_type = ""
+        if b_only_known_types:
+            error_msg = f"We only serialize types we know. Got eltype={eltype}"
+            logger.error(error_msg)
+            raise NotImplementedError(error_msg)
+        else:
+            warning_msg = f"Got unexpected type on serialize element. eltype={eltype}"
+            logger.warning(warning_msg)
+            loc_el = el
+            loc_type = ""
 
     return {"el": loc_el, "eltype": loc_type}
 
@@ -351,7 +355,13 @@ def _deserialize_element(
     Parameters
     ----------
     serialized_element : dict
-
+        The serialized element we want to deserialize.
+    b_chk_correctness : bool
+        Default True. Does some checking of type casts. You should probably keep
+        this as True.
+    b_only_known_types : bool
+        Default True. If True will raise exception if we encounter a type we
+        don't know about.
     """
 
     # TODO field checks and recursion protection
@@ -476,13 +486,15 @@ def _deserialize_element(
         if b_chk_correctness:
             _check_valid_scalar_np_cast(el, np.clongdouble)
         return np.clongdouble(el)
-
     else:
         if b_only_known_types:
             error_msg = f"We only deserialize types we know. Got eltype={eltype}"
             logger.error(error_msg)
             raise TypeError(error_msg)
-        return el
+        else:
+            warning_msg = f"In deserialize element, got unknown type. Got eltype={eltype}"
+            logger.warning(warning_msg)
+            return el
 
 
 def _serialize_list_with_types(data: list | tuple | np.ndarray) -> list:
@@ -492,7 +504,7 @@ def _serialize_list_with_types(data: list | tuple | np.ndarray) -> list:
 
     Parameters
     ----------
-    data : list
+    data : list | tuple | np.ndarray
 
     Returns
     -------
@@ -561,7 +573,7 @@ class FIEncodingCSV(BaseModel):
     """
 
     # WE write all our files, so we can be more restrictive to reduce window for
-    # ambiguity when reading a file. In particule, it's a bad idea to confuse
+    # ambiguity when reading a file. In particualr, it's a bad idea to confuse
     # NaN with a null value with a missing value with an empty value -- these
     # are NOT the same, despite what "data science" conventions might suggest.
     # If you must be awkward, try
@@ -1245,9 +1257,7 @@ class FIMetainfo(BaseModel):
             # Need to ensure the index and columns and custominfo are created as
             # the correct object type, not just instantiating the base class.
             if "custom_info" in data.keys() and isinstance(data["custom_info"], dict):
-                data["custom_info"] = FICustomInfoWrapper(
-                    data=data["custom_info"]
-                )
+                data["custom_info"] = FICustomInfoWrapper(data=data["custom_info"])
 
             if "index" in data.keys() and isinstance(data["index"], dict):
                 data["index"] = _deserialize_index_dict_to_fi_index(data["index"])
@@ -1437,26 +1447,39 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
             dtype_full = df.dtypes[col_name]
             assert isinstance(dtype_full, pd.CategoricalDtype)
             serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
-            serialized_dtypes[loc_col_name]["categories"] = dtype_full.categories.to_list()
+            serialized_dtypes[loc_col_name][
+                "categories"
+            ] = dtype_full.categories.to_list()
             serialized_dtypes[loc_col_name]["ordered"] = str(dtype_full.ordered)
         else:
             serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
 
-        serialized_dtypes[loc_col_name]["serialized_col_name"] = _serialize_element(col_name)
-
-    pprint(serialized_dtypes)
+        serialized_dtypes[loc_col_name]["serialized_col_name"] = _serialize_element(
+            col_name
+        )        
 
     return serialized_dtypes
 
 
 def _deserialize_df_types(serialized_dtypes: dict) -> dict:
-    """Deserializes output from `_serialize_df_dtypes_to_dict()`"""
+    """Deserializes output from `_serialize_df_dtypes_to_dict()`
+
+    Parameters
+    ----------
+    serialized_dtypes : dict
+
+    Returns
+    -------
+    dict    
+    """
 
     deserialized_dtypes = {}
     for col in serialized_dtypes:
         # Get deserialized column name
         assert "serialized_col_name" in serialized_dtypes[col]
-        loc_col_name = _deserialize_element(serialized_dtypes[col]["serialized_col_name"])
+        loc_col_name = _deserialize_element(
+            serialized_dtypes[col]["serialized_col_name"]
+        )
 
         # Get string representation of dtype
         dtype_str = serialized_dtypes[col].get("dtype_str", None)
@@ -1482,17 +1505,28 @@ def _deserialize_df_types(serialized_dtypes: dict) -> dict:
     return deserialized_dtypes
 
 
-def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
+def _deserialize_dtypes_for_read_csv(serialized_dtypes: dict) -> dict:
+    """Deserialize dtypes from what's stored in FIMetaInfo for use with Pandas `read_csv()`
+
+    Parameters
+    ----------
+    serialized_dtypes : dict
+
+    Returns
+    -------
+    dict
+        Deserialized dict appropriate for Pandas's consumption
+    """
 
     deserialized_dtypes = {}
     for col in serialized_dtypes:
         # There appears to be serious difficulties when referring to columns. We
         # can try to deal with this here. N.B. This seems necessary to make it
-        # work!
+        # work! i.e. forcing reference to columns to be a string.
         if False:
             pass
-        else:                 
-            # By default make it a string   
+        else:
+            # By default make it a string
             loc_col = str(col)
 
         # Get string representation of dtype
@@ -1503,7 +1537,7 @@ def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
             )
             logger.error(error_msg)
             raise Exception(error_msg)
-        
+
         # Try to apply dtypes. Usually we just "pass through" but there are some
         # that need a more permissive default (str or object) so that the column
         # can then be manually converted later.
@@ -1511,7 +1545,7 @@ def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
             deserialized_dtypes[loc_col] = "object"
         elif dtype_str[0:10] == "datetime64":
             # Catching all datetime64...
-            deserialized_dtypes[loc_col] = "object"            
+            deserialized_dtypes[loc_col] = "object"
         elif dtype_str[0:11] == "timedelta64":
             # Catching all timedelta64
             deserialized_dtypes[loc_col] = "object"
@@ -1523,8 +1557,6 @@ def _deserialize_df_types_for_read_csv(serialized_dtypes: dict) -> dict:
             deserialized_dtypes[loc_col] = dtype_str
 
     return deserialized_dtypes
-
-
 
 
 def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
@@ -1758,17 +1790,20 @@ def _read_from_csv(
 ) -> pd.DataFrame:
     """Read from CSV file using supplied options"""
 
+    # We always put our index column(s) first (row labels)
     if num_index_cols == 1:
         index_col = [0]
     else:
         index_col = list(range(0, num_index_cols))
 
+    # And we always put our index rows first (column labels)
     if num_index_rows == 1:
         index_row = [0]
     else:
         index_row = list(range(0, num_index_rows))
 
-    deserialized_dtypes = _deserialize_df_types_for_read_csv(dtypes)
+    # Get dtypes so that we can specify for `read_csv()`
+    deserialized_dtypes = _deserialize_dtypes_for_read_csv(dtypes)
 
     df = pd.read_csv(
         input_datafile,
@@ -1868,7 +1903,7 @@ def write_df_to_file(
     df: pd.DataFrame,
     datafile: Path,
     metafile: Path | None = None,
-    file_format: FIFileFormatEnum | Literal['csv', 'parquet'] | None = None,
+    file_format: FIFileFormatEnum | Literal["csv", "parquet"] | None = None,
     encoding: FIEncoding | None = None,
     custom_info: dict = {},
     preprocess_inplace=True,
@@ -1949,7 +1984,6 @@ def write_df_to_file(
     return loc_metafile
 
 
-
 def write_df_to_csv(
     df: pd.DataFrame,
     datafile: Path,
@@ -1977,8 +2011,15 @@ def write_df_to_csv(
     Path
     """
 
-    return write_df_to_file(df=df, datafile=datafile, metafile=None, file_format=FIFileFormatEnum.csv, encoding=encoding, custom_info=custom_info, preprocess_inplace=preprocess_inplace)
-
+    return write_df_to_file(
+        df=df,
+        datafile=datafile,
+        metafile=None,
+        file_format=FIFileFormatEnum.csv,
+        encoding=encoding,
+        custom_info=custom_info,
+        preprocess_inplace=preprocess_inplace,
+    )
 
 
 def write_df_to_parquet(
@@ -2008,9 +2049,15 @@ def write_df_to_parquet(
     Path
     """
 
-    return write_df_to_file(df=df, datafile=datafile, metafile=None, file_format=FIFileFormatEnum.parquet, encoding=encoding, custom_info=custom_info, preprocess_inplace=preprocess_inplace)
-
-
+    return write_df_to_file(
+        df=df,
+        datafile=datafile,
+        metafile=None,
+        file_format=FIFileFormatEnum.parquet,
+        encoding=encoding,
+        custom_info=custom_info,
+        preprocess_inplace=preprocess_inplace,
+    )
 
 
 def read_df(
@@ -2069,7 +2116,7 @@ def read_df(
             metainfo.encoding,
             dtypes=metainfo.serialized_dtypes,
             num_index_cols=num_index_cols,
-            num_index_rows=num_index_rows,            
+            num_index_rows=num_index_rows,
         )
     elif metainfo.file_format == FIFileFormatEnum.parquet:
         df = _read_from_parquet(datafile_abs, metainfo.encoding)
@@ -2086,4 +2133,3 @@ def read_df(
     _apply_serialized_dtypes(df, metainfo.serialized_dtypes)
 
     return (df, metainfo)
-

@@ -6,33 +6,31 @@ Import a la ```import df_file_interchange as fi```.
 
 """
 
-# We disable logging as default because we're only ever used as a library, see
-# https://loguru.readthedocs.io/en/stable/resources/recipes.html#configuring-loguru-to-be-used-by-a-library-or-an-application
 from loguru import logger
 
+# We disable logging as default because we're only ever used as a library, see
+# https://loguru.readthedocs.io/en/stable/resources/recipes.html#configuring-loguru-to-be-used-by-a-library-or-an-application
 logger.disable("df_file_interchange")
 
-from .version import __version__
-
-from .fi_generic import (
-    FIFileFormatEnum,
-    FIIndexType,
+from .lowlevel import examples
+from .lowlevel.rw import (
+    FICategoricalIndex,
+    FIDatetimeIndex,
+    FIEncoding,
     FIEncodingCSV,
     FIEncodingParquet,
-    FIEncoding,
+    FIFileFormatEnum,
     FIIndex,
-    FIRangeIndex,
-    FICategoricalIndex,
-    FIMultiIndex,
+    FIIndexType,
     FIIntervalIndex,
-    FIDatetimeIndex,
-    FITimedeltaIndex,
-    FIPeriodIndex,
     FIMetainfo,
-    write_df_to_file,
-    write_df_to_csv,
-    write_df_to_parquet,
+    FIMultiIndex,
+    FIPeriodIndex,
+    FIRangeIndex,
+    FITimedeltaIndex,
     read_df,
+    write_df_to_csv,
+    write_df_to_file,
+    write_df_to_parquet,
 )
-
-from . import fi_examples
+from .version import __version__

@@ -6,20 +6,20 @@ import os
 import sys
 from pathlib import Path
 
-import pytest
-
-import pandas as pd
-from pandas._testing import assert_frame_equal
 import numpy as np
-
+import pandas as pd
+import pytest
+from pandas._testing import assert_frame_equal
 
 TESTPATH = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(TESTPATH, ".."))
 
 import df_file_interchange as fi
-from df_file_interchange.fi_generic import InvalidValueForFieldError
-from df_file_interchange.fi_generic import _serialize_element, _deserialize_element
-
+from df_file_interchange.lowlevel.rw import (
+    InvalidValueForFieldError,
+    _deserialize_element,
+    _serialize_element,
+)
 
 badness_int_list = [
     (np.iinfo(np.uint8).min - 1, "np.uint8"),

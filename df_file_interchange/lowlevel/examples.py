@@ -1,10 +1,9 @@
-"""Examples, mainly used for tests
-"""
+"""Examples, mainly used for tests"""
 
-import pandas as pd
-import numpy as np
 import re
 
+import numpy as np
+import pandas as pd
 
 
 def _generate_example_indices():
@@ -237,11 +236,11 @@ def _generate_example_1(b_include_complex: bool = False):
             np.datetime64("2010-01-31T10:23:01"),
             np.datetime64("nAt"),
             np.datetime64(0, "ns"),
-            np.datetime64(2**63-1, "ns"),
-            np.datetime64(-2**63+1, "ns"),
+            np.datetime64(2**63 - 1, "ns"),
+            np.datetime64(-(2**63) + 1, "ns"),
         ],
         dtype="datetime64[ns]",
-    )    
+    )
 
     # timedeltas
     # df["F_np_timedelta64"] = pd.array(
@@ -259,7 +258,9 @@ def _generate_example_1(b_include_complex: bool = False):
             np.timedelta64(1, "D"),
             np.timedelta64("nAt"),
             np.timedelta64(2**63 - 1, "ns"),
-            np.timedelta64(-(2**62), "ns"),     # TODO: this should work with -(2**63)+1 but it doesn't. Don't know why.
+            np.timedelta64(
+                -(2**62), "ns"
+            ),  # TODO: this should work with -(2**63)+1 but it doesn't. Don't know why.
             np.timedelta64(0, "s"),
         ],
         dtype="timedelta64[ns]",
@@ -272,13 +273,25 @@ def _generate_example_1(b_include_complex: bool = False):
 
     # Careful with syntax! See, https://github.com/pandas-dev/pandas/issues/57644
     df["F_pd_DatetimeTZDtype"] = pd.array(
-        ["2010/01/31 10:23:01", None, 0, np.datetime64(2**63-1, "ns"), np.datetime64(-2**62+1, "ns")],  # TODO again, the lower limit is using 62 instead of 63
+        [
+            "2010/01/31 10:23:01",
+            None,
+            0,
+            np.datetime64(2**63 - 1, "ns"),
+            np.datetime64(-(2**62) + 1, "ns"),
+        ],  # TODO again, the lower limit is using 62 instead of 63
         dtype="datetime64[ns, Europe/Paris]",
     )
 
     # This is probably redunant
     df["F_pd_Timestamp"] = pd.array(
-        [pd.Timestamp("2010/01/31 10:23:01"), pd.Timestamp("NaT"), pd.Timestamp(0), pd.Timestamp(2**63-1), pd.Timestamp(-2**62+1)],
+        [
+            pd.Timestamp("2010/01/31 10:23:01"),
+            pd.Timestamp("NaT"),
+            pd.Timestamp(0),
+            pd.Timestamp(2**63 - 1),
+            pd.Timestamp(-(2**62) + 1),
+        ],
     )
 
     # Timedeltas (again, probably redundant)
@@ -287,7 +300,9 @@ def _generate_example_1(b_include_complex: bool = False):
             np.timedelta64(1, "D"),
             np.timedelta64("nAt"),
             np.timedelta64(2**63 - 1, "ns"),
-            np.timedelta64(-(2**62), "ns"),     # TODO: this should work with -(2**63)+1 but it doesn't. Don't know why.
+            np.timedelta64(
+                -(2**62), "ns"
+            ),  # TODO: this should work with -(2**63)+1 but it doesn't. Don't know why.
             np.timedelta64(0, "s"),
         ],
     )
@@ -299,12 +314,14 @@ def _generate_example_1(b_include_complex: bool = False):
 
     # Int64Dtype
     df["F_pd_Int64Dtype"] = pd.array(
-        [1, None, 0, np.iinfo(np.int64).min, np.iinfo(np.int64).max], dtype=pd.Int64Dtype()
+        [1, None, 0, np.iinfo(np.int64).min, np.iinfo(np.int64).max],
+        dtype=pd.Int64Dtype(),
     )
 
     # Float64Dtype
     df["F_pd_Float64Dtype"] = pd.array(
-        [1.0, np.pi, None, np.finfo(np.float64).min, np.finfo(np.float64).max], dtype=pd.Float64Dtype()
+        [1.0, np.pi, None, np.finfo(np.float64).min, np.finfo(np.float64).max],
+        dtype=pd.Float64Dtype(),
     )
 
     # CategoricalDtype
