@@ -2,64 +2,72 @@
 ---
 
 columns:
-  data:
-    el:
-    - el: A
-      eltype: str
-    - el: B
-      eltype: str
-    - el: C
-      eltype: str
-    - el: F_np_int8
-      eltype: str
-    - el: F_np_int16
-      eltype: str
-    - el: F_np_int32
-      eltype: str
-    - el: F_np_int64
-      eltype: str
-    - el: F_np_longlong
-      eltype: str
-    - el: F_np_uint8
-      eltype: str
-    - el: F_np_uint16
-      eltype: str
-    - el: F_np_uint32
-      eltype: str
-    - el: F_np_uint64
-      eltype: str
-    - el: F_np_ulonglong
-      eltype: str
-    - el: F_np_float32
-      eltype: str
-    - el: F_np_float64
-      eltype: str
-    - el: F_np_bool
-      eltype: str
-    - el: F_np_datetime64
-      eltype: str
-    - el: F_np_timedelta64
-      eltype: str
-    - el: F_pd_DatetimeTZDtype
-      eltype: str
-    - el: F_pd_Timestamp
-      eltype: str
-    - el: F_pd_Timedelta
-      eltype: str
-    - el: F_pd_Int64Dtype
-      eltype: str
-    - el: F_pd_Float64Dtype
-      eltype: str
-    - el: F_pd_CategoricalDtype
-      eltype: str
-    - el: F_pd_StringDtype
-      eltype: str
-    - el: F_pd_BooleanDtype
-      eltype: str
-    eltype: list
-  dtype: object
-  index_type: idx
-  name: null
+  codes:
+  - el:
+    - el: 0
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 2
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    - el: 3
+      eltype: np.int8
+    eltype: np.ndarray
+  - el:
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    - el: 0
+      eltype: np.int8
+    - el: 1
+      eltype: np.int8
+    eltype: np.ndarray
+  dtypes:
+  - object
+  - object
+  index_type: multi
+  levels:
+  - el:
+      dtype: object
+      elements:
+      - el: bar
+        eltype: str
+      - el: baz
+        eltype: str
+      - el: foo
+        eltype: str
+      - el: qux
+        eltype: str
+    eltype: pd.Index
+  - el:
+      dtype: object
+      elements:
+      - el: one
+        eltype: str
+      - el: two
+        eltype: str
+    eltype: pd.Index
+  names:
+  - first
+  - second
+  sortorder: null
 custom_info:
   data: {}
 datafile: test_serialized_df.csv
@@ -77,94 +85,85 @@ encoding:
   parq:
     engine: pyarrow
     index: null
-file_format: parquet
-hash: ac82898627106a610113dec77a7060e4ab6dce113444368ca8cf96c54e4032d0
+file_format: csv
+hash: 2cdcf1c32d8367f8c1f7f0d972cb2e50cee53de9b9a17884dc6c6e18d34e5f18
 index:
-  data:
-    el:
-      dtype: datetime64[ns]
-      elements:
-      - el:
-          isoformat: '2000-01-01T00:00:00'
-          tz: ''
-        eltype: pd.Timestamp
-      - el:
-          isoformat: '2000-01-02T00:00:00'
-          tz: ''
-        eltype: pd.Timestamp
-      - el:
-          isoformat: '2000-01-03T00:00:00'
-          tz: ''
-        eltype: pd.Timestamp
-      - el:
-          isoformat: '2000-01-04T00:00:00'
-          tz: ''
-        eltype: pd.Timestamp
-      - el:
-          isoformat: '2000-01-05T00:00:00'
-          tz: ''
-        eltype: pd.Timestamp
-    eltype: pd.arrays.DatetimeArray
-  dtype: datetime64[ns]
-  freq: D
-  index_type: datetime
-  name: Date
-  tz: null
+  dtype: int64
+  index_type: range
+  name: null
+  start: 0
+  step: 1
+  stop: 3
 serialized_dtypes:
-  A:
+  ('bar', 'one'):
     dtype_str: float64
-  B:
+    serialized_col_name:
+      el:
+      - el: bar
+        eltype: str
+      - el: one
+        eltype: str
+      eltype: tuple
+  ('bar', 'two'):
     dtype_str: float64
-  C:
+    serialized_col_name:
+      el:
+      - el: bar
+        eltype: str
+      - el: two
+        eltype: str
+      eltype: tuple
+  ('baz', 'one'):
     dtype_str: float64
-  F_np_bool:
-    dtype_str: bool
-  F_np_datetime64:
-    dtype_str: datetime64[ns]
-  F_np_float32:
-    dtype_str: float32
-  F_np_float64:
+    serialized_col_name:
+      el:
+      - el: baz
+        eltype: str
+      - el: one
+        eltype: str
+      eltype: tuple
+  ('baz', 'two'):
     dtype_str: float64
-  F_np_int16:
-    dtype_str: int16
-  F_np_int32:
-    dtype_str: int32
-  F_np_int64:
-    dtype_str: int64
-  F_np_int8:
-    dtype_str: int8
-  F_np_longlong:
-    dtype_str: int64
-  F_np_timedelta64:
-    dtype_str: timedelta64[ns]
-  F_np_uint16:
-    dtype_str: uint16
-  F_np_uint32:
-    dtype_str: uint32
-  F_np_uint64:
-    dtype_str: uint64
-  F_np_uint8:
-    dtype_str: uint8
-  F_np_ulonglong:
-    dtype_str: uint64
-  F_pd_BooleanDtype:
-    dtype_str: boolean
-  F_pd_CategoricalDtype:
-    categories:
-    - a
-    - b
-    - c
-    dtype_str: category
-    ordered: 'True'
-  F_pd_DatetimeTZDtype:
-    dtype_str: datetime64[ns, Europe/Paris]
-  F_pd_Float64Dtype:
-    dtype_str: Float64
-  F_pd_Int64Dtype:
-    dtype_str: Int64
-  F_pd_StringDtype:
-    dtype_str: string
-  F_pd_Timedelta:
-    dtype_str: timedelta64[ns]
-  F_pd_Timestamp:
-    dtype_str: datetime64[ns]
+    serialized_col_name:
+      el:
+      - el: baz
+        eltype: str
+      - el: two
+        eltype: str
+      eltype: tuple
+  ('foo', 'one'):
+    dtype_str: float64
+    serialized_col_name:
+      el:
+      - el: foo
+        eltype: str
+      - el: one
+        eltype: str
+      eltype: tuple
+  ('foo', 'two'):
+    dtype_str: float64
+    serialized_col_name:
+      el:
+      - el: foo
+        eltype: str
+      - el: two
+        eltype: str
+      eltype: tuple
+  ('qux', 'one'):
+    dtype_str: float64
+    serialized_col_name:
+      el:
+      - el: qux
+        eltype: str
+      - el: one
+        eltype: str
+      eltype: tuple
+  ('qux', 'two'):
+    dtype_str: float64
+    serialized_col_name:
+      el:
+      - el: qux
+        eltype: str
+      - el: two
+        eltype: str
+      eltype: tuple

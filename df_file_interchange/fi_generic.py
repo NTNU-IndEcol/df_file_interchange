@@ -163,6 +163,30 @@ def str_n(in_str):
         return str(in_str)
 
 
+
+def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
+    """Check whether two dataframes are equal, ignoring NaNs
+
+    This may be expensive since we have to make a copy of the dataframes to
+    avoid mangling the originals
+
+    Parameters
+    ----------
+    df1 : pd.DataFrame
+    df2 : pd.DataFrame
+    """
+
+    const_float = np.pi
+
+    loc_df1 = df1.fillna(const_float)
+    loc_df2 = df2.fillna(const_float)
+
+    pd._testing.assert_frame_equal(loc_df1, loc_df2, check_dtype=True, check_index_type=True, check_column_type=True, check_categorical=True, check_frame_type=True, check_names=True, check_exact=True, check_freq=True, check_flags=True)
+
+    return True
+
+
+
 def _check_valid_scalar_generic_cast(val, dtype):
     if dtype(val) != val:
         error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"
@@ -1397,14 +1421,27 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
     # Loop through and just append to serialized_dtypes unless we get a special
     # type we must manually serialize, e.g. category.
     for col_name, dtype in df.dtypes.to_dict().items():
+
+        # We do have to serialise the key (column name) somehow. Otherwise
+        # things like tuples end up being encoded in the YAML file in an
+        # undesirable way. BUT don't want to use usual serialization for the
+        # keys as it will become less readable+difficult. So lets try simple
+        # string representation for now and store properly serialized version as
+        # a value.
+        loc_col_name = str(col_name)
+
         if dtype == "category":
             dtype_full = df.dtypes[col_name]
             assert isinstance(dtype_full, pd.CategoricalDtype)
-            serialized_dtypes[col_name] = {"dtype_str": str(dtype)}
-            serialized_dtypes[col_name]["categories"] = dtype_full.categories.to_list()
-            serialized_dtypes[col_name]["ordered"] = str(dtype_full.ordered)
+            serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
+            serialized_dtypes[loc_col_name]["categories"] = dtype_full.categories.to_list()
+            serialized_dtypes[loc_col_name]["ordered"] = str(dtype_full.ordered)
         else:
-            serialized_dtypes[col_name] = {"dtype_str": str(dtype)}
+            serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
+
+        serialized_dtypes[loc_col_name]["serialized_col_name"] = _serialize_element(col_name)
+
+    pprint(serialized_dtypes)
 
     return serialized_dtypes
 
@@ -1414,9 +1451,9 @@ def _deserialize_df_types(serialized_dtypes: dict) -> dict:
 
     deserialized_dtypes = {}
     for col in serialized_dtypes:
-        # Get col name
-        # loc_col_name = _deserialize_element(json.loads(col))
-        loc_col_name = col
+        # Get deserialized column name
+        assert "serialized_col_name" in serialized_dtypes[col]
+        loc_col_name = _deserialize_element(serialized_dtypes[col]["serialized_col_name"])
 
         # Get string representation of dtype
         dtype_str = serialized_dtypes[col].get("dtype_str", None)
