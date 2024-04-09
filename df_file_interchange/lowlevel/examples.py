@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 
-def _generate_example_indices():
+def generate_example_indices():
 
     fi_index_1 = pd.Index(
         [
@@ -117,7 +117,7 @@ def _generate_example_indices():
     }
 
 
-def _generate_dfs_from_indices(test_indices):
+def generate_dfs_from_indices(test_indices):
 
     dfs = {}
     for k, v in test_indices.items():
@@ -139,7 +139,7 @@ def _generate_dfs_from_indices(test_indices):
     return dfs
 
 
-def _generate_example_1(b_include_complex: bool = False):
+def generate_example_1(b_include_complex: bool = False):
     """Generate an example dataframe for test purposes
 
     Parameters

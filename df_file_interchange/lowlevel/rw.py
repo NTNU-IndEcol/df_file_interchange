@@ -166,9 +166,27 @@ def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
 
     const_float = np.pi
 
-    loc_df1 = df1.fillna(const_float)
-    loc_df2 = df2.fillna(const_float)
+    # Copy the dataframes because we do not want to modify the originals
+    loc_df1 = df1.copy()
+    loc_df2 = df2.copy()
 
+    # Iterate through the columns of each df, and if the column dtype is float then we replace NaNs with a finite value
+    # We don't seem to need to bother to do this for np.complex types, so this seems ok...
+    col_list1 = []
+    col_list2 = []
+    for col in loc_df1:
+        if loc_df1[col].dtype in ["float16", "float32", "float64"]:
+            col_list1.append(col)
+    for col in loc_df2:
+        if loc_df2[col].dtype in ["float16", "float32", "float64"]:
+            col_list2.append(col)
+ 
+    d_col_list1 = {col: {np.nan: const_float} for col in col_list1}
+    d_col_list2 = {col: {np.nan: const_float} for col in col_list2}
+    loc_df1.replace(to_replace=d_col_list1, inplace=True)
+    loc_df2.replace(to_replace=d_col_list2, inplace=True)
+
+    # Finallly, we can do the test free from NaN != NaN issues.
     pd._testing.assert_frame_equal(
         loc_df1,
         loc_df2,
@@ -200,7 +218,9 @@ def _check_valid_scalar_np_cast(val, dtype):
         raise InvalidValueForFieldError(error_msg)
 
 
-def _serialize_element(el, b_chk_correctness: bool = True, b_only_known_types: bool = True) -> dict:
+def _serialize_element(
+    el, b_chk_correctness: bool = True, b_only_known_types: bool = True
+) -> dict:
     """Serialize something
 
     This is used primarily to encode indexes.
@@ -492,7 +512,9 @@ def _deserialize_element(
             logger.error(error_msg)
             raise TypeError(error_msg)
         else:
-            warning_msg = f"In deserialize element, got unknown type. Got eltype={eltype}"
+            warning_msg = (
+                f"In deserialize element, got unknown type. Got eltype={eltype}"
+            )
             logger.warning(warning_msg)
             return el
 
@@ -1456,7 +1478,7 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
 
         serialized_dtypes[loc_col_name]["serialized_col_name"] = _serialize_element(
             col_name
-        )        
+        )
 
     return serialized_dtypes
 
@@ -1470,7 +1492,7 @@ def _deserialize_df_types(serialized_dtypes: dict) -> dict:
 
     Returns
     -------
-    dict    
+    dict
     """
 
     deserialized_dtypes = {}

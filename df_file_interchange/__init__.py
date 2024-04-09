@@ -12,7 +12,8 @@ from loguru import logger
 # https://loguru.readthedocs.io/en/stable/resources/recipes.html#configuring-loguru-to-be-used-by-a-library-or-an-application
 logger.disable("df_file_interchange")
 
-from .lowlevel import examples
+from . import lowlevel
+
 from .lowlevel.rw import (
     FICategoricalIndex,
     FIDatetimeIndex,
