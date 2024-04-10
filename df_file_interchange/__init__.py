@@ -12,9 +12,9 @@ from loguru import logger
 # https://loguru.readthedocs.io/en/stable/resources/recipes.html#configuring-loguru-to-be-used-by-a-library-or-an-application
 logger.disable("df_file_interchange")
 
-from . import lowlevel
+from . import file
 
-from .lowlevel.rw import (
+from .file.rw import (
     FICategoricalIndex,
     FIDatetimeIndex,
     FIEncoding,
@@ -29,6 +29,7 @@ from .lowlevel.rw import (
     FIPeriodIndex,
     FIRangeIndex,
     FITimedeltaIndex,
+    chk_strict_frames_eq_ignore_nan,
     read_df,
     write_df_to_csv,
     write_df_to_file,
