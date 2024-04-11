@@ -63,6 +63,7 @@ import yaml
 from loguru import logger
 from pandas import Index, Series
 from pandas._libs.tslibs import BaseOffset
+from pandas._testing import assert_frame_equal
 
 # Pylance complains about Frequency, presumably because it uses a ForwardRef.
 # It's not striclty wrong but will redefine locally for now: see _Frequency
@@ -187,7 +188,7 @@ def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
     loc_df2.replace(to_replace=d_col_list2, inplace=True)
 
     # Finallly, we can do the test free from NaN != NaN issues.
-    pd._testing.assert_frame_equal(
+    assert_frame_equal(
         loc_df1,
         loc_df2,
         check_dtype=True,
@@ -198,7 +199,7 @@ def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
         check_names=True,
         check_exact=True,
         check_freq=True,
-        check_flags=True,
+        check_flag=True,
     )
 
     return True
@@ -353,11 +354,11 @@ def _serialize_element(
         loc_type = "np.clongdouble"
     else:
         if b_only_known_types:
-            error_msg = f"We only serialize types we know. Got eltype={eltype}"
+            error_msg = f"We only serialize types we know. Got type(el)={type(el)}"
             logger.error(error_msg)
             raise NotImplementedError(error_msg)
         else:
-            warning_msg = f"Got unexpected type on serialize element. eltype={eltype}"
+            warning_msg = f"Got unexpected type on serialize element. type(el)={type(el)}"
             logger.warning(warning_msg)
             loc_el = el
             loc_type = ""
@@ -1190,30 +1191,19 @@ class FIPeriodIndex(FIBaseIndex):
         return data
 
 
-class FICustomInfoWrapper(BaseModel):
+class FIBaseCustomInfo(BaseModel):
     """Wrapper class to store user custom info
 
     We store in the `ci` attribute (dict). Later, we can add some extra code to
     help with serialization/deserialization but will rely on defaults for now.
+
+    This is extended in the fi.custom_info classes to do useful stuff.
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     data: dict = {}
 
-    # TODO extra custom info for columns/rows
-
-
-class FIUndefinedCustomInfo(BaseModel):
-    """This is for user-supplied custom info that was in a dictionary
-
-    There is an assumption that the dictionary can be serialized without problem
-    with default method(s).
-    """
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    ci: dict = {}
 
 
 class FIMetainfo(BaseModel):
@@ -1243,7 +1233,7 @@ class FIMetainfo(BaseModel):
     encoding: FIEncoding
 
     # Custom info (user defined metainfo)
-    custom_info: FICustomInfoWrapper
+    custom_info: FIBaseCustomInfo
 
     # Serialized dtypes
     serialized_dtypes: dict
@@ -1279,7 +1269,7 @@ class FIMetainfo(BaseModel):
             # Need to ensure the index and columns and custominfo are created as
             # the correct object type, not just instantiating the base class.
             if "custom_info" in data.keys() and isinstance(data["custom_info"], dict):
-                data["custom_info"] = FICustomInfoWrapper(data=data["custom_info"])
+                data["custom_info"] = FIBaseCustomInfo(data=data["custom_info"])
 
             if "index" in data.keys() and isinstance(data["index"], dict):
                 data["index"] = _deserialize_index_dict_to_fi_index(data["index"])
@@ -1763,7 +1753,7 @@ def _compile_metainfo(
     columns = _serialize_index_to_metainfo_index(df.columns)
 
     # Process custom info into pydantic object
-    custom_info_obj = FICustomInfoWrapper(data=custom_info)
+    custom_info_obj = FIBaseCustomInfo(data=custom_info)
 
     # Now shove it all into a FIMetainfo object...
     metainfo = FIMetainfo(

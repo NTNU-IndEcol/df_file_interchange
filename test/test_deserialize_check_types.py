@@ -14,7 +14,7 @@ TESTPATH = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(TESTPATH, ".."))
 
 import df_file_interchange as fi
-from df_file_interchange.lowlevel.rw import (
+from df_file_interchange.file.rw import (
     InvalidValueForFieldError,
     _deserialize_element,
     _serialize_element,

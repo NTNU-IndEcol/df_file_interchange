@@ -16,16 +16,16 @@ TESTPATH = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(TESTPATH, ".."))
 
 import df_file_interchange as fi
-from df_file_interchange.lowlevel.rw import chk_strict_frames_eq_ignore_nan
+from df_file_interchange.file.rw import chk_strict_frames_eq_ignore_nan
 
 
 @pytest.fixture()
 def std_indices():
-    return fi.lowlevel.examples.generate_example_indices()
+    return fi.file.examples.generate_example_indices()
 
 
 def test_save_load_indices(tmp_path: Path, std_indices):
-    dfs = fi.lowlevel.examples.generate_dfs_from_indices(std_indices)
+    dfs = fi.file.examples.generate_dfs_from_indices(std_indices)
 
     for idx, df in dfs.items():
         print(f"Testing {idx}")
@@ -70,7 +70,7 @@ def test_save_load_indices(tmp_path: Path, std_indices):
 def test_save_load_examples(tmp_path: Path):
 
     # Get example dataframes
-    df1 = fi.lowlevel.examples.generate_example_1()
+    df1 = fi.file.examples.generate_example_1()
 
     # Generate and save CSV
     target_datafile1_csv = tmp_path / f"test_df_example_1__csv.csv"
