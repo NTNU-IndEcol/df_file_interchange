@@ -31,7 +31,6 @@ from pydantic import (
 
 class FIBaseUnit(BaseModel):
 
-    # The unit, should be a unit_type unit, e.g. if unit_type is "currency" then unit_desc could be "USD"
     unit_desc: Literal[None]
 
     # Sometimes we have quantities in "millions of $", for example
@@ -207,6 +206,6 @@ class FICurrencyUnit(FIBaseUnit):
 
 
 
-class FIColumnUnits(BaseModel):
+# class FIColumnUnits(BaseModel):
 
-    cols: dict[Any, FICurrencyUnit] = {}
+#     cols: dict[Any, FICurrencyUnit] = {}

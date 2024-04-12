@@ -24,9 +24,36 @@ from pydantic import (
 
 
 from ..file.rw import FIBaseCustomInfo
-from .sub.column_spec import FIColumnUnits
+from .sub.column_spec import FIBaseUnit, FICurrencyUnit
 
 
-class FIStdCustomInfo(FIBaseCustomInfo):
 
-    column_units: FIColumnUnits
+class FIBaseColumnSpec(BaseModel):
+
+    pass
+
+
+class FIStdColumnSpec(FIBaseColumnSpec):
+    """The standard specifications available for a single column.
+
+    Obviously, you can extend this or extend from the base class.
+
+    These are collected together to provide the custom metadata for all columns
+    using FIStdColumnSetSpec.
+
+    Attributes
+    ----------
+    unit : FIBaseUnit
+        Unit specification for this column.
+    """
+
+    unit: FIBaseUnit
+
+
+
+class FIStdColumnSetSpec(FIBaseCustomInfo):
+
+    cols: dict[Any, FIBaseColumnSpec] = {}
+
+
+
