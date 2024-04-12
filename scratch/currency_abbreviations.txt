@@ -43,7 +43,7 @@ CNY
 COP
 KMF
 XAF
-Congo Franc
+CDF
 NZD
 CRC
 XOF
@@ -62,7 +62,7 @@ USD
 XAF
 ERN
 EUR
-Lilangeni                               
+SZL
 ETB
 FJD
 EUR
@@ -102,11 +102,11 @@ JOD
 KZT
 KES
 AUD
-Korean Won
-Korean Won
+KPW
+KRW
 KWD
 KGS
-Laos Kip                                
+LAK
 EUR
 LBP
 LSL
@@ -116,7 +116,7 @@ CHF
 EUR
 EUR
 MOP
- Madagascar             
+MGA
 MWK
 MYR
 MVR
@@ -128,7 +128,7 @@ MRU
 MUR
 MXN
 USD
-Moldovan Leu                            
+MDL
 EUR
 MNT
 EUR
@@ -147,12 +147,12 @@ NIO
 XOF
 NGN
 NZD
-Denar                                   
+MKD
 USD
 NOK
 OMR
 PKR
-US Dollar                               
+USD
 PAB
 PGK
 PYG
@@ -193,7 +193,7 @@ SEK
 CHF
 SYP
 TJS
-Tanzania Shilling                       
+TZS
 THB
 XOF
 NZD
@@ -217,6 +217,6 @@ VND
 USD
 USD
 XPF
-Yemeni Rial                             
+YER
 ZMW
 ZWL

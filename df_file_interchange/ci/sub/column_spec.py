@@ -29,16 +29,16 @@ from pydantic import (
 
 
 
-class FIBaseColumnUnits(BaseModel):
+class FIBaseUnit(BaseModel):
 
     # The unit, should be a unit_type unit, e.g. if unit_type is "currency" then unit_desc could be "USD"
-    unit_desc: Literal["USD"] | None
+    unit_desc: Literal[None]
 
     # Sometimes we have quantities in "millions of $", for example
     unit_multiplier: float = 1.0
 
 
-class FICurrencyColumnUnits(BaseModel):
+class FICurrencyUnit(FIBaseUnit):
 
     # Currency abbreviations can be obtained from https://treasury.un.org/operationalrates/OperationalRates.php
     # Download the EXCEL file, copy the column into a text file, then run
@@ -73,16 +73,15 @@ class FICurrencyColumnUnits(BaseModel):
         "BYN",
         "BZD",
         "CAD",
+        "CDF",
         "CHF",
         "CLP",
         "CNY",
-        "CongoFranc",
         "COP",
         "CRC",
         "CUP",
         "CVE",
         "CZK",
-        "Denar",
         "DJF",
         "DKK",
         "DOP",
@@ -117,22 +116,23 @@ class FICurrencyColumnUnits(BaseModel):
         "KGS",
         "KHR",
         "KMF",
-        "KoreanWon",
+        "KPW",
+        "KRW",
         "KWD",
         "KYD",
         "KZT",
-        "LaosKip",
+        "LAK",
         "LBP",
-        "Lilangeni",
         "LKR",
         "LRD",
         "LSL",
         "LYD",
         "MAD",
-        "Madagascar",
+        "MDL",
+        "MGA",
+        "MKD",
         "MMK",
         "MNT",
-        "MoldovanLeu",
         "MOP",
         "MRU",
         "MUR",
@@ -173,7 +173,7 @@ class FICurrencyColumnUnits(BaseModel):
         "SSP",
         "STN",
         "SYP",
-        "TanzaniaShilling",
+        "SZL",
         "THB",
         "TJS",
         "TMT",
@@ -181,6 +181,7 @@ class FICurrencyColumnUnits(BaseModel):
         "TOP",
         "TRY",
         "TTD",
+        "TZS",
         "UAH",
         "UGX",
         "USD",
@@ -194,7 +195,7 @@ class FICurrencyColumnUnits(BaseModel):
         "XCD",
         "XOF",
         "XPF",
-        "YemeniRial",
+        "YER",
         "ZAR",
         "ZMW",
         "ZWL",
@@ -206,6 +207,6 @@ class FICurrencyColumnUnits(BaseModel):
 
 
 
-class FIColumnSetSpec(BaseModel):
+class FIColumnUnits(BaseModel):
 
-    pass
+    cols: dict[Any, FICurrencyUnit] = {}
