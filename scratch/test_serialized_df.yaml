@@ -2,72 +2,34 @@
 ---
 
 columns:
-  codes:
-  - el:
-    - el: 0
-      eltype: np.int8
-    - el: 0
-      eltype: np.int8
+  data:
+    el:
+    - el: a
+      eltype: str
+    - el: b
+      eltype: str
+    - el: c
+      eltype: str
     - el: 1
-      eltype: np.int8
-    - el: 1
-      eltype: np.int8
+      eltype: int
     - el: 2
-      eltype: np.int8
-    - el: 2
-      eltype: np.int8
+      eltype: int
     - el: 3
-      eltype: np.int8
-    - el: 3
-      eltype: np.int8
-    eltype: np.ndarray
-  - el:
-    - el: 0
-      eltype: np.int8
-    - el: 1
-      eltype: np.int8
-    - el: 0
-      eltype: np.int8
-    - el: 1
-      eltype: np.int8
-    - el: 0
-      eltype: np.int8
-    - el: 1
-      eltype: np.int8
-    - el: 0
-      eltype: np.int8
-    - el: 1
-      eltype: np.int8
-    eltype: np.ndarray
-  dtypes:
-  - object
-  - object
-  index_type: multi
-  levels:
-  - el:
-      dtype: object
-      elements:
-      - el: bar
-        eltype: str
-      - el: baz
-        eltype: str
-      - el: foo
-        eltype: str
-      - el: qux
-        eltype: str
-    eltype: pd.Index
-  - el:
-      dtype: object
-      elements:
-      - el: one
-        eltype: str
-      - el: two
-        eltype: str
-    eltype: pd.Index
-  names:
-  - first
-  - second
-  sortorder: null
+      eltype: int
+    - el:
+        isoformat: '2024-01-01T00:00:00'
+        tz: ''
+      eltype: pd.Timestamp
+    - el:
+        isoformat: '2024-01-02T10:11:12'
+        tz: ''
+      eltype: pd.Timestamp
+    - el: an arbitrary string
+      eltype: str
+    eltype: list
+  dtype: object
+  index_type: idx
+  name: null
 custom_info:
   data: {}
 datafile: test_serialized_df.csv
@@ -87,84 +49,83 @@ encoding:
     index: null
 file_format: csv
 format_version: 1
-hash: 793cb8600d42200d725065448fdcba9bb42bd5a144348f582409015e189e5e8c
+hash: 3dfa08447cca853bbb1e8a0c050ed8718d2a4f09ad718b8217cee4f2d54b84c4
 index:
-  dtype: int64
-  index_type: range
+  data:
+    el:
+    - el: a
+      eltype: str
+    - el: b
+      eltype: str
+    - el: c
+      eltype: str
+    - el: 1
+      eltype: int
+    - el: 2
+      eltype: int
+    - el: 3
+      eltype: int
+    - el:
+        isoformat: '2024-01-01T00:00:00'
+        tz: ''
+      eltype: pd.Timestamp
+    - el:
+        isoformat: '2024-01-02T10:11:12'
+        tz: ''
+      eltype: pd.Timestamp
+    - el: an arbitrary string
+      eltype: str
+    eltype: list
+  dtype: object
+  index_type: idx
   name: null
-  start: 0
-  step: 1
-  stop: 3
 serialized_dtypes:
-  ('bar', 'one'):
+  '1':
+    dtype_str: float64
+    serialized_col_name:
+      el: 1
+      eltype: int
+  '2':
+    dtype_str: float64
+    serialized_col_name:
+      el: 2
+      eltype: int
+  '2024-01-01 00:00:00':
     dtype_str: float64
     serialized_col_name:
       el:
-      - el: bar
-        eltype: str
-      - el: one
-        eltype: str
-      eltype: tuple
-  ('bar', 'two'):
+        isoformat: '2024-01-01T00:00:00'
+        tz: ''
+      eltype: pd.Timestamp
+  '2024-01-02 10:11:12':
     dtype_str: float64
     serialized_col_name:
       el:
-      - el: bar
-        eltype: str
-      - el: two
-        eltype: str
-      eltype: tuple
-  ('baz', 'one'):
+        isoformat: '2024-01-02T10:11:12'
+        tz: ''
+      eltype: pd.Timestamp
+  '3':
     dtype_str: float64
     serialized_col_name:
-      el:
-      - el: baz
-        eltype: str
-      - el: one
-        eltype: str
-      eltype: tuple
-  ('baz', 'two'):
+      el: 3
+      eltype: int
+  a:
     dtype_str: float64
     serialized_col_name:
-      el:
-      - el: baz
-        eltype: str
-      - el: two
-        eltype: str
-      eltype: tuple
-  ('foo', 'one'):
+      el: a
+      eltype: str
+  an arbitrary string:
     dtype_str: float64
     serialized_col_name:
-      el:
-      - el: foo
-        eltype: str
-      - el: one
-        eltype: str
-      eltype: tuple
-  ('foo', 'two'):
+      el: an arbitrary string
+      eltype: str
+  b:
     dtype_str: float64
     serialized_col_name:
-      el:
-      - el: foo
-        eltype: str
-      - el: two
-        eltype: str
-      eltype: tuple
-  ('qux', 'one'):
+      el: b
+      eltype: str
+  c:
     dtype_str: float64
     serialized_col_name:
-      el:
-      - el: qux
-        eltype: str
-      - el: one
-        eltype: str
-      eltype: tuple
-  ('qux', 'two'):
-    dtype_str: float64
-    serialized_col_name:
-      el:
-      - el: qux
-        eltype: str
-      - el: two
-        eltype: str
-      eltype: tuple
+      el: c
+      eltype: str

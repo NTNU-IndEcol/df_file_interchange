@@ -11,7 +11,6 @@ import pandas as pd
 from loguru import logger
 
 
-
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -19,7 +18,6 @@ from pydantic import (
     field_serializer,
     model_validator,
 )
-
 
 
 class FIBaseUnit(BaseModel):
@@ -195,5 +193,3 @@ class FICurrencyUnit(FIBaseUnit):
 
     # Sometimes we have quantities in "millions of $", for example
     unit_multiplier: float = 1.0
-
-

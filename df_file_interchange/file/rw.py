@@ -61,7 +61,6 @@ import numpy as np
 import pandas as pd
 import yaml
 from loguru import logger
-from pandas import Index, Series
 from pandas._libs.tslibs import BaseOffset
 from pandas._testing import assert_frame_equal
 
@@ -72,8 +71,11 @@ from pandas._testing import assert_frame_equal
 from pandas._typing import AnyArrayLike, ArrayLike, Dtype, DtypeObj, IntervalClosedType
 
 # DO NOT try to remove these. It's required by Pydantic to resolve forward
-# references, I think. Anyway, it complains without this.
+# references, I think. Anyway, it raises an exception without these.
+from pandas import Index, Series
 from pandas.api.extensions import ExtensionArray, ExtensionDtype
+
+# Pydantic imports
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -81,7 +83,7 @@ from pydantic import (
     field_serializer,
     model_validator,
 )
-from typing_extensions import Annotated
+
 
 try:
     from yaml import CDumper as Dumper
@@ -98,7 +100,6 @@ _Frequency = Union[str, BaseOffset]
 
 # Our "anything like a list"
 TArrayThing: TypeAlias = list | tuple | np.ndarray
-
 
 
 class InvalidValueForFieldError(Exception):
@@ -152,7 +153,7 @@ def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
     for col in loc_df2:
         if loc_df2[col].dtype in ["float16", "float32", "float64"]:
             col_list2.append(col)
- 
+
     d_col_list1 = {col: {np.nan: const_float} for col in col_list1}
     d_col_list2 = {col: {np.nan: const_float} for col in col_list2}
     loc_df1.replace(to_replace=d_col_list1, inplace=True)
@@ -170,13 +171,32 @@ def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
         check_names=True,
         check_exact=True,
         check_freq=True,
-        check_flag=True,
+        # check_flag=True,
     )
 
     return True
 
 
 def _check_valid_scalar_generic_cast(val, dtype):
+    """Checks whether casting `val` to type `dtype` is valid
+
+    Use this for Python types. `_check_valid_scalar_np_cast()` is for NumPy
+    types.
+
+    Not sure if this is strictly necessary since it'd likely be caught on an
+    explicit case anyway but, meh.
+
+    Parameters
+    ----------
+    val : Any
+    dtype : type
+
+    Raises
+    ------
+    InvalidValueForFieldError
+        If not a valid cast.
+    """
+
     if dtype(val) != val:
         error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"
         logger.error(error_msg)
@@ -184,15 +204,32 @@ def _check_valid_scalar_generic_cast(val, dtype):
 
 
 def _check_valid_scalar_np_cast(val, dtype):
+    """Checks whether casting `val` to type `dtype` is valid
+
+    Use this for NumPy types. `_check_valid_scalar_generic_cast()` is for NumPy
+    types.
+
+    Not sure if this is strictly necessary since it'd likely be caught on an
+    explicit case anyway but, meh.
+
+    Parameters
+    ----------
+    val : Any
+    dtype : numpy type
+
+    Raises
+    ------
+    InvalidValueForFieldError
+        If not a valid cast.
+    """
+
     if not np.can_cast(val, dtype):
         error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"
         logger.error(error_msg)
         raise InvalidValueForFieldError(error_msg)
 
 
-def _serialize_element(
-    el, b_chk_correctness: bool = True, b_only_known_types: bool = True
-) -> dict:
+def _serialize_element(el, b_only_known_types: bool = True) -> dict:
     """Serialize something
 
     This is used primarily to encode indexes.
@@ -329,7 +366,9 @@ def _serialize_element(
             logger.error(error_msg)
             raise NotImplementedError(error_msg)
         else:
-            warning_msg = f"Got unexpected type on serialize element. type(el)={type(el)}"
+            warning_msg = (
+                f"Got unexpected type on serialize element. type(el)={type(el)}"
+            )
             logger.warning(warning_msg)
             loc_el = el
             loc_type = ""
@@ -574,10 +613,6 @@ class FIEncodingCSV(BaseModel):
     #   ["-NaN", "-nan", "<NA>", "N/A", "NA", "NULL", "NaN", "None", "n/a", "nan", "null"]
     #   noting that "" is not in that list (that does cause problems).
     csv_allowed_na: list[str] = ["<NA>"]
-
-    # # We write headers and indexes
-    # header: bool = True
-    # index: bool = True
 
     # Explictly define field separator
     sep: str = ","
@@ -1176,7 +1211,6 @@ class FIBaseCustomInfo(BaseModel):
     data: dict = {}
 
 
-
 class FIMetainfo(BaseModel):
     """All the collected metadata we use when saving or loading
 
@@ -1771,19 +1805,33 @@ def _read_from_csv(
     num_index_cols: int = 1,
     num_index_rows: int = 1,
 ) -> pd.DataFrame:
-    """Read from CSV file using supplied options"""
+    """Read from CSV file using supplied options
+
+    Parameters
+    ----------
+    input_datafile : Path
+        What CSV file to read from.
+    encoding : FIEncoding
+        The encoding options to use (like sep, etc).
+    dtypes : dict
+        Dictionary of dtype specifications.
+    num_index_cols : int, optional
+        How many columns as used for the row index. Always the first n columns.
+    num_index_rows : int, optional
+        How many rows are used to specify the columns. Always the first n rows.
+
+    Returns
+    -------
+    pd.DataFrame
+        _description_
+
+    """
 
     # We always put our index column(s) first (row labels)
-    if num_index_cols == 1:
-        index_col = [0]
-    else:
-        index_col = list(range(0, num_index_cols))
+    index_col = list(range(0, num_index_cols))
 
     # And we always put our index rows first (column labels)
-    if num_index_rows == 1:
-        index_row = [0]
-    else:
-        index_row = list(range(0, num_index_rows))
+    index_row = list(range(0, num_index_rows))
 
     # Get dtypes so that we can specify for `read_csv()`
     deserialized_dtypes = _deserialize_dtypes_for_read_csv(dtypes)
@@ -2089,8 +2137,6 @@ def read_df(
         num_index_rows = len(metainfo.columns.levels)
     else:
         num_index_rows = 1
-
-    # TODO need to check index rows and cols the right way around
 
     # Load the data
     if metainfo.file_format == FIFileFormatEnum.csv:

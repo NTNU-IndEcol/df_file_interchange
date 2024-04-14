@@ -29,9 +29,6 @@ from .base import FIBaseColumnSpec, FIBaseOptionalInfo
 from .sub.unit import FIBaseUnit
 
 
-
-
-
 class FIStdColumnSpec(FIBaseColumnSpec):
     """The standard specifications available for a single column.
 
