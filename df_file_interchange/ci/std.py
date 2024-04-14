@@ -10,9 +10,6 @@ Includes
 
 from pprint import pprint
 from typing import Any, Literal, TypeAlias, Union
-
-import numpy as np
-import pandas as pd
 from loguru import logger
 
 from pydantic import (
@@ -26,7 +23,8 @@ from pydantic import (
 
 from ..file.rw import FIBaseCustomInfo
 from .base import FIBaseColumnSpec, FIBaseOptionalInfo
-from .sub.unit import FIBaseUnit
+from .unit.base import FIBaseUnit
+from .unit.currency import FICurrencyUnit
 
 
 class FIStdColumnSpec(FIBaseColumnSpec):
@@ -34,13 +32,10 @@ class FIStdColumnSpec(FIBaseColumnSpec):
 
     Obviously, you can extend this or extend from the base class.
 
-    These are collected together to provide the custom metadata for all columns
-    using FIStdColumnSetSpec.
-
     Attributes
     ----------
     unit : FIBaseUnit
-        Unit specification for this column.
+        Unit specification for this column, e.g. a currency.
     """
 
     unit: FIBaseUnit
@@ -55,4 +50,5 @@ class FIStdOptionalInfo(FIBaseOptionalInfo):
 
 class FIStdCustomInfo(FIBaseCustomInfo):
 
-    cols: dict[Any, FIBaseColumnSpec] = {}
+    optional: FIStdOptionalInfo = FIStdOptionalInfo()
+    cols: dict[Any, FIStdColumnSpec] = {}

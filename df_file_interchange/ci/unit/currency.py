@@ -3,29 +3,16 @@ Column unit, i.e. a "currency" or such.
 
 """
 
-from pprint import pprint
+
 from typing import Any, Literal, TypeAlias, Union
-
-import numpy as np
-import pandas as pd
 from loguru import logger
-
 
 from pydantic import (
     BaseModel,
-    ConfigDict,
     computed_field,
-    field_serializer,
-    model_validator,
 )
 
-
-class FIBaseUnit(BaseModel):
-
-    unit_desc: Literal[None]
-
-    # Sometimes we have quantities in "millions of $", for example
-    unit_multiplier: float = 1.0
+from .base import FIBaseUnit
 
 
 class FICurrencyUnit(FIBaseUnit):
@@ -193,3 +180,10 @@ class FICurrencyUnit(FIBaseUnit):
 
     # Sometimes we have quantities in "millions of $", for example
     unit_multiplier: float = 1.0
+
+    @computed_field
+    @property
+    def unit_type(self) -> str:
+        return "currency"
+    
+
