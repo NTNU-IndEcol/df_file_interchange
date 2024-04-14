@@ -4,6 +4,7 @@ Standard custom info
 Includes
 
 * Column unit+descriptions
+* Some basic optional info
 
 """
 
@@ -24,13 +25,11 @@ from pydantic import (
 
 
 from ..file.rw import FIBaseCustomInfo
-from .sub.column_spec import FIBaseUnit, FICurrencyUnit
+from .base import FIBaseColumnSpec, FIBaseOptionalInfo
+from .sub.unit import FIBaseUnit
 
 
 
-class FIBaseColumnSpec(BaseModel):
-
-    pass
 
 
 class FIStdColumnSpec(FIBaseColumnSpec):
@@ -50,10 +49,13 @@ class FIStdColumnSpec(FIBaseColumnSpec):
     unit: FIBaseUnit
 
 
+class FIStdOptionalInfo(FIBaseOptionalInfo):
 
-class FIStdColumnSetSpec(FIBaseCustomInfo):
+    source: str | None = None
+    version: str | int | None = None
+    author: str | None = None
+
+
+class FIStdCustomInfo(FIBaseCustomInfo):
 
     cols: dict[Any, FIBaseColumnSpec] = {}
-
-
-

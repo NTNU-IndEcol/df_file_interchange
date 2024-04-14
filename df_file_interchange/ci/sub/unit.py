@@ -1,8 +1,5 @@
 """
-Column unit and description handler
-
-
-
+Column unit, i.e. a "currency" or such.
 
 """
 
@@ -22,10 +19,6 @@ from pydantic import (
     field_serializer,
     model_validator,
 )
-
-
-
-
 
 
 
@@ -204,8 +197,3 @@ class FICurrencyUnit(FIBaseUnit):
     unit_multiplier: float = 1.0
 
 
-
-
-# class FIColumnUnits(BaseModel):
-
-#     cols: dict[Any, FICurrencyUnit] = {}

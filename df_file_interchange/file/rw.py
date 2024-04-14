@@ -100,35 +100,6 @@ _Frequency = Union[str, BaseOffset]
 TArrayThing: TypeAlias = list | tuple | np.ndarray
 
 
-# def save(df, author, url, source, year, country):
-#     df.to_xxx
-#     **kwars -> yaml
-#     ** pandas_file_format -> yaml
-# a, b, c, d
-# a ... mean gdp
-# b ... mean gdp per capita
-# def load(path):
-#     reads yaml
-#     select from_xxx from yaml, with paramters from yaml - file_paramters
-#     meta_dict = yaml (except file_paramters)
-#     return (df, meta_dict)
-# yaml metadata file : metadata.yaml
-# file_paramters:  - AUTOMATIC
-#     type: parquet, csv, etc.
-#     index_col
-#     headers
-#     sep:
-#     encoding:
-# general:  - USER MANUAL ENTRY, partly optional
-#     source
-#     version
-#     author
-#     country
-#     currency
-# columns:  - USER MANUAL, fully optional?
-#     for each column:
-#     column_name: description
-
 
 class InvalidValueForFieldError(Exception):
     pass
