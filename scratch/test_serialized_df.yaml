@@ -4,34 +4,65 @@
 columns:
   data:
     el:
-    - el: a
+    - el: A
       eltype: str
-    - el: b
+    - el: B
       eltype: str
-    - el: c
+    - el: C
       eltype: str
-    - el: 1
-      eltype: int
-    - el: 2
-      eltype: int
-    - el: 3
-      eltype: int
-    - el:
-        isoformat: '2024-01-01T00:00:00'
-        tz: ''
-      eltype: pd.Timestamp
-    - el:
-        isoformat: '2024-01-02T10:11:12'
-        tz: ''
-      eltype: pd.Timestamp
-    - el: an arbitrary string
+    - el: F_np_int8
+      eltype: str
+    - el: F_np_int16
+      eltype: str
+    - el: F_np_int32
+      eltype: str
+    - el: F_np_int64
+      eltype: str
+    - el: F_np_longlong
+      eltype: str
+    - el: F_np_uint8
+      eltype: str
+    - el: F_np_uint16
+      eltype: str
+    - el: F_np_uint32
+      eltype: str
+    - el: F_np_uint64
+      eltype: str
+    - el: F_np_ulonglong
+      eltype: str
+    - el: F_np_float32
+      eltype: str
+    - el: F_np_float64
+      eltype: str
+    - el: F_np_bool
+      eltype: str
+    - el: F_np_datetime64
+      eltype: str
+    - el: F_np_timedelta64
+      eltype: str
+    - el: F_pd_DatetimeTZDtype
+      eltype: str
+    - el: F_pd_Timestamp
+      eltype: str
+    - el: F_pd_Timedelta
+      eltype: str
+    - el: F_pd_Int64Dtype
+      eltype: str
+    - el: F_pd_Float64Dtype
+      eltype: str
+    - el: F_pd_CategoricalDtype
+      eltype: str
+    - el: F_pd_StringDtype
+      eltype: str
+    - el: F_pd_BooleanDtype
       eltype: str
     eltype: list
   dtype: object
   index_type: idx
   name: null
 custom_info:
-  data: {}
+  data:
+    a: 5
 datafile: test_serialized_df.csv
 encoding:
   auto_convert_int_to_intna: true
@@ -49,83 +80,171 @@ encoding:
     index: null
 file_format: csv
 format_version: 1
-hash: 3dfa08447cca853bbb1e8a0c050ed8718d2a4f09ad718b8217cee4f2d54b84c4
+hash: aa0490b8c538e16b73a4563209a5461f94907667eb9d8dde526a2f2ba3b508e5
 index:
   data:
     el:
-    - el: a
-      eltype: str
-    - el: b
-      eltype: str
-    - el: c
-      eltype: str
-    - el: 1
-      eltype: int
-    - el: 2
-      eltype: int
-    - el: 3
-      eltype: int
-    - el:
-        isoformat: '2024-01-01T00:00:00'
-        tz: ''
-      eltype: pd.Timestamp
-    - el:
-        isoformat: '2024-01-02T10:11:12'
-        tz: ''
-      eltype: pd.Timestamp
-    - el: an arbitrary string
-      eltype: str
-    eltype: list
-  dtype: object
-  index_type: idx
-  name: null
+      dtype: datetime64[ns]
+      elements:
+      - el:
+          isoformat: '2000-01-01T00:00:00'
+          tz: ''
+        eltype: pd.Timestamp
+      - el:
+          isoformat: '2000-01-02T00:00:00'
+          tz: ''
+        eltype: pd.Timestamp
+      - el:
+          isoformat: '2000-01-03T00:00:00'
+          tz: ''
+        eltype: pd.Timestamp
+      - el:
+          isoformat: '2000-01-04T00:00:00'
+          tz: ''
+        eltype: pd.Timestamp
+      - el:
+          isoformat: '2000-01-05T00:00:00'
+          tz: ''
+        eltype: pd.Timestamp
+    eltype: pd.arrays.DatetimeArray
+  dtype: datetime64[ns]
+  freq: D
+  index_type: datetime
+  name: Date
+  tz: null
 serialized_dtypes:
-  '1':
+  A:
     dtype_str: float64
     serialized_col_name:
-      el: 1
-      eltype: int
-  '2':
-    dtype_str: float64
-    serialized_col_name:
-      el: 2
-      eltype: int
-  '2024-01-01 00:00:00':
-    dtype_str: float64
-    serialized_col_name:
-      el:
-        isoformat: '2024-01-01T00:00:00'
-        tz: ''
-      eltype: pd.Timestamp
-  '2024-01-02 10:11:12':
-    dtype_str: float64
-    serialized_col_name:
-      el:
-        isoformat: '2024-01-02T10:11:12'
-        tz: ''
-      eltype: pd.Timestamp
-  '3':
-    dtype_str: float64
-    serialized_col_name:
-      el: 3
-      eltype: int
-  a:
-    dtype_str: float64
-    serialized_col_name:
-      el: a
+      el: A
       eltype: str
-  an arbitrary string:
+  B:
     dtype_str: float64
     serialized_col_name:
-      el: an arbitrary string
+      el: B
       eltype: str
-  b:
+  C:
     dtype_str: float64
     serialized_col_name:
-      el: b
+      el: C
       eltype: str
-  c:
+  F_np_bool:
+    dtype_str: bool
+    serialized_col_name:
+      el: F_np_bool
+      eltype: str
+  F_np_datetime64:
+    dtype_str: datetime64[ns]
+    serialized_col_name:
+      el: F_np_datetime64
+      eltype: str
+  F_np_float32:
+    dtype_str: float32
+    serialized_col_name:
+      el: F_np_float32
+      eltype: str
+  F_np_float64:
     dtype_str: float64
     serialized_col_name:
-      el: c
+      el: F_np_float64
+      eltype: str
+  F_np_int16:
+    dtype_str: int16
+    serialized_col_name:
+      el: F_np_int16
+      eltype: str
+  F_np_int32:
+    dtype_str: int32
+    serialized_col_name:
+      el: F_np_int32
+      eltype: str
+  F_np_int64:
+    dtype_str: int64
+    serialized_col_name:
+      el: F_np_int64
+      eltype: str
+  F_np_int8:
+    dtype_str: int8
+    serialized_col_name:
+      el: F_np_int8
+      eltype: str
+  F_np_longlong:
+    dtype_str: int64
+    serialized_col_name:
+      el: F_np_longlong
+      eltype: str
+  F_np_timedelta64:
+    dtype_str: timedelta64[ns]
+    serialized_col_name:
+      el: F_np_timedelta64
+      eltype: str
+  F_np_uint16:
+    dtype_str: uint16
+    serialized_col_name:
+      el: F_np_uint16
+      eltype: str
+  F_np_uint32:
+    dtype_str: uint32
+    serialized_col_name:
+      el: F_np_uint32
+      eltype: str
+  F_np_uint64:
+    dtype_str: uint64
+    serialized_col_name:
+      el: F_np_uint64
+      eltype: str
+  F_np_uint8:
+    dtype_str: uint8
+    serialized_col_name:
+      el: F_np_uint8
+      eltype: str
+  F_np_ulonglong:
+    dtype_str: uint64
+    serialized_col_name:
+      el: F_np_ulonglong
+      eltype: str
+  F_pd_BooleanDtype:
+    dtype_str: boolean
+    serialized_col_name:
+      el: F_pd_BooleanDtype
+      eltype: str
+  F_pd_CategoricalDtype:
+    categories:
+    - a
+    - b
+    - c
+    dtype_str: category
+    ordered: 'True'
+    serialized_col_name:
+      el: F_pd_CategoricalDtype
+      eltype: str
+  F_pd_DatetimeTZDtype:
+    dtype_str: datetime64[ns, Europe/Paris]
+    serialized_col_name:
+      el: F_pd_DatetimeTZDtype
+      eltype: str
+  F_pd_Float64Dtype:
+    dtype_str: Float64
+    serialized_col_name:
+      el: F_pd_Float64Dtype
+      eltype: str
+  F_pd_Int64Dtype:
+    dtype_str: Int64
+    serialized_col_name:
+      el: F_pd_Int64Dtype
+      eltype: str
+  F_pd_StringDtype:
+    dtype_str: string
+    serialized_col_name:
+      el: F_pd_StringDtype
+      eltype: str
+  F_pd_Timedelta:
+    dtype_str: timedelta64[ns]
+    serialized_col_name:
+      el: F_pd_Timedelta
+      eltype: str
+  F_pd_Timestamp:
+    dtype_str: datetime64[ns]
+    serialized_col_name:
+      el: F_pd_Timestamp
       eltype: str
