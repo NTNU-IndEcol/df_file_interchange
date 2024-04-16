@@ -54,7 +54,7 @@ from datetime import tzinfo
 from enum import Enum
 from pathlib import Path
 from pprint import pprint
-from typing import Any, Literal, TypeAlias, Union
+from typing import Any, Literal, TypeAlias, Union, Self, Iterator
 from zoneinfo import ZoneInfo
 
 import numpy as np
@@ -76,12 +76,16 @@ from pandas import Index, Series
 from pandas.api.extensions import ExtensionArray, ExtensionDtype
 
 # Pydantic imports
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pydantic import (
     BaseModel,
     ConfigDict,
     computed_field,
     field_serializer,
     model_validator,
+    ValidationInfo,
+    field_validator,
 )
 
 
@@ -1197,18 +1201,42 @@ class FIPeriodIndex(FIBaseIndex):
         return data
 
 
+# See: https://docs.pydantic.dev/latest/concepts/validators/#validation-context
+_init_context_var = ContextVar('_init_context_var', default=None)
+
+@contextmanager
+def init_context(value: dict[str, Any]) -> Iterator[None]:
+    token = _init_context_var.set(value)
+    try:
+        yield
+    finally:
+        _init_context_var.reset(token)
+
+
 class FIBaseCustomInfo(BaseModel):
     """Wrapper class to store user custom info
 
-    We store in the `ci` attribute (dict). Later, we can add some extra code to
-    help with serialization/deserialization but will rely on defaults for now.
+    N.B. This, and any descendent, MUST be able to deserialise based on a
+    provided dictionary!
 
-    This is extended in the fi.custom_info classes to do useful stuff.
-    """
+    A descendent of this is usually supplied as an object when writing a file to
+    include additional metadata. When reading, a class is passed as a parameter
+    and an object will be instantiated upon reading.
+    """    
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    data: dict = {}
+    unstructured_data: dict = {}
+
+    def __init__(self, /, **data: Any) -> None:
+        self.__pydantic_validator__.validate_python(
+            data,
+            self_instance=self,
+            context=_init_context_var.get(),
+        )
+
+
+
 
 
 class FIMetainfo(BaseModel):

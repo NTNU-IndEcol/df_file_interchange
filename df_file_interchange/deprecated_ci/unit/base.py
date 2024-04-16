@@ -1,17 +1,16 @@
 """
-Base unit definitions
+Column unit, i.e. a "currency" or such.
+
 """
 
-from pprint import pprint
+
 from typing import Any, Literal, TypeAlias, Union
 from loguru import logger
 
+
 from pydantic import (
     BaseModel,
-    ConfigDict,
     computed_field,
-    field_serializer,
-    model_validator,
 )
 
 
