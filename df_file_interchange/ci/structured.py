@@ -64,7 +64,7 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
             context=_init_context_var.get(),
         )
 
-    @field_validator('extra_info')
+    @field_validator('extra_info', mode="before")
     @classmethod
     def validator_extra_info(cls, value: dict | FIBaseExtraInfo, info: ValidationInfo) -> FIBaseExtraInfo:
         if info.context:
