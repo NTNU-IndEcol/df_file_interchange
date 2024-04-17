@@ -83,6 +83,7 @@ from pydantic import (
     ConfigDict,
     computed_field,
     field_serializer,
+    model_serializer,
     model_validator,
     ValidationInfo,
     field_validator,
@@ -1202,7 +1203,8 @@ class FIPeriodIndex(FIBaseIndex):
 
 
 # See: https://docs.pydantic.dev/latest/concepts/validators/#validation-context
-_init_context_var = ContextVar('_init_context_var', default=None)
+_init_context_var = ContextVar[dict | None]("_init_context_var", default=None)
+
 
 @contextmanager
 def init_context(value: dict[str, Any]) -> Iterator[None]:
@@ -1222,7 +1224,7 @@ class FIBaseCustomInfo(BaseModel):
     A descendent of this is usually supplied as an object when writing a file to
     include additional metadata. When reading, a class is passed as a parameter
     and an object will be instantiated upon reading.
-    """    
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -1235,7 +1237,10 @@ class FIBaseCustomInfo(BaseModel):
             context=_init_context_var.get(),
         )
 
-
+    @model_serializer()
+    def serialize_model(self):
+        # TODO Perhaps we need to actually serialize the dictionary?
+        return {"unstructured_data": self.unstructured_data}
 
 
 

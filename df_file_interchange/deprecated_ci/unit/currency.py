@@ -3,7 +3,6 @@ Column unit, i.e. a "currency" or such.
 
 """
 
-
 from typing import Any, Literal, TypeAlias, Union
 from loguru import logger
 
@@ -185,5 +184,3 @@ class FICurrencyUnit(FIBaseUnit):
     @property
     def unit_type(self) -> str:
         return "currency"
-    
-

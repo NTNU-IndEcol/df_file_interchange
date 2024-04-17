@@ -3,7 +3,6 @@ Column unit, i.e. a "currency" or such.
 
 """
 
-
 from typing import Any, Literal, TypeAlias, Union
 from loguru import logger
 
