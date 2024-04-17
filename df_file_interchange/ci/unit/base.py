@@ -38,8 +38,28 @@ class FIBaseUnit(BaseModel):
     # Sometimes we have quantities in "millions of $", for example
     unit_multiplier: float = 1.0
 
+    @classmethod
+    def get_classname(cls) -> str:
+        return cls.__name__
+    
     @computed_field
     @property
-    def unit_type(self) -> str:
-        raise NotImplemented("This is a base class.")
-        return ""
+    def classname(self) -> str:
+        """Ensures classname is included in serialization
+
+        Returns
+        -------
+        str
+            Our classname
+        """
+
+        return self.get_classname()
+    
+
+
+class FIGenericUnit(FIBaseUnit):
+
+    # Override so we can specify arbitrary strings
+    unit_desc: Literal[None] | str = None
+
+    

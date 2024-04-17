@@ -1237,10 +1237,10 @@ class FIBaseCustomInfo(BaseModel):
             context=_init_context_var.get(),
         )
 
-    @model_serializer()
-    def serialize_model(self):
-        # TODO Perhaps we need to actually serialize the dictionary?
-        return {"unstructured_data": self.unstructured_data}
+    # @model_serializer()
+    # def serialize_model(self):
+    #     # TODO Perhaps we need to actually serialize the dictionary?
+    #     return {"unstructured_data": self.unstructured_data}
 
 
 
