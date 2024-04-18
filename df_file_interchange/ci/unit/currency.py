@@ -1,5 +1,5 @@
 """
-Column unit, i.e. a "currency" or such.
+Column currency unit using three letter acronyms, e.g. "USD", "EUR", etc.
 
 """
 
@@ -180,7 +180,3 @@ class FICurrencyUnit(FIBaseUnit):
     # Sometimes we have quantities in "millions of $", for example
     unit_multiplier: float = 1.0
 
-    # @computed_field
-    # @property
-    # def unit_type(self) -> str:
-    #     return "currency"

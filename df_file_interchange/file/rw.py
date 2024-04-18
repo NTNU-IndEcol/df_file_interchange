@@ -87,6 +87,7 @@ from pydantic import (
     model_validator,
     ValidationInfo,
     field_validator,
+    SerializeAsAny,
 )
 
 
@@ -1202,17 +1203,17 @@ class FIPeriodIndex(FIBaseIndex):
         return data
 
 
-# See: https://docs.pydantic.dev/latest/concepts/validators/#validation-context
-_init_context_var = ContextVar[dict | None]("_init_context_var", default=None)
+# # See: https://docs.pydantic.dev/latest/concepts/validators/#validation-context
+# _init_context_var = ContextVar[dict | None]("_init_context_var", default=None)
 
 
-@contextmanager
-def init_context(value: dict[str, Any]) -> Iterator[None]:
-    token = _init_context_var.set(value)
-    try:
-        yield
-    finally:
-        _init_context_var.reset(token)
+# @contextmanager
+# def init_context(value: dict[str, Any]) -> Iterator[None]:
+#     token = _init_context_var.set(value)
+#     try:
+#         yield
+#     finally:
+#         _init_context_var.reset(token)
 
 
 class FIBaseCustomInfo(BaseModel):
@@ -1230,17 +1231,15 @@ class FIBaseCustomInfo(BaseModel):
 
     unstructured_data: dict = {}
 
-    def __init__(self, /, **data: Any) -> None:
-        self.__pydantic_validator__.validate_python(
-            data,
-            self_instance=self,
-            context=_init_context_var.get(),
-        )
+    # def __init__(self, /, **data: Any) -> None:
 
-    # @model_serializer()
-    # def serialize_model(self):
-    #     # TODO Perhaps we need to actually serialize the dictionary?
-    #     return {"unstructured_data": self.unstructured_data}
+    #     super().__init__(**data)
+
+    #     self.__pydantic_validator__.validate_python(
+    #         data,
+    #         self_instance=self,
+    #         context=_init_context_var.get(),
+    #     )
 
 
 
@@ -1271,7 +1270,7 @@ class FIMetainfo(BaseModel):
     encoding: FIEncoding
 
     # Custom info (user defined metainfo)
-    custom_info: FIBaseCustomInfo
+    custom_info: SerializeAsAny[FIBaseCustomInfo]
 
     # Serialized dtypes
     serialized_dtypes: dict
@@ -1300,15 +1299,63 @@ class FIMetainfo(BaseModel):
         # TODO is this ok if caller does a model_dump_json()?
         return columns.model_dump()
 
+    @field_validator("custom_info", mode="before")
+    @classmethod
+    def validator_custom_info(
+        cls, value: dict | FIBaseCustomInfo, info: ValidationInfo
+    ) -> FIBaseCustomInfo:
+
+        # Shortcut exit, if we've been passed something with extra_info already
+        # instantiated. We only deal with dicts here.
+        if not isinstance(value, dict):
+            return value
+
+        # If we don't have context, just use the base class or return as-is
+        if not info.context:
+            if isinstance(value, dict):
+                loc_value = FIBaseCustomInfo(**value)
+                return loc_value
+            else:
+                return value
+
+        # Check our context is a dictionary
+        assert isinstance(info.context, dict)
+
+        # Get the available classes for extra_info (this should also be a
+        # dictionary)
+        clss_extra_info = info.context.get(
+            "clss_custom_info", {"FIBaseCustomInfo": FIBaseCustomInfo}
+        )
+        assert isinstance(clss_extra_info, dict)
+
+        # Now process
+        value_classname = value.get("classname", None)
+        if value_classname and value_classname in clss_extra_info.keys():
+            # return clss_extra_info[value_classname](**value)
+            # Now instantiate the model
+            custom_info_class = clss_extra_info[value_classname]
+            assert isinstance(custom_info_class, FIBaseCustomInfo)
+            return custom_info_class.model_validate(value, context=info.context)
+
+        # Meh. Just use the base class, apparently we don't have a class
+        # specified in the context for this.
+        logger.warning(f"Missing context for custom_info deserialize. value={value}")
+        return FIBaseCustomInfo.model_validate(value, context=info.context)
+    
+
+
     @model_validator(mode="before")
     @classmethod
     def pre_process(cls, data: Any) -> Any:
-        if isinstance(data, dict):
-            # Need to ensure the index and columns and custominfo are created as
-            # the correct object type, not just instantiating the base class.
-            if "custom_info" in data.keys() and isinstance(data["custom_info"], dict):
-                data["custom_info"] = FIBaseCustomInfo(data=data["custom_info"])
+        # TODO perhaps move index and columns into separate field validators.
 
+        if isinstance(data, dict):
+            # # The custom info needs some help: need to provide a user-supplied context
+            # if "custom_info" in data.keys() and isinstance(data["custom_info"], dict):
+            #     data["custom_info"] = FIBaseCustomInfo(data=data["custom_info"])
+
+            # Need to ensure the index and columns and custominfo are created as
+            # the correct object type, not just instantiating the base class.            
             if "index" in data.keys() and isinstance(data["index"], dict):
                 data["index"] = _deserialize_index_dict_to_fi_index(data["index"])
 

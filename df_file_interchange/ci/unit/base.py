@@ -33,7 +33,7 @@ class FIBaseUnit(BaseModel):
         "currency".
     """
 
-    unit_desc: Literal[None]
+    unit_desc: None = None
 
     # Sometimes we have quantities in "millions of $", for example
     unit_multiplier: float = 1.0
@@ -41,7 +41,7 @@ class FIBaseUnit(BaseModel):
     @classmethod
     def get_classname(cls) -> str:
         return cls.__name__
-    
+
     @computed_field
     @property
     def classname(self) -> str:
@@ -54,12 +54,9 @@ class FIBaseUnit(BaseModel):
         """
 
         return self.get_classname()
-    
 
 
 class FIGenericUnit(FIBaseUnit):
 
     # Override so we can specify arbitrary strings
     unit_desc: Literal[None] | str = None
-
-    
