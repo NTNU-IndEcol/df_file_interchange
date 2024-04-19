@@ -36,7 +36,7 @@ class FIBaseUnit(BaseModel):
     unit_desc: None = None
 
     # Sometimes we have quantities in "millions of $", for example
-    unit_multiplier: float = 1.0
+    unit_multiplier: int | float = 1.0
 
     @classmethod
     def get_classname(cls) -> str:

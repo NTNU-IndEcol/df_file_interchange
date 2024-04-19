@@ -27,4 +27,4 @@ class FIPopulationUnit(FIBaseUnit):
     ]
 
     # This is probably what will be changed rather than unit_desc
-    unit_multiplier: float = 1.0
+    unit_multiplier: int = 1

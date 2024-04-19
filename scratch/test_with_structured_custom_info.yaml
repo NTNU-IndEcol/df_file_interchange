@@ -40,7 +40,7 @@ custom_info:
     pop:
       classname: FIPopulationUnit
       unit_desc: people
-      unit_multiplier: 1.0
+      unit_multiplier: 1
   extra_info:
     author: Spud
     classname: FIStdExtraInfo
@@ -63,7 +63,7 @@ encoding:
     index: null
 file_format: csv
 format_version: 1
-hash: f5749ec2274d816fe01577267d582e61a05d5983cf4dc2d0e992da036634a0ab
+hash: bcb6fe607b8f3ff13af50d89050325da5c9044290527762596dad65a59436694
 index:
   dtype: int64
   index_type: range
