@@ -179,4 +179,3 @@ class FICurrencyUnit(FIBaseUnit):
 
     # Sometimes we have quantities in "millions of $", for example
     unit_multiplier: float = 1.0
-

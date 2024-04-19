@@ -71,6 +71,7 @@ class FIBaseExtraInfo(BaseModel):
 class FIStdExtraInfo(FIBaseExtraInfo):
 
     author: str | None = None
+    source: str | None = None
 
 
 class FIStructuredCustomInfo(FIBaseCustomInfo):
@@ -103,7 +104,6 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
     #         self_instance=self,
     #         context=_init_context_var.get(),
     #     )
-
 
     @field_validator("extra_info", mode="before")
     @classmethod
@@ -141,7 +141,7 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
 
             # Now instantiate the model
             extra_info_class = clss_extra_info[value_classname]
-            assert isinstance(extra_info_class, FIBaseExtraInfo)
+            assert issubclass(extra_info_class, FIBaseExtraInfo)
             return extra_info_class.model_validate(value, context=info.context)
 
         # Meh. Just use the base class, apparently we don't have a class
@@ -183,8 +183,10 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
 
                 # Now instantiate the model and add to our local dictionary
                 units_class = clss_col_units[value_classname]
-                assert isinstance(units_class, FIBaseUnit)
-                loc_value[idx] = units_class.model_validate(value[idx], context=info.context)
+                assert issubclass(units_class, FIBaseUnit)
+                loc_value[idx] = units_class.model_validate(
+                    value[idx], context=info.context
+                )
             else:
                 warning_msg = f"Missing context for col_unit deserialize. idx={idx}, value[idx]={value[idx]}"
                 logger.warning(warning_msg)

@@ -1,0 +1,99 @@
+# Metadata for test_with_structured_custom_info.csv
+---
+
+columns:
+  data:
+    el:
+    - el: a
+      eltype: str
+    - el: b
+      eltype: str
+    - el: c
+      eltype: str
+    - el: d
+      eltype: str
+    - el: pop
+      eltype: str
+    eltype: list
+  dtype: object
+  index_type: idx
+  name: null
+custom_info:
+  classname: FIStructuredCustomInfo
+  col_units:
+    a:
+      classname: FICurrencyUnit
+      unit_desc: USD
+      unit_multiplier: 1000.0
+    b:
+      classname: FICurrencyUnit
+      unit_desc: EUR
+      unit_multiplier: 1000.0
+    c:
+      classname: FICurrencyUnit
+      unit_desc: JPY
+      unit_multiplier: 1000000.0
+    d:
+      classname: FICurrencyUnit
+      unit_desc: USD
+      unit_multiplier: 1000.0
+    pop:
+      classname: FIPopulationUnit
+      unit_desc: people
+      unit_multiplier: 1.0
+  extra_info:
+    author: Spud
+    classname: FIStdExtraInfo
+    source: A simple test
+  unstructured_data: {}
+datafile: test_with_structured_custom_info.csv
+encoding:
+  auto_convert_int_to_intna: true
+  csv:
+    csv_allowed_na:
+    - <NA>
+    doublequote: true
+    float_precision: round_trip
+    keep_default_na: false
+    na_rep: <NA>
+    quoting: 2
+    sep: ','
+  parq:
+    engine: pyarrow
+    index: null
+file_format: csv
+format_version: 1
+hash: f5749ec2274d816fe01577267d582e61a05d5983cf4dc2d0e992da036634a0ab
+index:
+  dtype: int64
+  index_type: range
+  name: null
+  start: 0
+  step: 1
+  stop: 3
+serialized_dtypes:
+  a:
+    dtype_str: float64
+    serialized_col_name:
+      el: a
+      eltype: str
+  b:
+    dtype_str: float64
+    serialized_col_name:
+      el: b
+      eltype: str
+  c:
+    dtype_str: float64
+    serialized_col_name:
+      el: c
+      eltype: str
+  d:
+    dtype_str: float64
+    serialized_col_name:
+      el: d
+      eltype: str
+  pop:
+    dtype_str: Int64
+    serialized_col_name:
+      el: pop
+      eltype: str

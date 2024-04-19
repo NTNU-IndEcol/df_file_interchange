@@ -1241,6 +1241,22 @@ class FIBaseCustomInfo(BaseModel):
     #         context=_init_context_var.get(),
     #     )
 
+    @classmethod
+    def get_classname(cls) -> str:
+        return cls.__name__
+
+    @computed_field
+    @property
+    def classname(self) -> str:
+        """Ensures classname is included in serialization
+
+        Returns
+        -------
+        str
+            Our classname
+        """
+
+        return self.get_classname()
 
 
 class FIMetainfo(BaseModel):
@@ -1304,7 +1320,7 @@ class FIMetainfo(BaseModel):
     def validator_custom_info(
         cls, value: dict | FIBaseCustomInfo, info: ValidationInfo
     ) -> FIBaseCustomInfo:
-
+        
         # Shortcut exit, if we've been passed something with extra_info already
         # instantiated. We only deal with dicts here.
         if not isinstance(value, dict):
@@ -1323,26 +1339,24 @@ class FIMetainfo(BaseModel):
 
         # Get the available classes for extra_info (this should also be a
         # dictionary)
-        clss_extra_info = info.context.get(
+        clss_custom_info = info.context.get(
             "clss_custom_info", {"FIBaseCustomInfo": FIBaseCustomInfo}
         )
-        assert isinstance(clss_extra_info, dict)
+        assert isinstance(clss_custom_info, dict)
 
         # Now process
         value_classname = value.get("classname", None)
-        if value_classname and value_classname in clss_extra_info.keys():
+        if value_classname and value_classname in clss_custom_info.keys():
             # return clss_extra_info[value_classname](**value)
             # Now instantiate the model
-            custom_info_class = clss_extra_info[value_classname]
-            assert isinstance(custom_info_class, FIBaseCustomInfo)
+            custom_info_class = clss_custom_info[value_classname]
+            assert issubclass(custom_info_class, FIBaseCustomInfo)
             return custom_info_class.model_validate(value, context=info.context)
 
         # Meh. Just use the base class, apparently we don't have a class
         # specified in the context for this.
         logger.warning(f"Missing context for custom_info deserialize. value={value}")
         return FIBaseCustomInfo.model_validate(value, context=info.context)
-    
-
 
     @model_validator(mode="before")
     @classmethod
@@ -1355,7 +1369,7 @@ class FIMetainfo(BaseModel):
             #     data["custom_info"] = FIBaseCustomInfo(data=data["custom_info"])
 
             # Need to ensure the index and columns and custominfo are created as
-            # the correct object type, not just instantiating the base class.            
+            # the correct object type, not just instantiating the base class.
             if "index" in data.keys() and isinstance(data["index"], dict):
                 data["index"] = _deserialize_index_dict_to_fi_index(data["index"])
 
@@ -1805,7 +1819,7 @@ def _compile_metainfo(
     file_format: FIFileFormatEnum,
     hash: str,
     encoding: FIEncoding,
-    custom_info: dict,
+    custom_info: FIBaseCustomInfo,
     df: pd.DataFrame,
 ) -> FIMetainfo:
     """Creates an FIMetainfo object from supplied metainfo
@@ -1820,6 +1834,7 @@ def _compile_metainfo(
         Hash of the datafile.
     encoding : FIEncoding
         Encoding options.
+    custom_info : FIBaseCustomInfo
     df : pd.DataFrame
         The actual dataframe (we need to record information about indexes and dtypes).
 
@@ -1837,16 +1852,13 @@ def _compile_metainfo(
     # Get columns as an FIIndex object
     columns = _serialize_index_to_metainfo_index(df.columns)
 
-    # Process custom info into pydantic object
-    custom_info_obj = FIBaseCustomInfo(data=custom_info)
-
     # Now shove it all into a FIMetainfo object...
     metainfo = FIMetainfo(
         datafile=Path(datafile.name),
         file_format=file_format,
         hash=hash,
         encoding=encoding,
-        custom_info=custom_info_obj,
+        custom_info=custom_info,
         serialized_dtypes=serialized_dtypes,
         index=index,
         columns=columns,
@@ -1997,15 +2009,18 @@ def _write_metafile(datafile: Path, metafile: Path, metainfo: FIMetainfo):
         h_targetfile.write(yaml_output)
 
 
-def _read_metafile(metafile: Path) -> FIMetainfo:
-    """Reads in metainfo from file"""
+def _read_metafile(metafile: Path, context: dict = {}) -> FIMetainfo:
+    """Reads in metainfo from file
+
+    We may need a context to construct the custom info properly.
+    """
 
     # Read metainfo from file
     with open(metafile, "r") as h_metafile:
         metainfo_dict = yaml.load(h_metafile, Loader=Loader)
 
     # Convert into an FIMetainfo model
-    metainfo = FIMetainfo(**metainfo_dict)
+    metainfo = FIMetainfo.model_validate(metainfo_dict, context=context)
 
     return metainfo
 
@@ -2016,7 +2031,7 @@ def write_df_to_file(
     metafile: Path | None = None,
     file_format: FIFileFormatEnum | Literal["csv", "parquet"] | None = None,
     encoding: FIEncoding | None = None,
-    custom_info: dict = {},
+    custom_info: FIBaseCustomInfo | dict = {},
     preprocess_inplace=True,
 ) -> Path:
     """Writes a dataframe to file
@@ -2033,8 +2048,11 @@ def write_df_to_file(
         The file format. If not supplied will be determined automatically.
     encoding : FIEncoding | None, optional
         Datafile encoding options.
-    custom_info : dict
-        Custom user metadata to be stored.
+    custom_info : FIBaseCustomInfo or dict
+        Custom user metadata to be stored. IF supplied as a FIBaseCustomInfo (or
+        descendent) then it stores things properly. If supplied as a dict, then
+        will create a FIBaseCustomInfo class and store the dictionary in the
+        `unstructured_data` field.
     preprocess_inplace : bool, optional
 
     Returns
@@ -2064,6 +2082,18 @@ def write_df_to_file(
     else:
         loc_df = _preprocess_safe(df, encoding)
 
+    # Deal with custom info situation
+    if isinstance(custom_info, dict):
+        # We create FIBaseCustomInfo ourselves, and assign the dictionary into
+        # unstructured_data
+        loc_custom_info = FIBaseCustomInfo.model_validate(
+            {"unstructured_data": custom_info}
+        )
+    elif isinstance(custom_info, FIBaseCustomInfo):
+        loc_custom_info = custom_info
+    else:
+        raise Exception("custom_info must be a dict or descendent of FIBaseCustomInfo")
+
     # Write to the data file
     if loc_file_format == FIFileFormatEnum.csv:
         _write_to_csv(loc_df, datafile, encoding)
@@ -2085,7 +2115,7 @@ def write_df_to_file(
         file_format=loc_file_format,
         hash=hash,
         encoding=encoding,
-        custom_info=custom_info,
+        custom_info=loc_custom_info,
         df=loc_df,
     )
 
@@ -2099,7 +2129,7 @@ def write_df_to_csv(
     df: pd.DataFrame,
     datafile: Path,
     encoding: FIEncoding | None = None,
-    custom_info: dict = {},
+    custom_info: FIBaseCustomInfo | dict = {},
     preprocess_inplace=True,
 ) -> Path:
     """Simplified wrapper around `write_df_to_file()` to write dataframe to CSV
@@ -2137,7 +2167,7 @@ def write_df_to_parquet(
     df: pd.DataFrame,
     datafile: Path,
     encoding: FIEncoding | None = None,
-    custom_info: dict = {},
+    custom_info: FIBaseCustomInfo | dict = {},
     preprocess_inplace=True,
 ) -> Path:
     """Simplified wrapper around `write_df_to_file()` to write dataframe to CSV
@@ -2172,7 +2202,9 @@ def write_df_to_parquet(
 
 
 def read_df(
-    metafile: Path, strict_hash_check: bool = True
+    metafile: Path,
+    strict_hash_check: bool = True,
+    context_metainfo: dict = {},
 ) -> tuple[pd.DataFrame, FIMetainfo]:
     """Load a dataframe from file
 
@@ -2192,7 +2224,7 @@ def read_df(
     """
 
     # Load metainfo
-    metainfo = _read_metafile(metafile)
+    metainfo = _read_metafile(metafile, context=context_metainfo)
 
     # Check datafile's hash
     datafile_abs = Path(metafile.parent / metainfo.datafile).resolve()
