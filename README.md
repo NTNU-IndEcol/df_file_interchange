@@ -1,10 +1,10 @@
 # df_file_interchange
 
-This package is designed to store complete specification DataFrames (including indexes) along with structured custom metadata in CSV or Parquet, as an "interchange format". In other words, if a an application such as a datapipeline must store intermediate DataFrames to disc then this would be a nice solution.
+This package is designed to store complete specification DataFrames (including indexes) along with structured custom metadata in CSV or Parquet, as an "interchange format". In other words, if a an application such as a data pipeline must store intermediate DataFrames to disc then this would be a nice solution.
 
 When saving a DataFrame to CSV, specification of the indexes and dtypes are often lost, e.g. a `RangeIndex` is merely encoded as the enumerated elements, a `DatetimeIndex` ends up losing the `freq` attribute, etc. When saving in Parquet format with `pyarrow` some restrictions apply: in general, an `Index` can only be stored if the elements are all of the same type. Ad hoc work-arounds can be used but these soon start to become messy.
 
-The other aspect is storing of additional metadata. Even temporary tabular data storage within an application can benefit from having associated metadata. The aim is that this is done in a structured manner and that it's extensible, in the sense that some simple examples are included here but the user can easily define their own custom metadata structure. So, for example, in a economics setting, one may wish to denoate some columns as being a currency (USD, EUR, etc) with multiplier (millions of EUR, say). In a different setting, one might want physical units, say.
+The other aspect is the storage of additional metadata. Even temporary tabular data storage within an application can benefit from having associated metadata. The aim is that this is done in a structured manner and that it's extensible, in the sense that some simple examples are included here but the user can easily define their own custom metadata structure. So, for example, in a economics setting, one may wish to denoate some columns as being a currency (USD, EUR, etc) with multiplier (millions of EUR, say). In a different setting, one might want physical units, say.
 
 We do not try to reinvent-the-wheel, only supplement existing functionality found in Pandas.
 
@@ -17,15 +17,17 @@ We do not try to reinvent-the-wheel, only supplement existing functionality foun
 
 Then do something like (autodetect of target file format from `datafile_path` extension):
 
-`metafile = fi.write_df_to_file(df, datafile_path, yamlfile_path, custom_info_dict=custom_info_dict)`
+`metafile = fi.write_df_to_file(df, datafile_path)`
 
 or to specify the datafile format explicitly:
 
-`metafile = fi.write_df_to_csv(df, datafile_path, custom_info=custom_info)`
+`metafile = fi.write_df_to_csv(df, datafile_path)`
 
-`metafile = fi.write_df_to_parquet(df, datafile_path, custom_info=custom_info)`
+`metafile = fi.write_df_to_parquet(df, datafile_path)`
 
-where `metafile` will return a `Path` object that is just `yamlfile_path`, `datafile_path` and `yamlfile_path` are `Path` objects, and `custom_info` is a dictionary (custom_info will change slightly once the structured metadata code is finished).
+where `metafile` will return a `Path` object for the YAML file path, `datafile_path` is a `Path` object.
+
+Additional parameters can be used, e.g. `metafile` to specify the YAML file manually (must be same dir) and `custom_info`.
 
 To read:
 
@@ -38,9 +40,13 @@ Additional encoding options can be specified using the `encoding` argument (as a
 
 ### Structured Metadata
 
-There's support for storing custom metadata, in the sense that it both can be validated using Pydantic models and is extensible. _NOTE_: for development purposes, there is currently a "loose" validation, which may result in 'missing' info/units, and a warning; later, this will be made strict and so would raise an exception.
+There's support for storing custom metadata, in the sense that it both can be validated using Pydantic models and is extensible.
 
-In principle, we can store any custom information that is derived from the `FIBaseCustomInfo` class. However, it's strongly advised to use `FIStructuredCustomInfo`. At time of writing, this supports general 'table-wide' information (as `FIBaseExtraInfo` or `FIStdExtraInfo`), and columnwise units (derived from `FIBaseUnit`). To allow both validation using Pydantic and extensibility is slightly fiddly: when reading, we have to know which classes to instantiate. The code to do this is included in the aforementioned classes, so it should be simple enough to derive from these to maintain that functionality.
+_NOTE_: for development purposes, we currently use a very "loose" validation, which may result in 'missing' info/units, and a warning; later, this will be made strict and so would raise an exception.
+
+In principle, we can store any custom information that is derived from the `FIBaseCustomInfo` class. However, it's strongly advised to use `FIStructuredCustomInfo`. At time of writing, this supports general 'table-wide' information (as `FIBaseExtraInfo` or `FIStdExtraInfo`), and columnwise units (derived from `FIBaseUnit`).
+
+To allow both validation using Pydantic and extensibility is slightly fiddly: when reading, we have to know which classes to instantiate. The code to do this is included in the aforementioned classes, so it should be simple enough to derive from these to maintain that functionality.
 
 This means that, when reading, a "context" must be supplied. In short, this is information on what custom info classes are available. For anything included in df_file_interchange though, this can be done automatically. It's only if you're extending that you have to concern yourself with this.
 
@@ -59,7 +65,7 @@ unit_cur_d = fi.ci.unit.currency.FICurrencyUnit(unit_desc="USD", unit_multiplier
 unit_pop = fi.ci.unit.population.FIPopulationUnit(unit_desc="people", unit_multiplier=1)
 
 # Create extra info
-extra_info = fi.ci.structured.FIStdExtraInfo(author="Spud", source="A simple test")
+extra_info = fi.ci.structured.FIStdExtraInfo(author="Spud", source="Potato")
 
 # Create custom info with these
 custom_info = fi.ci.structured.FIStructuredCustomInfo(
@@ -90,6 +96,9 @@ If you were extending the extra info or units, you'd need to include extra infor
 
 * Pyarrow won't encode numpy's complex64. So, we've disabled this in the tests for now although the functionality will work in CSV. Solution would be to serialize the actual data column when necessary but that's new functionality.
 
+* Float16s won't work properly and will never work, due to Pandas decision.
+
+* Some of the newer or more esoteric features of Pandas are not yet accounted for.
 
 
 ## Technical Reasonings
