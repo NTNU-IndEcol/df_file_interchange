@@ -8,8 +8,6 @@ Includes
 
 """
 
-import traceback
-
 from pprint import pprint
 from typing import Any, Literal, TypeAlias, Union, Self, Iterator
 from loguru import logger
