@@ -38,7 +38,52 @@ Additional encoding options can be specified using the `encoding` argument (as a
 
 ### Structured Metadata
 
-TODO
+There's support for storing custom metadata, in the sense that it both can be validated using Pydantic models and is extensible. _NOTE_: for development purposes, there is currently a "loose" validation, which may result in 'missing' info/units, and a warning; later, this will be made strict and so would raise an exception.
+
+In principle, we can store any custom information that is derived from the `FIBaseCustomInfo` class. However, it's strongly advised to use `FIStructuredCustomInfo`. At time of writing, this supports general 'table-wide' information (as `FIBaseExtraInfo` or `FIStdExtraInfo`), and columnwise units (derived from `FIBaseUnit`). To allow both validation using Pydantic and extensibility is slightly fiddly: when reading, we have to know which classes to instantiate. The code to do this is included in the aforementioned classes, so it should be simple enough to derive from these to maintain that functionality.
+
+This means that, when reading, a "context" must be supplied. In short, this is information on what custom info classes are available. For anything included in df_file_interchange though, this can be done automatically. It's only if you're extending that you have to concern yourself with this.
+
+Anyway, a simple example (same example used in tests).
+
+```python
+# Create simple dataframe
+df = pd.DataFrame(np.random.randn(3, 4), columns=["a", "b", "c", "d"])
+df["pop"] = pd.array([1234, 5678, 101010])
+
+# Create units
+unit_cur_a = fi.ci.unit.currency.FICurrencyUnit(unit_desc="USD", unit_multiplier=1000)
+unit_cur_b = fi.ci.unit.currency.FICurrencyUnit(unit_desc="EUR", unit_multiplier=1000)
+unit_cur_c = fi.ci.unit.currency.FICurrencyUnit(unit_desc="JPY", unit_multiplier=1000000)
+unit_cur_d = fi.ci.unit.currency.FICurrencyUnit(unit_desc="USD", unit_multiplier=1000)
+unit_pop = fi.ci.unit.population.FIPopulationUnit(unit_desc="people", unit_multiplier=1)
+
+# Create extra info
+extra_info = fi.ci.structured.FIStdExtraInfo(author="Spud", source="A simple test")
+
+# Create custom info with these
+custom_info = fi.ci.structured.FIStructuredCustomInfo(
+    extra_info=extra_info,
+    col_units={
+        "a": unit_cur_a,
+        "b": unit_cur_b,
+        "c": unit_cur_c,
+        "d": unit_cur_d,
+        "pop": unit_pop,
+    },
+)
+
+# Write to file
+metafile = fi.write_df_to_csv(df, Path("./test_with_structured_custom_info.csv"), custom_info=custom_info)
+```
+
+and to read (we use the default context)
+
+```python
+(df_reload, metainfo_reload) = fi.read_df(metafile, context_metainfo=fi.generate_default_context())
+```
+
+If you were extending the extra info or units, you'd need to include extra information in the context. TODO: document this.
 
 
 ## Known Problems
