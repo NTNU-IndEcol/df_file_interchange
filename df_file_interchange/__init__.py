@@ -38,4 +38,5 @@ from .file.rw import (
 
 # from . import deprecated_ci
 from . import ci
+from .ci.structured import generate_default_context
 from .version import __version__

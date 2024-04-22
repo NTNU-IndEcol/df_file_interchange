@@ -2009,6 +2009,7 @@ def _write_metafile(datafile: Path, metafile: Path, metainfo: FIMetainfo):
         h_targetfile.write(yaml_output)
 
 
+
 def _read_metafile(metafile: Path, context: dict = {}) -> FIMetainfo:
     """Reads in metainfo from file
 

@@ -35,6 +35,7 @@ from ..file.rw import FIBaseCustomInfo
 from . import unit
 from .unit.base import FIBaseUnit, FIGenericUnit
 from .unit.currency import FICurrencyUnit
+from .unit.population import FIPopulationUnit
 
 
 class FIBaseExtraInfo(BaseModel):
@@ -192,3 +193,32 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
                 logger.warning(warning_msg)
 
         return loc_value
+
+
+def generate_default_context():
+    """Generates a default context that is an 'all' for anything that is included by default
+
+    Returns all available default units and FIStdExtraInfo.
+
+    If you extend with your own units, you'll have to add manually.
+
+    Returns
+    -------
+    dict
+        The context.
+    """
+
+    context = {
+        "clss_custom_info": {
+            "FIStructuredCustomInfo": FIStructuredCustomInfo,
+        },
+        "clss_extra_info": {
+            "FIStdExtraInfo": FIStdExtraInfo,
+        },
+        "clss_col_units": {
+            "FICurrencyUnit": FICurrencyUnit,
+            "FIPopulationUnit": FIPopulationUnit,
+        },
+    }
+
+    return context
