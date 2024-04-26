@@ -21,10 +21,12 @@ from .base import FIBaseUnit
 
 class FICurrencyUnit(FIBaseUnit):
 
-    # Currency abbreviations can be obtained from https://treasury.un.org/operationalrates/OperationalRates.php
+    # Currency codes can be obtained from https://treasury.un.org/operationalrates/OperationalRates.php
     # Download the EXCEL file, copy the column into a text file, then run
     # `cat currency_abbreviations.txt | sed 's/ //g;s/^/"/;s/$/",/' | sort | uniq  > currency_abbreviations_processed.txt`
     # and then you'll need to manually remove the "USDollar" entry.
+
+    # Supplemented with Taiwan dollar, "TWD"
 
     # The various currencies we can use.
     unit_desc: Literal[
@@ -162,6 +164,7 @@ class FICurrencyUnit(FIBaseUnit):
         "TOP",
         "TRY",
         "TTD",
+        "TWD", # Manually added
         "TZS",
         "UAH",
         "UGX",
