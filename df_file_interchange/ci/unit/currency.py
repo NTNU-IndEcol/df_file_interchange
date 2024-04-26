@@ -4,11 +4,16 @@ Column currency unit using three letter acronyms, e.g. "USD", "EUR", etc.
 """
 
 from typing import Any, Literal, TypeAlias, Union
+from typing_extensions import Self
 from loguru import logger
+
+from datetime import datetime, date
 
 from pydantic import (
     BaseModel,
     computed_field,
+    model_validator,
+    ValidationError,
 )
 
 from .base import FIBaseUnit
@@ -179,3 +184,30 @@ class FICurrencyUnit(FIBaseUnit):
 
     # Sometimes we have quantities in "millions of $", for example
     unit_multiplier: float = 1.0
+
+    # Sometimes we need currency to be tagged to a specific year, e.g. "EUR" in
+    # 2004. If using this field, must also specify whether it's averaged, year
+    # end, or what in unit_year_method
+    unit_year: int | None = None
+    unit_year_method: Literal["AVG", "END"] | None = None
+
+    # Sometimes we might want tosspecify currency against a fixed date.
+    unit_date: datetime | date | None = None
+
+    @model_validator(mode="after")
+    def model_validator_after(self) -> Self:
+
+        # Check if unit_year not None then unit_year_method must also be not
+        # None
+        if not self.unit_year is None and self.unit_year_method is None:
+            error_msg = f"Validator error: if unit_year is not None then unit_year_method must be defined."
+            logger.error(error_msg)
+            raise ValueError(error_msg)
+
+        # Check that both unit_year and unit_date are not both set at once
+        if not self.unit_year is None and not self.unit_date is None:
+            error_msg = f"Validation error: cannot have both unit_year and unit_date not None at same time."
+            logger.error(error_msg)
+            raise ValueError(error_msg)
+
+        return self

@@ -29,9 +29,15 @@ def test_save_load_examples(tmp_path: Path):
     target_datafile1_csv = tmp_path / f"test_df_example_1__csv.csv"
     target_metafile1_csv = tmp_path / f"test_df_example_1__csv.yaml"
     metafile1_csv = fi.write_df_to_file(
-        df1, target_datafile1_csv, target_metafile1_csv, fi.FIFileFormatEnum.csv, custom_info=custom_info1
+        df1,
+        target_datafile1_csv,
+        target_metafile1_csv,
+        fi.FIFileFormatEnum.csv,
+        custom_info=custom_info1,
     )
-    (df1_reload_csv, metainfo1_reload_csv) = fi.read_df(metafile1_csv, context_metainfo=generate_default_context())
+    (df1_reload_csv, metainfo1_reload_csv) = fi.read_df(
+        metafile1_csv, context_metainfo=generate_default_context()
+    )
 
     # Generate and save parquet
     target_datafile1_parquet = tmp_path / f"test_df_example_1__parquet.parq"
@@ -43,7 +49,9 @@ def test_save_load_examples(tmp_path: Path):
         fi.FIFileFormatEnum.parquet,
         custom_info=custom_info1,
     )
-    (df1_reload_parquet, metainfo1_reload_parquet) = fi.read_df(metafile1_parquet, context_metainfo=generate_default_context())
+    (df1_reload_parquet, metainfo1_reload_parquet) = fi.read_df(
+        metafile1_parquet, context_metainfo=generate_default_context()
+    )
 
     # Compare dataframes
     chk_strict_frames_eq_ignore_nan(

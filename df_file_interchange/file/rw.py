@@ -1320,7 +1320,7 @@ class FIMetainfo(BaseModel):
     def validator_custom_info(
         cls, value: dict | FIBaseCustomInfo, info: ValidationInfo
     ) -> FIBaseCustomInfo:
-        
+
         # Shortcut exit, if we've been passed something with extra_info already
         # instantiated. We only deal with dicts here.
         if not isinstance(value, dict):
@@ -2007,7 +2007,6 @@ def _write_metafile(datafile: Path, metafile: Path, metainfo: FIMetainfo):
 
         # Write out the rest of the file now
         h_targetfile.write(yaml_output)
-
 
 
 def _read_metafile(metafile: Path, context: dict = {}) -> FIMetainfo:

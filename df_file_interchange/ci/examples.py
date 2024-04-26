@@ -14,8 +14,6 @@ from .unit.currency import FICurrencyUnit
 from .unit.population import FIPopulationUnit
 
 
-
-
 def generate_example_with_metainfo_1():
     """Generates a sample dataframe with custom info
 
@@ -31,13 +29,9 @@ def generate_example_with_metainfo_1():
 
     unit_cur_a = FICurrencyUnit(unit_desc="USD", unit_multiplier=1000)
     unit_cur_b = FICurrencyUnit(unit_desc="EUR", unit_multiplier=1000)
-    unit_cur_c = FICurrencyUnit(
-        unit_desc="JPY", unit_multiplier=1000000
-    )
+    unit_cur_c = FICurrencyUnit(unit_desc="JPY", unit_multiplier=1000000)
     unit_cur_d = FICurrencyUnit(unit_desc="USD", unit_multiplier=1000)
-    unit_pop = FIPopulationUnit(
-        unit_desc="people", unit_multiplier=1
-    )
+    unit_pop = FIPopulationUnit(unit_desc="people", unit_multiplier=1)
 
     extra_info = FIStdExtraInfo(author="Spud", source="Potato")
 
