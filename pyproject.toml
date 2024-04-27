@@ -5,8 +5,42 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "df_file_interchange"
 authors = [{name = "Esmé Maxwell", email = "peter.maxwell@ntnu.no"}]
+description = "Ensures exactly round-trip saves with Pandas (CSV/Parquet) and storage of validatable metadata"
 readme = "README.md"
-dynamic = ["version", "description"]
+dynamic = ["version"]
+requires-python = ">= 3.11"
+dependencies = [
+    "pydantic >= 2.7",
+    "pydantic-settings",
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "loguru",
+    "pyyaml",
+]
+classifiers = [
+  # How mature is this project? Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 3 - Alpha",
+
+  # Indicate who your project is intended for
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+
+  # Pick your license as you wish (see also "license" above)
+  # "License :: OSI Approved :: MIT License",
+
+  # Specify the Python versions you support here.
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+
+  "Topic :: File Formats",
+
+]
 
 [project.urls]
 Home = "https://github.com/EXIOBASE/df_file_interchange"
+Issues = "https://github.com/EXIOBASE/df_file_interchange/issues"
