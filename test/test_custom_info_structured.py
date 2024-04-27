@@ -35,7 +35,12 @@ def test_save_load_examples(tmp_path: Path):
         fi.FIFileFormatEnum.csv,
         custom_info=custom_info1,
     )
-    (df1_reload_csv, metainfo1_reload_csv) = fi.read_df(
+    # With no context
+    (df1nc_reload_csv, metainfo1nc_reload_csv) = fi.read_df(
+        metafile1_csv,
+    )
+    # With default context
+    (df1dc_reload_csv, metainfo1dc_reload_csv) = fi.read_df(
         metafile1_csv, context_metainfo=generate_default_context()
     )
 
@@ -49,20 +54,38 @@ def test_save_load_examples(tmp_path: Path):
         fi.FIFileFormatEnum.parquet,
         custom_info=custom_info1,
     )
-    (df1_reload_parquet, metainfo1_reload_parquet) = fi.read_df(
+    # With no context
+    (df1nc_reload_parquet, metainfo1nc_reload_parquet) = fi.read_df(
+        metafile1_parquet, context_metainfo=generate_default_context()
+    )
+    # With default context
+    (df1dc_reload_parquet, metainfo1dc_reload_parquet) = fi.read_df(
         metafile1_parquet, context_metainfo=generate_default_context()
     )
 
     # Compare dataframes
     chk_strict_frames_eq_ignore_nan(
         df1,
-        df1_reload_csv,
+        df1nc_reload_csv,
     )
     chk_strict_frames_eq_ignore_nan(
         df1,
-        df1_reload_parquet,
+        df1dc_reload_csv,
     )
 
+    chk_strict_frames_eq_ignore_nan(
+        df1,
+        df1nc_reload_parquet,
+    )
+    chk_strict_frames_eq_ignore_nan(
+        df1,
+        df1dc_reload_parquet,
+    )
+
+
     # Check custom info matches
-    assert custom_info1 == metainfo1_reload_csv.custom_info
-    assert custom_info1 == metainfo1_reload_parquet.custom_info
+    assert custom_info1 == metainfo1nc_reload_csv.custom_info
+    assert custom_info1 == metainfo1dc_reload_csv.custom_info
+
+    assert custom_info1 == metainfo1nc_reload_parquet.custom_info
+    assert custom_info1 == metainfo1dc_reload_parquet.custom_info

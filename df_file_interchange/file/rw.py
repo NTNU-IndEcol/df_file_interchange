@@ -76,8 +76,6 @@ from pandas import Index, Series
 from pandas.api.extensions import ExtensionArray, ExtensionDtype
 
 # Pydantic imports
-from contextlib import contextmanager
-from contextvars import ContextVar
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -106,6 +104,15 @@ _Frequency = Union[str, BaseOffset]
 
 # Our "anything like a list"
 TArrayThing: TypeAlias = list | tuple | np.ndarray
+
+
+# Import custom info stuff
+from ..ci.base import FIBaseCustomInfo
+from ..ci.structured import FIStdExtraInfo, FIStructuredCustomInfo
+from ..ci.unit.base import FIBaseUnit
+from ..ci.unit.currency import FICurrencyUnit
+from ..ci.unit.population import FIPopulationUnit
+
 
 
 class InvalidValueForFieldError(Exception):
@@ -1203,60 +1210,38 @@ class FIPeriodIndex(FIBaseIndex):
         return data
 
 
-# # See: https://docs.pydantic.dev/latest/concepts/validators/#validation-context
-# _init_context_var = ContextVar[dict | None]("_init_context_var", default=None)
 
+# class FIBaseCustomInfo(BaseModel):
+#     """Wrapper class to store user custom info
 
-# @contextmanager
-# def init_context(value: dict[str, Any]) -> Iterator[None]:
-#     token = _init_context_var.set(value)
-#     try:
-#         yield
-#     finally:
-#         _init_context_var.reset(token)
+#     N.B. This, and any descendent, MUST be able to deserialise based on a
+#     provided dictionary!
 
+#     A descendent of this is usually supplied as an object when writing a file to
+#     include additional metadata. When reading, a class is passed as a parameter
+#     and an object will be instantiated upon reading.
+#     """
 
-class FIBaseCustomInfo(BaseModel):
-    """Wrapper class to store user custom info
+#     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    N.B. This, and any descendent, MUST be able to deserialise based on a
-    provided dictionary!
+#     unstructured_data: dict = {}
 
-    A descendent of this is usually supplied as an object when writing a file to
-    include additional metadata. When reading, a class is passed as a parameter
-    and an object will be instantiated upon reading.
-    """
+#     @classmethod
+#     def get_classname(cls) -> str:
+#         return cls.__name__
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+#     @computed_field
+#     @property
+#     def classname(self) -> str:
+#         """Ensures classname is included in serialization
 
-    unstructured_data: dict = {}
+#         Returns
+#         -------
+#         str
+#             Our classname
+#         """
 
-    # def __init__(self, /, **data: Any) -> None:
-
-    #     super().__init__(**data)
-
-    #     self.__pydantic_validator__.validate_python(
-    #         data,
-    #         self_instance=self,
-    #         context=_init_context_var.get(),
-    #     )
-
-    @classmethod
-    def get_classname(cls) -> str:
-        return cls.__name__
-
-    @computed_field
-    @property
-    def classname(self) -> str:
-        """Ensures classname is included in serialization
-
-        Returns
-        -------
-        str
-            Our classname
-        """
-
-        return self.get_classname()
+#         return self.get_classname()
 
 
 class FIMetainfo(BaseModel):
@@ -1326,37 +1311,32 @@ class FIMetainfo(BaseModel):
         if not isinstance(value, dict):
             return value
 
+        # By default we don't use a context
+        clss_custom_info = None
+
         # If we don't have context, just use the base class or return as-is
-        if not info.context:
-            if isinstance(value, dict):
-                loc_value = FIBaseCustomInfo(**value)
-                return loc_value
-            else:
-                return value
-
-        # Check our context is a dictionary
-        assert isinstance(info.context, dict)
-
-        # Get the available classes for extra_info (this should also be a
-        # dictionary)
-        clss_custom_info = info.context.get(
-            "clss_custom_info", {"FIBaseCustomInfo": FIBaseCustomInfo}
-        )
-        assert isinstance(clss_custom_info, dict)
+        if info.context and isinstance(info.context, dict):
+            # Get the available classes for extra_info (this should also be a
+            # dictionary)
+            clss_custom_info = info.context.get(
+                "clss_custom_info", {"FIBaseCustomInfo": FIBaseCustomInfo}
+            )
+            assert isinstance(clss_custom_info, dict)
 
         # Now process
         value_classname = value.get("classname", None)
-        if value_classname and value_classname in clss_custom_info.keys():
-            # return clss_extra_info[value_classname](**value)
+        if value_classname and not clss_custom_info is None and value_classname in clss_custom_info.keys():
             # Now instantiate the model
             custom_info_class = clss_custom_info[value_classname]
-            assert issubclass(custom_info_class, FIBaseCustomInfo)
-            return custom_info_class.model_validate(value, context=info.context)
+        elif value_classname in globals().keys() and issubclass(globals()[value_classname], FIBaseCustomInfo):
+            custom_info_class = globals()[value_classname]
+        else:
+            error_msg = f"Neither context for supplied classname nor is it a subclass of FIBaseCustomInfo. classname={value_classname}"
+            logger.error(error_msg)
+            raise Exception(error_msg)            
 
-        # Meh. Just use the base class, apparently we don't have a class
-        # specified in the context for this.
-        logger.warning(f"Missing context for custom_info deserialize. value={value}")
-        return FIBaseCustomInfo.model_validate(value, context=info.context)
+        assert issubclass(custom_info_class, FIBaseCustomInfo)
+        return custom_info_class.model_validate(value, context=info.context)
 
     @model_validator(mode="before")
     @classmethod
@@ -1364,10 +1344,6 @@ class FIMetainfo(BaseModel):
         # TODO perhaps move index and columns into separate field validators.
 
         if isinstance(data, dict):
-            # # The custom info needs some help: need to provide a user-supplied context
-            # if "custom_info" in data.keys() and isinstance(data["custom_info"], dict):
-            #     data["custom_info"] = FIBaseCustomInfo(data=data["custom_info"])
-
             # Need to ensure the index and columns and custominfo are created as
             # the correct object type, not just instantiating the base class.
             if "index" in data.keys() and isinstance(data["index"], dict):
@@ -2009,7 +1985,7 @@ def _write_metafile(datafile: Path, metafile: Path, metainfo: FIMetainfo):
         h_targetfile.write(yaml_output)
 
 
-def _read_metafile(metafile: Path, context: dict = {}) -> FIMetainfo:
+def _read_metafile(metafile: Path, context: dict | None = None) -> FIMetainfo:
     """Reads in metainfo from file
 
     We may need a context to construct the custom info properly.
@@ -2204,7 +2180,7 @@ def write_df_to_parquet(
 def read_df(
     metafile: Path,
     strict_hash_check: bool = True,
-    context_metainfo: dict = {},
+    context_metainfo: dict | None = None,
 ) -> tuple[pd.DataFrame, FIMetainfo]:
     """Load a dataframe from file
 

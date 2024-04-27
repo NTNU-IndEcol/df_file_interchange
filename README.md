@@ -46,9 +46,7 @@ _NOTE_: for development purposes, we currently use a very "loose" validation, wh
 
 In principle, we can store any custom information that is derived from the `FIBaseCustomInfo` class. However, it's strongly advised to use `FIStructuredCustomInfo`. At time of writing, this supports general 'table-wide' information (as `FIBaseExtraInfo` or `FIStdExtraInfo`), and columnwise units (derived from `FIBaseUnit`).
 
-To allow both validation using Pydantic and extensibility is slightly fiddly: when reading, we have to know which classes to instantiate. The code to do this is included in the aforementioned classes, so it should be simple enough to derive from these to maintain that functionality.
-
-This means that, when reading, a "context" must be supplied. In short, this is information on what custom info classes are available. For anything included in df_file_interchange though, this can be done automatically. It's only if you're extending that you have to concern yourself with this.
+To allow both validation using Pydantic and extensibility is slightly fiddly: when reading, we have to know which classes to instantiate. By default, the code at the moment checks `globals()` and checks that the supplied class is a subclass of the appropriate base class. However, one can manually define a context to enforce which classes can be instantiated, which might be necessary when extending functionality.
 
 Anyway, a simple example (same example used in tests).
 
@@ -86,10 +84,10 @@ metafile = fi.write_df_to_csv(df, Path("./test_with_structured_custom_info.csv")
 and to read (we use the default context)
 
 ```python
-(df_reload, metainfo_reload) = fi.read_df(metafile, context_metainfo=fi.generate_default_context())
+(df_reload, metainfo_reload) = fi.read_df(metafile)
 ```
 
-If you were extending the extra info or units, you'd need to include extra information in the context. TODO: document this.
+If you were extending the extra info or units, you'll probably have to include a context. TODO: document this.
 
 
 ## Known Problems

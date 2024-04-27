@@ -23,20 +23,32 @@ custom_info:
   col_units:
     a:
       classname: FICurrencyUnit
+      unit_date: null
       unit_desc: USD
       unit_multiplier: 1000.0
+      unit_year: null
+      unit_year_method: null
     b:
       classname: FICurrencyUnit
+      unit_date: null
       unit_desc: EUR
       unit_multiplier: 1000.0
+      unit_year: null
+      unit_year_method: null
     c:
       classname: FICurrencyUnit
+      unit_date: null
       unit_desc: JPY
       unit_multiplier: 1000000.0
+      unit_year: null
+      unit_year_method: null
     d:
       classname: FICurrencyUnit
+      unit_date: null
       unit_desc: USD
       unit_multiplier: 1000.0
+      unit_year: null
+      unit_year_method: null
     pop:
       classname: FIPopulationUnit
       unit_desc: people
@@ -63,7 +75,7 @@ encoding:
     index: null
 file_format: csv
 format_version: 1
-hash: 2b290b481dd9e52d9582ea113488fd26a9524a6423c76018cb31da68241432b6
+hash: ac3f2e11e0ff9ba540b630f03d32652560ef6a224778184b30271ce542b4a59a
 index:
   dtype: int64
   index_type: range

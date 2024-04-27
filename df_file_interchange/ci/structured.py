@@ -12,8 +12,8 @@ from pprint import pprint
 from typing import Any, Literal, TypeAlias, Union, Self, Iterator
 from loguru import logger
 
-from contextlib import contextmanager
-from contextvars import ContextVar
+# from contextlib import contextmanager
+# from contextvars import ContextVar
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -27,9 +27,7 @@ from pydantic import (
 )
 
 
-# from ..file.rw import _init_context_var, init_context, FIBaseCustomInfo
-from ..file.rw import FIBaseCustomInfo
-
+from .base import FIBaseCustomInfo
 from . import unit
 from .unit.base import FIBaseUnit, FIGenericUnit
 from .unit.currency import FICurrencyUnit
@@ -95,15 +93,6 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
     # Columnwise unit info
     col_units: dict[Any, SerializeAsAny[FIBaseUnit]] = {}
 
-    # def __init__(self, /, **data: Any) -> None:
-    #     # Get parent to do its bit.
-    #     super().__init__(**data)
-    #     self.__pydantic_validator__.validate_python(
-    #         data,
-    #         self_instance=self,
-    #         context=_init_context_var.get(),
-    #     )
-
     @field_validator("extra_info", mode="before")
     @classmethod
     def validator_extra_info(
@@ -115,38 +104,34 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
         if not isinstance(value, dict):
             return value
 
-        # If we don't have context, just use the base class or return as-is
-        if not info.context:
-            if isinstance(value, dict):
-                loc_value = FIBaseExtraInfo(**value)
-                return loc_value
-            else:
-                return value
+        # Default don't use context        
+        clss_extra_info = None
 
-        # Check our context is a dictionary
-        assert isinstance(info.context, dict)
-
-        # Get the available classes for extra_info (this should also be a
-        # dictionary)
-        clss_extra_info = info.context.get(
-            "clss_extra_info", {"FIBaseExtraInfo": FIBaseExtraInfo}
-        )
-        assert isinstance(clss_extra_info, dict)
+        # Check if we've been supplied a context
+        if info.context and isinstance(info.context, dict):
+            # Get the available classes for extra_info (this should also be a
+            # dictionary)
+            clss_extra_info = info.context.get(
+                "clss_extra_info", {"FIBaseExtraInfo": FIBaseExtraInfo}
+            )
+            assert isinstance(clss_extra_info, dict)        
 
         # Now process
         value_classname = value.get("classname", None)
-        if value_classname and value_classname in clss_extra_info.keys():
-            # return clss_extra_info[value_classname](**value)
-
+        if value_classname and not clss_extra_info is None and value_classname in clss_extra_info.keys():
             # Now instantiate the model
             extra_info_class = clss_extra_info[value_classname]
-            assert issubclass(extra_info_class, FIBaseExtraInfo)
-            return extra_info_class.model_validate(value, context=info.context)
+        elif value_classname in globals().keys() and issubclass(globals()[value_classname], FIBaseExtraInfo):
+            extra_info_class = globals()[value_classname]
+        else:
+            error_msg = f"Neither context for supplied classname nor is it a subclass of FIBaseExtraInfo. classname={value_classname}"
+            logger.error(error_msg)
+            raise Exception(error_msg)
 
-        # Meh. Just use the base class, apparently we don't have a class
-        # specified in the context for this.
-        logger.warning(f"Missing context for extra_info deserialize. value={value}")
-        return FIBaseExtraInfo.model_validate(value, context=info.context)
+        assert issubclass(extra_info_class, FIBaseExtraInfo)
+        return extra_info_class.model_validate(value, context=info.context)
+
+
 
     @field_validator("col_units", mode="before")
     @classmethod
@@ -160,35 +145,39 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
             logger.error(error_msg)
             raise Exception(error_msg)
 
-        # If we don't have context, just return and let validation (likely)
-        # fail.
-        if not info.context:
-            return value
+        # By default we don't use a context
+        clss_col_units = None
 
-        # Check our context is a dictionary
-        assert isinstance(info.context, dict)
-
-        # Get the available classes for units (this should also be a
-        # dictionary)
-        clss_col_units = info.context.get("clss_col_units", {"FIBaseUnit": FIBaseUnit})
-        assert isinstance(clss_col_units, dict)
+        # Check for a context
+        if info.context and isinstance(info.context, dict):
+            # Get the available classes for units (this should also be a
+            # dictionary)
+            clss_col_units = info.context.get("clss_col_units", {"FIBaseUnit": FIBaseUnit})
+            assert isinstance(clss_col_units, dict)
 
         # Now process each element in value, in turn
         loc_value = {}
         for idx in value:
-            value_classname = value[idx].get("classname", None)
-            if value_classname and value_classname in clss_col_units.keys():
-                # loc_value[idx] = clss_col_units[value_classname](**(value[idx]))
+            # Skip if already instantiated
+            if not isinstance(value[idx], dict):
+                loc_value[idx] = value[idx]
+                continue
 
+            value_classname = value[idx].get("classname", None)
+            if value_classname and not clss_col_units is None and value_classname in clss_col_units.keys():
                 # Now instantiate the model and add to our local dictionary
                 units_class = clss_col_units[value_classname]
-                assert issubclass(units_class, FIBaseUnit)
-                loc_value[idx] = units_class.model_validate(
-                    value[idx], context=info.context
-                )
+            elif value_classname in globals().keys() and issubclass(globals()[value_classname], FIBaseUnit):
+                units_class = globals()[value_classname]
             else:
-                warning_msg = f"Missing context for col_unit deserialize. idx={idx}, value[idx]={value[idx]}"
-                logger.warning(warning_msg)
+                error_msg = f"Neither context supplied nor is subclass of FIBaseUnit. classname={value_classname}"
+                logger.error(error_msg)
+                raise Exception(error_msg)
+
+            assert issubclass(units_class, FIBaseUnit)
+            loc_value[idx] = units_class.model_validate(
+                value[idx], context=info.context
+            )
 
         return loc_value
 
