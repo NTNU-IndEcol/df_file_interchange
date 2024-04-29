@@ -2,22 +2,20 @@
 Tests the basic type checking in deserialize
 """
 
+# ruff: noqa: E402
+
 import os
 import sys
-from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import pytest
 
 TESTPATH = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(TESTPATH, ".."))
 
-import df_file_interchange as fi
 from df_file_interchange.file.rw import (
     InvalidValueForFieldError,
     _deserialize_element,
-    _serialize_element,
 )
 
 badness_int_list = [
@@ -77,6 +75,6 @@ badness_int_list = [
 @pytest.mark.parametrize("el,dtype", badness_int_list)
 def test_badness_deserialize_np_ints(el, dtype):
     with pytest.raises(InvalidValueForFieldError):
-        dummy_result = _deserialize_element(
+        dummy_result = _deserialize_element(  # noqa: F841
             {"el": el, "eltype": dtype}, b_chk_correctness=True
         )

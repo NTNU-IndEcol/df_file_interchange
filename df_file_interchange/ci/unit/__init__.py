@@ -1,1 +1,1 @@
-from . import base, currency, population
+from . import base, currency, population    # noqa: F401

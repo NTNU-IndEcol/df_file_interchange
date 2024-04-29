@@ -10,9 +10,10 @@ dependencies:
   - pyarrow
   - ipykernel
   - loguru
-  - black
-  - black-jupyter
+  # - black
+  # - black-jupyter
   - pytest
-  - isort
+  # - isort
   - mypy
   - pyyaml
+  - ruff

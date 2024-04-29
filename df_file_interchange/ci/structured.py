@@ -8,8 +8,7 @@ Includes
 
 """
 
-from pprint import pprint
-from typing import Any, Literal, TypeAlias, Union, Self, Iterator
+from typing import Any
 from loguru import logger
 
 # from contextlib import contextmanager
@@ -18,8 +17,6 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     computed_field,
-    field_serializer,
-    model_serializer,
     model_validator,
     field_validator,
     ValidationInfo,
@@ -28,14 +25,12 @@ from pydantic import (
 
 
 from .base import FIBaseCustomInfo
-from . import unit
-from .unit.base import FIBaseUnit, FIGenericUnit
+from .unit.base import FIBaseUnit
 from .unit.currency import FICurrencyUnit
 from .unit.population import FIPopulationUnit
 
 
 class FIBaseExtraInfo(BaseModel):
-
     # model_config = ConfigDict(arbitrary_types_allowed=True, extra="forbid")
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -66,7 +61,6 @@ class FIBaseExtraInfo(BaseModel):
 
 
 class FIStdExtraInfo(FIBaseExtraInfo):
-
     author: str | None = None
     source: str | None = None
 
@@ -98,13 +92,12 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
     def validator_extra_info(
         cls, value: dict | FIBaseExtraInfo, info: ValidationInfo
     ) -> FIBaseExtraInfo:
-
         # Shortcut exit, if we've been passed something with extra_info already
         # instantiated. We only deal with dicts here.
         if not isinstance(value, dict):
             return value
 
-        # Default don't use context        
+        # Default don't use context
         clss_extra_info = None
 
         # Check if we've been supplied a context
@@ -114,14 +107,20 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
             clss_extra_info = info.context.get(
                 "clss_extra_info", {"FIBaseExtraInfo": FIBaseExtraInfo}
             )
-            assert isinstance(clss_extra_info, dict)        
+            assert isinstance(clss_extra_info, dict)
 
         # Now process
         value_classname = value.get("classname", None)
-        if value_classname and not clss_extra_info is None and value_classname in clss_extra_info.keys():
+        if (
+            value_classname
+            and clss_extra_info is not None
+            and value_classname in clss_extra_info.keys()
+        ):
             # Now instantiate the model
             extra_info_class = clss_extra_info[value_classname]
-        elif value_classname in globals().keys() and issubclass(globals()[value_classname], FIBaseExtraInfo):
+        elif value_classname in globals().keys() and issubclass(
+            globals()[value_classname], FIBaseExtraInfo
+        ):
             extra_info_class = globals()[value_classname]
         else:
             error_msg = f"Neither context for supplied classname nor is it a subclass of FIBaseExtraInfo. classname={value_classname}"
@@ -131,14 +130,11 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
         assert issubclass(extra_info_class, FIBaseExtraInfo)
         return extra_info_class.model_validate(value, context=info.context)
 
-
-
     @field_validator("col_units", mode="before")
     @classmethod
     def validator_col_units(
         cls, value: dict | FIBaseExtraInfo, info: ValidationInfo
     ) -> dict:
-
         # If this happens, we really need to fail.
         if not isinstance(value, dict):
             error_msg = f"col_units should always be a dictionary. Got type={type(value)}, value={value}"
@@ -152,7 +148,9 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
         if info.context and isinstance(info.context, dict):
             # Get the available classes for units (this should also be a
             # dictionary)
-            clss_col_units = info.context.get("clss_col_units", {"FIBaseUnit": FIBaseUnit})
+            clss_col_units = info.context.get(
+                "clss_col_units", {"FIBaseUnit": FIBaseUnit}
+            )
             assert isinstance(clss_col_units, dict)
 
         # Now process each element in value, in turn
@@ -164,10 +162,16 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
                 continue
 
             value_classname = value[idx].get("classname", None)
-            if value_classname and not clss_col_units is None and value_classname in clss_col_units.keys():
+            if (
+                value_classname
+                and clss_col_units is not None
+                and value_classname in clss_col_units.keys()
+            ):
                 # Now instantiate the model and add to our local dictionary
                 units_class = clss_col_units[value_classname]
-            elif value_classname in globals().keys() and issubclass(globals()[value_classname], FIBaseUnit):
+            elif value_classname in globals().keys() and issubclass(
+                globals()[value_classname], FIBaseUnit
+            ):
                 units_class = globals()[value_classname]
             else:
                 error_msg = f"Neither context supplied nor is subclass of FIBaseUnit. classname={value_classname}"

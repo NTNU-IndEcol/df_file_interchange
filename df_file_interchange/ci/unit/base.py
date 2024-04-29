@@ -2,16 +2,11 @@
 Base unit definitions
 """
 
-from pprint import pprint
-from typing import Any, Literal, TypeAlias, Union
-from loguru import logger
+from typing import Literal
 
 from pydantic import (
     BaseModel,
-    ConfigDict,
     computed_field,
-    field_serializer,
-    model_validator,
 )
 
 
@@ -57,6 +52,5 @@ class FIBaseUnit(BaseModel):
 
 
 class FIGenericUnit(FIBaseUnit):
-
     # Override so we can specify arbitrary strings
     unit_desc: Literal[None] | str = None

@@ -2,14 +2,11 @@
 Tests structured custom metainfo handling/storage
 """
 
+# ruff: noqa: E402
+
 import os
 import sys
 from pathlib import Path
-from pprint import pprint
-
-import numpy as np
-import pandas as pd
-import pytest
 
 TESTPATH = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(TESTPATH, ".."))
@@ -21,18 +18,17 @@ from df_file_interchange.ci.structured import generate_default_context
 
 
 def test_save_load_examples(tmp_path: Path):
-
     # Get example dataframes
     (df1, custom_info1) = generate_example_with_metainfo_1()
 
     # Generate and save CSV
-    target_datafile1_csv = tmp_path / f"test_df_example_1__csv.csv"
-    target_metafile1_csv = tmp_path / f"test_df_example_1__csv.yaml"
+    target_datafile1_csv = tmp_path / "test_df_example_1__csv.csv"
+    target_metafile1_csv = tmp_path / "test_df_example_1__csv.yaml"
     metafile1_csv = fi.write_df_to_file(
         df1,
         target_datafile1_csv,
         target_metafile1_csv,
-        fi.FIFileFormatEnum.csv,
+        fi.file.rw.FIFileFormatEnum.csv,
         custom_info=custom_info1,
     )
     # With no context
@@ -45,13 +41,13 @@ def test_save_load_examples(tmp_path: Path):
     )
 
     # Generate and save parquet
-    target_datafile1_parquet = tmp_path / f"test_df_example_1__parquet.parq"
-    target_metafile1_parquet = tmp_path / f"test_df_example_1__parquet.yaml"
+    target_datafile1_parquet = tmp_path / "test_df_example_1__parquet.parq"
+    target_metafile1_parquet = tmp_path / "test_df_example_1__parquet.yaml"
     metafile1_parquet = fi.write_df_to_file(
         df1,
         target_datafile1_parquet,
         target_metafile1_parquet,
-        fi.FIFileFormatEnum.parquet,
+        fi.file.rw.FIFileFormatEnum.parquet,
         custom_info=custom_info1,
     )
     # With no context
@@ -81,7 +77,6 @@ def test_save_load_examples(tmp_path: Path):
         df1,
         df1dc_reload_parquet,
     )
-
 
     # Check custom info matches
     assert custom_info1 == metainfo1nc_reload_csv.custom_info

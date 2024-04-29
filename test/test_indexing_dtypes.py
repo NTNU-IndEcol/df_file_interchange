@@ -2,12 +2,12 @@
 Tests indexing and dtypes for df_file_interchange
 """
 
+# ruff: noqa: E402
+
 import os
 import sys
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
 import pytest
 
 # from pandas._testing import assert_frame_equal
@@ -34,7 +34,10 @@ def test_save_load_indices(tmp_path: Path, std_indices):
         target_datafile_csv = tmp_path / f"test_df_{idx}__csv.csv"
         target_metafile_csv = tmp_path / f"test_df_{idx}__csv.yaml"
         metafile_csv = fi.write_df_to_file(
-            df, target_datafile_csv, target_metafile_csv, fi.FIFileFormatEnum.csv
+            df,
+            target_datafile_csv,
+            target_metafile_csv,
+            fi.file.rw.FIFileFormatEnum.csv,
         )
         (df_reload_csv, metainfo_reload_csv) = fi.read_df(metafile_csv)
 
@@ -45,7 +48,7 @@ def test_save_load_indices(tmp_path: Path, std_indices):
             df,
             target_datafile_parquet,
             target_metafile_parquet,
-            fi.FIFileFormatEnum.parquet,
+            fi.file.rw.FIFileFormatEnum.parquet,
         )
         (df_reload_parquet, metainfo_reload_parquet) = fi.read_df(metafile_parquet)
 
@@ -68,26 +71,25 @@ def test_save_load_indices(tmp_path: Path, std_indices):
 
 
 def test_save_load_examples(tmp_path: Path):
-
     # Get example dataframes
     df1 = fi.file.examples.generate_example_1()
 
     # Generate and save CSV
-    target_datafile1_csv = tmp_path / f"test_df_example_1__csv.csv"
-    target_metafile1_csv = tmp_path / f"test_df_example_1__csv.yaml"
+    target_datafile1_csv = tmp_path / "test_df_example_1__csv.csv"
+    target_metafile1_csv = tmp_path / "test_df_example_1__csv.yaml"
     metafile1_csv = fi.write_df_to_file(
-        df1, target_datafile1_csv, target_metafile1_csv, fi.FIFileFormatEnum.csv
+        df1, target_datafile1_csv, target_metafile1_csv, fi.file.rw.FIFileFormatEnum.csv
     )
     (df1_reload_csv, metainfo1_reload_csv) = fi.read_df(metafile1_csv)
 
     # Generate and save parquet
-    target_datafile1_parquet = tmp_path / f"test_df_example_1__parquet.parq"
-    target_metafile1_parquet = tmp_path / f"test_df_example_1__parquet.yaml"
+    target_datafile1_parquet = tmp_path / "test_df_example_1__parquet.parq"
+    target_metafile1_parquet = tmp_path / "test_df_example_1__parquet.yaml"
     metafile1_parquet = fi.write_df_to_file(
         df1,
         target_datafile1_parquet,
         target_metafile1_parquet,
-        fi.FIFileFormatEnum.parquet,
+        fi.file.rw.FIFileFormatEnum.parquet,
     )
     (df1_reload_parquet, metainfo1_reload_parquet) = fi.read_df(metafile1_parquet)
 

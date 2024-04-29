@@ -49,13 +49,10 @@ properly serialise column dtype information.
 import copy
 import csv
 import hashlib
-import hmac
 from datetime import tzinfo
 from enum import Enum
 from pathlib import Path
-from pprint import pprint
-from typing import Any, Literal, TypeAlias, Union, Self, Iterator
-from zoneinfo import ZoneInfo
+from typing import Any, Literal, TypeAlias, Union
 
 import numpy as np
 import pandas as pd
@@ -72,8 +69,8 @@ from pandas._typing import AnyArrayLike, ArrayLike, Dtype, DtypeObj, IntervalClo
 
 # DO NOT try to remove these. It's required by Pydantic to resolve forward
 # references, I think. Anyway, it raises an exception without these.
-from pandas import Index, Series
-from pandas.api.extensions import ExtensionArray, ExtensionDtype
+from pandas import Index, Series    # noqa: F401
+from pandas.api.extensions import ExtensionArray, ExtensionDtype    # noqa: F401
 
 # Pydantic imports
 from pydantic import (
@@ -81,19 +78,30 @@ from pydantic import (
     ConfigDict,
     computed_field,
     field_serializer,
-    model_serializer,
     model_validator,
     ValidationInfo,
     field_validator,
     SerializeAsAny,
 )
 
+# Import custom info stuff
+from ..ci.base import FIBaseCustomInfo
 
+# Import custom info stuff. DO NOT remove these. They're required when
+# dynamically checking inheritance of the structured info/unit classes when
+# instantiating.
+from ..ci.structured import FIStdExtraInfo, FIStructuredCustomInfo    # noqa: F401
+from ..ci.unit.base import FIBaseUnit    # noqa: F401
+from ..ci.unit.currency import FICurrencyUnit    # noqa: F401
+from ..ci.unit.population import FIPopulationUnit    # noqa: F401
+
+
+# Setup YAML
 try:
-    from yaml import CDumper as Dumper
-    from yaml import CLoader as Loader
+    from yaml import CDumper as Dumper  # noqa: F401
+    from yaml import CLoader as Loader  # noqa: F401
 except ImportError:
-    from yaml import Dumper, Loader
+    from yaml import Loader  # noqa: F401
 
 # Set CoW semantics
 pd.set_option("mode.copy_on_write", True)
@@ -104,15 +112,6 @@ _Frequency = Union[str, BaseOffset]
 
 # Our "anything like a list"
 TArrayThing: TypeAlias = list | tuple | np.ndarray
-
-
-# Import custom info stuff
-from ..ci.base import FIBaseCustomInfo
-from ..ci.structured import FIStdExtraInfo, FIStructuredCustomInfo
-from ..ci.unit.base import FIBaseUnit
-from ..ci.unit.currency import FICurrencyUnit
-from ..ci.unit.population import FIPopulationUnit
-
 
 
 class InvalidValueForFieldError(Exception):
@@ -432,9 +431,13 @@ def _deserialize_element(
             _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
         )
     elif eltype == "pd.arrays.DatetimeArray":
-        return pd.arrays.DatetimeArray._from_sequence(_deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True)  # type: ignore
+        return pd.arrays.DatetimeArray._from_sequence(
+            _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
+        )  # type: ignore
     elif eltype == "pd.arrays.PeriodArray":
-        return pd.arrays.PeriodArray._from_sequence(_deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True)  # type: ignore
+        return pd.arrays.PeriodArray._from_sequence(
+            _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
+        )  # type: ignore
     elif eltype == "pd.Timestamp":
         if el["tz"] == "":
             return pd.Timestamp(el["isoformat"])
@@ -650,7 +653,7 @@ class FIEncodingCSV(BaseModel):
     def check_logic(self):
         # Check if oid set then must be in correct format
         if self.na_rep != "":
-            if not self.na_rep in self.csv_allowed_na:
+            if self.na_rep not in self.csv_allowed_na:
                 error_msg = (
                     f"na_rep must be in csv_allowed_na. na_rep={self.na_rep};"
                     f" csv_allowed_na={self.csv_allowed_na}"
@@ -919,7 +922,6 @@ class FIMultiIndex(FIBaseIndex):
     @classmethod
     def pre_process(cls, data: Any) -> Any:
         if isinstance(data, dict):
-
             # Check if data provided is a "true" data array or if it's serialized from before
             if (
                 "levels" in data.keys()
@@ -1210,7 +1212,6 @@ class FIPeriodIndex(FIBaseIndex):
         return data
 
 
-
 # class FIBaseCustomInfo(BaseModel):
 #     """Wrapper class to store user custom info
 
@@ -1305,7 +1306,6 @@ class FIMetainfo(BaseModel):
     def validator_custom_info(
         cls, value: dict | FIBaseCustomInfo, info: ValidationInfo
     ) -> FIBaseCustomInfo:
-
         # Shortcut exit, if we've been passed something with extra_info already
         # instantiated. We only deal with dicts here.
         if not isinstance(value, dict):
@@ -1325,15 +1325,21 @@ class FIMetainfo(BaseModel):
 
         # Now process
         value_classname = value.get("classname", None)
-        if value_classname and not clss_custom_info is None and value_classname in clss_custom_info.keys():
+        if (
+            value_classname
+            and clss_custom_info is not None
+            and value_classname in clss_custom_info.keys()
+        ):
             # Now instantiate the model
             custom_info_class = clss_custom_info[value_classname]
-        elif value_classname in globals().keys() and issubclass(globals()[value_classname], FIBaseCustomInfo):
+        elif value_classname in globals().keys() and issubclass(
+            globals()[value_classname], FIBaseCustomInfo
+        ):
             custom_info_class = globals()[value_classname]
         else:
             error_msg = f"Neither context for supplied classname nor is it a subclass of FIBaseCustomInfo. classname={value_classname}"
             logger.error(error_msg)
-            raise Exception(error_msg)            
+            raise Exception(error_msg)
 
         assert issubclass(custom_info_class, FIBaseCustomInfo)
         return custom_info_class.model_validate(value, context=info.context)
@@ -1355,26 +1361,26 @@ class FIMetainfo(BaseModel):
         return data
 
 
-def _get_extensions_from_file_format(file_format: FIFileFormatEnum) -> str:
-    """Given a FIFileFormatEnum, returns the used filename extension
+# def _get_extensions_from_file_format(file_format: FIFileFormatEnum) -> str:
+#     """Given a FIFileFormatEnum, returns the used filename extension
 
-    Parameters
-    ----------
-    file_format : FIFileFormatEnum
+#     Parameters
+#     ----------
+#     file_format : FIFileFormatEnum
 
-    Returns
-    -------
-    str
-    """
+#     Returns
+#     -------
+#     str
+#     """
 
-    if file_format == FIFileFormatEnum.csv:
-        return "csv"
-    elif file_format == FIFileFormatEnum.parquet:
-        return "parq"
-    else:
-        error_msg = f"Unknown file format"
-        logger.error(error_msg)
-        raise Exception(error_msg)
+#     if file_format == FIFileFormatEnum.csv:
+#         return "csv"
+#     elif file_format == FIFileFormatEnum.parquet:
+#         return "parq"
+#     else:
+#         error_msg = "Unknown file format"
+#         logger.error(error_msg)
+#         raise Exception(error_msg)
 
 
 def _detect_file_format_from_filename(datafile: Path) -> FIFileFormatEnum:
@@ -1432,13 +1438,11 @@ def _check_metafile_name(
     """
 
     # Determine output metafile name and ensure extension is correct
-    # TODO think we're misssing something here...
-    extension = _get_extensions_from_file_format(file_format)
     if metafile is None:
         loc_metafile = datafile.with_suffix(".yaml")
     else:
         loc_metafile = metafile
-        if loc_metafile.suffix != ".yaml":
+        if loc_metafile.suffix not in [".yaml", ".yml"]:
             error_msg = f"File extension for metadata file must be .yaml. Got {loc_metafile.suffix}"
             logger.error(error_msg)
             raise Exception(error_msg)
@@ -1521,7 +1525,6 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
     # Loop through and just append to serialized_dtypes unless we get a special
     # type we must manually serialize, e.g. category.
     for col_name, dtype in df.dtypes.to_dict().items():
-
         # We do have to serialise the key (column name) somehow. Otherwise
         # things like tuples end up being encoded in the YAML file in an
         # undesirable way. BUT don't want to use usual serialization for the
@@ -1534,9 +1537,9 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
             dtype_full = df.dtypes[col_name]
             assert isinstance(dtype_full, pd.CategoricalDtype)
             serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
-            serialized_dtypes[loc_col_name][
-                "categories"
-            ] = dtype_full.categories.to_list()
+            serialized_dtypes[loc_col_name]["categories"] = (
+                dtype_full.categories.to_list()
+            )
             serialized_dtypes[loc_col_name]["ordered"] = str(dtype_full.ordered)
         else:
             serialized_dtypes[loc_col_name] = {"dtype_str": str(dtype)}
@@ -1764,7 +1767,7 @@ def _deserialize_index_dict_to_fi_index(index: dict) -> FIBaseIndex:
 
     index_type = index.get("index_type", None)
     if index_type is None or index_type == "":
-        error_msg = f"index_type cannot be empty or None when deserializing."
+        error_msg = "index_type cannot be empty or None when deserializing."
         logger.error(error_msg)
         raise Exception(error_msg)
 
@@ -2076,7 +2079,7 @@ def write_df_to_file(
     elif loc_file_format == FIFileFormatEnum.parquet:
         _write_to_parquet(loc_df, datafile, encoding)
     else:
-        error_msg = f"Output format not supported. This shouldn't happen."
+        error_msg = "Output format not supported. This shouldn't happen."
         logger.error(error_msg)
         raise Exception(error_msg)
 
@@ -2238,7 +2241,7 @@ def read_df(
     elif metainfo.file_format == FIFileFormatEnum.parquet:
         df = _read_from_parquet(datafile_abs, metainfo.encoding)
     else:
-        error_msg = f"Input format not supported. This shouldn't happen."
+        error_msg = "Input format not supported. This shouldn't happen."
         logger.error(error_msg)
         raise Exception(error_msg)
 

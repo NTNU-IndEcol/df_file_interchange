@@ -3,24 +3,20 @@ Column currency unit using three letter acronyms, e.g. "USD", "EUR", etc.
 
 """
 
-from typing import Any, Literal, TypeAlias, Union
+from typing import Literal
 from typing_extensions import Self
 from loguru import logger
 
 from datetime import datetime, date
 
 from pydantic import (
-    BaseModel,
-    computed_field,
     model_validator,
-    ValidationError,
 )
 
 from .base import FIBaseUnit
 
 
 class FICurrencyUnit(FIBaseUnit):
-
     # Currency codes can be obtained from https://treasury.un.org/operationalrates/OperationalRates.php
     # Download the EXCEL file, copy the column into a text file, then run
     # `cat currency_abbreviations.txt | sed 's/ //g;s/^/"/;s/$/",/' | sort | uniq  > currency_abbreviations_processed.txt`
@@ -164,7 +160,7 @@ class FICurrencyUnit(FIBaseUnit):
         "TOP",
         "TRY",
         "TTD",
-        "TWD", # Manually added
+        "TWD",  # Manually added
         "TZS",
         "UAH",
         "UGX",
@@ -199,17 +195,16 @@ class FICurrencyUnit(FIBaseUnit):
 
     @model_validator(mode="after")
     def model_validator_after(self) -> Self:
-
         # Check if unit_year not None then unit_year_method must also be not
         # None
-        if not self.unit_year is None and self.unit_year_method is None:
-            error_msg = f"Validator error: if unit_year is not None then unit_year_method must be defined."
+        if self.unit_year is not None and self.unit_year_method is None:
+            error_msg = "Validator error: if unit_year is not None then unit_year_method must be defined."
             logger.error(error_msg)
             raise ValueError(error_msg)
 
         # Check that both unit_year and unit_date are not both set at once
-        if not self.unit_year is None and not self.unit_date is None:
-            error_msg = f"Validation error: cannot have both unit_year and unit_date not None at same time."
+        if self.unit_year is not None and self.unit_date is not None:
+            error_msg = "Validation error: cannot have both unit_year and unit_date not None at same time."
             logger.error(error_msg)
             raise ValueError(error_msg)
 

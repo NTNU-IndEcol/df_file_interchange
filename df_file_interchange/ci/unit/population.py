@@ -3,19 +3,13 @@ Column population units.
 
 """
 
-from typing import Any, Literal, TypeAlias, Union
-from loguru import logger
+from typing import Literal
 
-from pydantic import (
-    BaseModel,
-    computed_field,
-)
 
 from .base import FIBaseUnit
 
 
 class FIPopulationUnit(FIBaseUnit):
-
     # The various currencies we can use.
     unit_desc: Literal[
         "people",

@@ -3,13 +3,9 @@
 import numpy as np
 import pandas as pd
 
-from ..file.rw import FIBaseCustomInfo
 
-from . import structured
 from .structured import FIStdExtraInfo, FIStructuredCustomInfo
 
-from . import unit
-from .unit.base import FIBaseUnit, FIGenericUnit
 from .unit.currency import FICurrencyUnit
 from .unit.population import FIPopulationUnit
 
