@@ -8,7 +8,7 @@ import os
 import sys
 from pathlib import Path
 
-import pytest
+import pytest  # noqa: F401
 import pandas as pd
 import numpy as np
 
@@ -57,7 +57,6 @@ def test_write_read_function_args(tmp_path: Path):
 
     # Save to Parquet using `fi.write_df_to_file()`, determine metafile and `file_format` automatically
     target_datafile_parq_2 = tmp_path / "test_df_fn_args_2.parq"
-    target_metafile_parq_2 = tmp_path / "test_df_fn_args_2.yaml"
     metafile_parq_2 = fi.write_df_to_file(df, target_datafile_parq_2)
     (df_parq_2_reload, metainfo_parq_2_reload) = fi.read_df(metafile_parq_2)
     chk_strict_frames_eq_ignore_nan(

@@ -116,6 +116,7 @@ TArrayThing: TypeAlias = list | tuple | np.ndarray
 
 class InvalidValueForFieldError(Exception):
     """Used to indicate a value has been passed to a field of unsuitable type, e.g. passing int to a float dtype field"""
+
     pass
 
 
@@ -413,8 +414,13 @@ def _deserialize_element(
 
     # TODO recursion protection
 
-    if "el" not in serialized_element.keys() or "eltype" not in serialized_element.keys():
-        error_msg = f"Cannot unserialize: both 'el' and 'eltype' fields must be specified."
+    if (
+        "el" not in serialized_element.keys()
+        or "eltype" not in serialized_element.keys()
+    ):
+        error_msg = (
+            "Cannot unserialize: both 'el' and 'eltype' fields must be specified."
+        )
         logger.error(error_msg)
         raise ValueError(error_msg)
 
@@ -2267,7 +2273,7 @@ def read_df(
     context : dict | None, optional
         If manually supplying a context to decode the structured custom info, by
         default None (in which was subclass type checks are used).
-        
+
     Returns
     -------
     tuple[pd.DataFrame, FIMetainfo]:

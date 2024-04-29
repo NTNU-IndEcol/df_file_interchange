@@ -1,15 +1,9 @@
 """
-Structured custom info
+Base class for structured custom info
 
-Includes
-
-* Column unit+descriptions
-* Some basic optional info
-
+Make sure any structured custom info is derived from this.
 """
 
-# from contextlib import contextmanager
-# from contextvars import ContextVar
 from pydantic import (
     BaseModel,
     ConfigDict,

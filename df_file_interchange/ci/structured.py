@@ -11,8 +11,6 @@ Includes
 from typing import Any
 from loguru import logger
 
-# from contextlib import contextmanager
-# from contextvars import ContextVar
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -23,46 +21,12 @@ from pydantic import (
     SerializeAsAny,
 )
 
-
 from .base import FIBaseCustomInfo
+from .extra.base import FIBaseExtraInfo
+from .extra.std_extra import FIStdExtraInfo
 from .unit.base import FIBaseUnit
 from .unit.currency import FICurrencyUnit
 from .unit.population import FIPopulationUnit
-
-
-class FIBaseExtraInfo(BaseModel):
-    # model_config = ConfigDict(arbitrary_types_allowed=True, extra="forbid")
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    @classmethod
-    def get_classname(cls) -> str:
-        return cls.__name__
-
-    @computed_field
-    @property
-    def classname(self) -> str:
-        """Ensures classname is included in serialization
-
-        Returns
-        -------
-        str
-            Our classname
-        """
-
-        return self.get_classname()
-
-    @model_validator(mode="before")
-    @classmethod
-    def model_validator_extra_info(cls, data: Any) -> Any:
-        if isinstance(data, dict):
-            if "classname" in data.keys():
-                del data["classname"]
-        return data
-
-
-class FIStdExtraInfo(FIBaseExtraInfo):
-    author: str | None = None
-    source: str | None = None
 
 
 class FIStructuredCustomInfo(FIBaseCustomInfo):
@@ -74,10 +38,9 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
     user can inherit from `FIBaseExtraInfo` or `FIBaseUnit` to add more fields
     to extra info or define new units, respectively. This makes matters a little
     tricky when instantiating from metadata because we have to choose the
-    correct class to create; in the normal run of things, this is not too bad
-    but we allow userdefined classes presented at runtime. So this needs a bit
-    of logic to get Pydantic to play ball. In particular, the user needs to
-    supply a context with available classes to `model_validate()`.
+    correct class to create. By default we use the classnames stored in the
+    metainfo and check they're a subclass of the appropriate base class. An
+    explicit context can, however, be passed to `.model_validate()`.
     """
 
     # Extra meta info that applies to the whole table
@@ -92,6 +55,17 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
     def validator_extra_info(
         cls, value: dict | FIBaseExtraInfo, info: ValidationInfo
     ) -> FIBaseExtraInfo:
+        """When necessary, instantiate the correct FIBaseExtraInfo from the supplied dict
+
+        This has to happen when supplied a dict because Pydantic needs to know
+        what class to actually instantiate (otherwise it'll instantiate the
+        FIBaseExtraInfo base class).
+
+        A context can be supplied to `.model_validate()`. which then appears as
+        `info.context` here. To see the format, check
+        `generate_default_context()`.
+        """
+
         # Shortcut exit, if we've been passed something with extra_info already
         # instantiated. We only deal with dicts here.
         if not isinstance(value, dict):
@@ -133,8 +107,19 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
     @field_validator("col_units", mode="before")
     @classmethod
     def validator_col_units(
-        cls, value: dict | FIBaseExtraInfo, info: ValidationInfo
+        cls, value: dict | dict[Any, FIBaseUnit], info: ValidationInfo
     ) -> dict:
+        """When necessary, instantiate the correct units from the supplied dict
+
+        This has to happen when supplied a dict because Pydantic needs to know
+        what class to actually instantiate (otherwise it'll instantiate a dict
+        of FIBaseUnit base class instead of the correct unit class).
+
+        A context can be supplied to `.model_validate()`. which then appears as
+        `info.context` here. To see the format, check
+        `generate_default_context()`.
+        """
+
         # If this happens, we really need to fail.
         if not isinstance(value, dict):
             error_msg = f"col_units should always be a dictionary. Got type={type(value)}, value={value}"
@@ -156,12 +141,16 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
         # Now process each element in value, in turn
         loc_value = {}
         for idx in value:
-            # Skip if already instantiated
-            if not isinstance(value[idx], dict):
+            # I don't like having to write this explicitly but Pylance
+            # complained on the .get() later if we don't do this (or similar)
+            cur_value = value[idx]
+
+            # Skip if already instantiated            
+            if not isinstance(cur_value, dict):
                 loc_value[idx] = value[idx]
                 continue
 
-            value_classname = value[idx].get("classname", None)
+            value_classname = cur_value.get("classname", None)
             if (
                 value_classname
                 and clss_col_units is not None
