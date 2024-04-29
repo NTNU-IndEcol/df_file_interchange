@@ -115,6 +115,7 @@ TArrayThing: TypeAlias = list | tuple | np.ndarray
 
 
 class InvalidValueForFieldError(Exception):
+    """Used to indicate a value has been passed to a field of unsuitable type, e.g. passing int to a float dtype field"""
     pass
 
 
@@ -141,12 +142,17 @@ def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
     """Check whether two dataframes are equal, ignoring NaNs
 
     This may be expensive since we have to make a copy of the dataframes to
-    avoid mangling the originals
+    avoid mangling the originals. Raises exception if dfs are unequal.
 
     Parameters
     ----------
     df1 : pd.DataFrame
     df2 : pd.DataFrame
+
+    Returns
+    -------
+    bool
+        Always True.
     """
 
     const_float = np.pi
@@ -248,9 +254,7 @@ def _serialize_element(el, b_only_known_types: bool = True) -> dict:
 
     Parameters
     ----------
-    el : list, tuple, array, int, str, etc.
-    b_chk_correctness : bool
-        Whether to check correctness of (some) of the fields. Default is True.
+    el : list, tuple, array, int, str, float, etc.
     b_only_known_types : bool
         Default True. If True will raise exception if we encounter a type we
         don't know about.
@@ -258,8 +262,8 @@ def _serialize_element(el, b_only_known_types: bool = True) -> dict:
     Returns
     -------
     dict
-        With elements `el` with the serialized content and `eltype` to describe
-        how to deserialize.
+        Field `el` contains the serialized content. Field `eltype` describes how
+        it was serialized.
     """
 
     # TODO recursion protection
@@ -407,7 +411,12 @@ def _deserialize_element(
         don't know about.
     """
 
-    # TODO field checks and recursion protection
+    # TODO recursion protection
+
+    if "el" not in serialized_element.keys() or "eltype" not in serialized_element.keys():
+        error_msg = f"Cannot unserialize: both 'el' and 'eltype' fields must be specified."
+        logger.error(error_msg)
+        raise ValueError(error_msg)
 
     el = serialized_element["el"]
     eltype = serialized_element["eltype"]
@@ -549,7 +558,7 @@ def _deserialize_element(
 def _serialize_list_with_types(data: list | tuple | np.ndarray) -> list:
     """Serialize a list (don't call this directly, use `_serialize_element()` instead)
 
-    Serializes list elementwise.
+    Serializes list/tuple/np.ndarary elementwise.
 
     Parameters
     ----------
@@ -615,10 +624,6 @@ class FIEncodingCSV(BaseModel):
 
     NOTE! You almost certainly do not have any reason to change these defaults.
     They were tested to ensure that the roundtrip write-read is exactly correct.
-
-    Attributes
-    ----------
-
     """
 
     # WE write all our files, so we can be more restrictive to reduce window for
@@ -649,7 +654,6 @@ class FIEncodingCSV(BaseModel):
 
     # Do logic checks now that we've got the fields sorted
     @model_validator(mode="after")
-    # def check_logic(self) -> "FIEncodingCSV":     # -- removed return type to fix warnings
     def check_logic(self):
         # Check if oid set then must be in correct format
         if self.na_rep != "":
@@ -698,12 +702,24 @@ class FIBaseIndex(BaseModel):
     @computed_field(title="index_type")
     @property
     def index_type(self) -> str:
+        """Get the str name for the index (one of the FIIndex enum entires)"""
+
         return FIIndexType.base.name
 
     def get_fi_index_type(self) -> FIIndexType:
+        """Get the index type (one of the FIIndex enum entires)"""
+
         return FIIndexType.base
 
     def get_as_index(self, **kwargs) -> pd.Index:
+        """Creates corresponding Pandas index
+
+        Returns
+        -------
+        pd.Index
+            The Pandas index created corresponding to our FIIndex type and data.
+        """
+
         return pd.Index()
 
 
@@ -719,12 +735,23 @@ class FIIndex(FIBaseIndex):
     @computed_field(title="index_type")
     @property
     def index_type(self) -> str:
+        """Get the str name for the index (one of the FIIndex enum entires)"""
+
         return FIIndexType.idx.name
 
     def get_fi_index_type(self) -> str:
+        """Get the index type (one of the FIIndex enum entires)"""
+
         return FIIndexType.idx
 
     def get_as_index(self, **kwargs) -> pd.Index:
+        """Creates corresponding Pandas index
+
+        Returns
+        -------
+        pd.Index
+            The Pandas index created corresponding to our FIIndex type and data.
+        """
         return pd.Index(
             data=self.data,
             name=self.name,
@@ -744,8 +771,6 @@ class FIIndex(FIBaseIndex):
     @classmethod
     def pre_process(cls, data: Any) -> Any:
         if isinstance(data, dict):
-            # Check if data provided is a "true" data array or if it's serialized from before
-            # if "data" in data.keys() and len(data["data"]) > 0 and isinstance(data["data"][0], dict) and "eltype" in data["data"][0].keys():
             if (
                 "data" in data.keys()
                 and isinstance(data["data"], dict)
@@ -771,12 +796,24 @@ class FIRangeIndex(FIBaseIndex):
     @computed_field(title="index_type")
     @property
     def index_type(self) -> str:
+        """Get the str name for the index (one of the FIIndex enum entires)"""
+
         return FIIndexType.range.name
 
     def get_fi_index_type(self) -> str:
+        """Get the index type (one of the FIIndex enum entires)"""
+
         return FIIndexType.range
 
     def get_as_index(self, **kwargs) -> pd.RangeIndex:
+        """Creates corresponding Pandas index
+
+        Returns
+        -------
+        pd.RangeIndex
+            The Pandas index created corresponding to our FIIndex type and data.
+        """
+
         return pd.RangeIndex(
             start=self.start,
             stop=self.stop,
@@ -806,12 +843,24 @@ class FICategoricalIndex(FIBaseIndex):
     @computed_field(title="index_type")
     @property
     def index_type(self) -> str:
+        """Get the str name for the index (one of the FIIndex enum entires)"""
+
         return FIIndexType.categorical.name
 
     def get_fi_index_type(self) -> str:
+        """Get the index type (one of the FIIndex enum entires)"""
+
         return FIIndexType.categorical
 
     def get_as_index(self, **kwargs) -> pd.CategoricalIndex:
+        """Creates corresponding Pandas index
+
+        Returns
+        -------
+        pd.CategoricalIndex
+            The Pandas index created corresponding to our FIIndex type and data.
+        """
+
         return pd.CategoricalIndex(
             data=self.data,
             categories=self.categories,
@@ -837,7 +886,6 @@ class FICategoricalIndex(FIBaseIndex):
     @classmethod
     def pre_process(cls, data: Any) -> Any:
         if isinstance(data, dict):
-            # if "data" in data.keys() and len(data["data"]) > 0 and isinstance(data["data"][0], dict) and "eltype" in data["data"][0].keys():
             if (
                 "data" in data.keys()
                 and isinstance(data["data"], dict)
@@ -846,7 +894,6 @@ class FICategoricalIndex(FIBaseIndex):
             ):
                 data["data"] = _deserialize_element(data["data"])
 
-            # if "categories" in data.keys() and len(data["categories"]) > 0 and isinstance(data["categories"][0], dict) and "eltype" in data["categories"][0].keys():
             if (
                 "categories" in data.keys()
                 and isinstance(data["categories"], dict)
@@ -874,12 +921,24 @@ class FIMultiIndex(FIBaseIndex):
     @computed_field(title="index_type")
     @property
     def index_type(self) -> str:
+        """Get the str name for the index (one of the FIIndex enum entires)"""
+
         return FIIndexType.multi.name
 
     def get_fi_index_type(self) -> str:
+        """Get the index type (one of the FIIndex enum entires)"""
+
         return FIIndexType.multi
 
     def get_as_index(self, **kwargs) -> pd.MultiIndex:
+        """Creates corresponding Pandas index
+
+        Returns
+        -------
+        pd.MultiIndex
+            The Pandas index created corresponding to our FIIndex type and data.
+        """
+
         return pd.MultiIndex(
             levels=self.levels,
             codes=self.codes,
@@ -977,12 +1036,24 @@ class FIIntervalIndex(FIBaseIndex):
     @computed_field(title="index_type")
     @property
     def index_type(self) -> str:
+        """Get the str name for the index (one of the FIIndex enum entires)"""
+
         return FIIndexType.interval.name
 
     def get_fi_index_type(self) -> str:
+        """Get the index type (one of the FIIndex enum entires)"""
+
         return FIIndexType.interval
 
     def get_as_index(self, **kwargs) -> pd.IntervalIndex:
+        """Creates corresponding Pandas index
+
+        Returns
+        -------
+        pd.IntervalIndex
+            The Pandas index created corresponding to our FIIndex type and data.
+        """
+
         return pd.IntervalIndex(
             data=self.data,  # type: ignore
             closed=self.closed,
@@ -1003,8 +1074,6 @@ class FIIntervalIndex(FIBaseIndex):
     @classmethod
     def pre_process(cls, data: Any) -> Any:
         if isinstance(data, dict):
-            # Check if data provided is a "true" data array or if it's serialized from before
-            # if "data" in data.keys() and len(data["data"]) > 0 and isinstance(data["data"][0], dict) and "eltype" in data["data"][0].keys():
             if (
                 "data" in data.keys()
                 and isinstance(data["data"], dict)
@@ -1033,12 +1102,24 @@ class FIDatetimeIndex(FIBaseIndex):
     @computed_field(title="index_type")
     @property
     def index_type(self) -> str:
+        """Get the str name for the index (one of the FIIndex enum entires)"""
+
         return FIIndexType.datetime.name
 
     def get_fi_index_type(self) -> str:
+        """Get the index type (one of the FIIndex enum entires)"""
+
         return FIIndexType.datetime
 
     def get_as_index(self, **kwargs) -> pd.DatetimeIndex:
+        """Creates corresponding Pandas index
+
+        Returns
+        -------
+        pd.DatetimeIndex
+            The Pandas index created corresponding to our FIIndex type and data.
+        """
+
         return pd.DatetimeIndex(
             data=self.data,
             freq=self.freq,
@@ -1101,12 +1182,24 @@ class FITimedeltaIndex(FIBaseIndex):
     @computed_field(title="index_type")
     @property
     def index_type(self) -> str:
+        """Get the str name for the index (one of the FIIndex enum entires)"""
+
         return FIIndexType.timedelta.name
 
     def get_fi_index_type(self) -> str:
+        """Get the index type (one of the FIIndex enum entires)"""
+
         return FIIndexType.timedelta
 
     def get_as_index(self, **kwargs) -> pd.TimedeltaIndex:
+        """Creates corresponding Pandas index
+
+        Returns
+        -------
+        pd.TimedeltaIndex
+            The Pandas index created corresponding to our FIIndex type and data.
+        """
+
         return pd.TimedeltaIndex(
             data=self.data,  # type: ignore
             freq=self.freq,  # type: ignore
@@ -1118,12 +1211,6 @@ class FITimedeltaIndex(FIBaseIndex):
     @field_serializer("data", when_used="always")
     def serialize_data(self, data: ArrayLike | AnyArrayLike | list | tuple):
         return _serialize_element(list(data))
-        # if isinstance(data, np.ndarray):
-        #     loc_list = data.tolist()
-        # else:
-        #     loc_list = list(data)
-
-        # return list(map(str, loc_list))
 
     @field_serializer("freq", when_used="always")
     def serialize_freq(self, freq):
@@ -1140,8 +1227,6 @@ class FITimedeltaIndex(FIBaseIndex):
     @classmethod
     def pre_process(cls, data: Any) -> Any:
         if isinstance(data, dict):
-            # Check if data provided is a "true" data array or if it's serialized from before
-            # if "data" in data.keys() and len(data["data"]) > 0 and isinstance(data["data"][0], dict) and "eltype" in data["data"][0].keys():
             if (
                 "data" in data.keys()
                 and isinstance(data["data"], dict)
@@ -1166,12 +1251,24 @@ class FIPeriodIndex(FIBaseIndex):
     @computed_field(title="index_type")
     @property
     def index_type(self) -> str:
+        """Get the str name for the index (one of the FIIndex enum entires)"""
+
         return FIIndexType.period.name
 
     def get_fi_index_type(self) -> str:
+        """Get the index type (one of the FIIndex enum entires)"""
+
         return FIIndexType.period
 
     def get_as_index(self, **kwargs) -> pd.PeriodIndex:
+        """Creates corresponding Pandas index
+
+        Returns
+        -------
+        pd.PeriodIndex
+            The Pandas index created corresponding to our FIIndex type and data.
+        """
+
         return pd.PeriodIndex(
             data=self.data,
             # freq=self.freq,   -- disabled because it seems to mess things up, info included in dtype and freq is old notation (QE-DEC instead of Q-DEC)
@@ -1199,8 +1296,6 @@ class FIPeriodIndex(FIBaseIndex):
     @classmethod
     def pre_process(cls, data: Any) -> Any:
         if isinstance(data, dict):
-            # Check if data provided is a "true" data array or if it's serialized from before
-            # if "data" in data.keys() and len(data["data"]) > 0 and isinstance(data["data"][0], dict) and "eltype" in data["data"][0].keys():
             if (
                 "data" in data.keys()
                 and isinstance(data["data"], dict)
@@ -1210,39 +1305,6 @@ class FIPeriodIndex(FIBaseIndex):
                 data["data"] = _deserialize_element(data["data"])
 
         return data
-
-
-# class FIBaseCustomInfo(BaseModel):
-#     """Wrapper class to store user custom info
-
-#     N.B. This, and any descendent, MUST be able to deserialise based on a
-#     provided dictionary!
-
-#     A descendent of this is usually supplied as an object when writing a file to
-#     include additional metadata. When reading, a class is passed as a parameter
-#     and an object will be instantiated upon reading.
-#     """
-
-#     model_config = ConfigDict(arbitrary_types_allowed=True)
-
-#     unstructured_data: dict = {}
-
-#     @classmethod
-#     def get_classname(cls) -> str:
-#         return cls.__name__
-
-#     @computed_field
-#     @property
-#     def classname(self) -> str:
-#         """Ensures classname is included in serialization
-
-#         Returns
-#         -------
-#         str
-#             Our classname
-#         """
-
-#         return self.get_classname()
 
 
 class FIMetainfo(BaseModel):
@@ -1361,28 +1423,6 @@ class FIMetainfo(BaseModel):
         return data
 
 
-# def _get_extensions_from_file_format(file_format: FIFileFormatEnum) -> str:
-#     """Given a FIFileFormatEnum, returns the used filename extension
-
-#     Parameters
-#     ----------
-#     file_format : FIFileFormatEnum
-
-#     Returns
-#     -------
-#     str
-#     """
-
-#     if file_format == FIFileFormatEnum.csv:
-#         return "csv"
-#     elif file_format == FIFileFormatEnum.parquet:
-#         return "parq"
-#     else:
-#         error_msg = "Unknown file format"
-#         logger.error(error_msg)
-#         raise Exception(error_msg)
-
-
 def _detect_file_format_from_filename(datafile: Path) -> FIFileFormatEnum:
     """Given a filename, returns the file format as a FIFileFormatEnum
 
@@ -1417,7 +1457,6 @@ def _detect_file_format_from_filename(datafile: Path) -> FIFileFormatEnum:
 
 def _check_metafile_name(
     datafile: Path,
-    file_format: FIFileFormatEnum,
     metafile: Path | None = None,
 ) -> Path:
     """Checks or generates the absolute path to the metafile
@@ -1426,8 +1465,6 @@ def _check_metafile_name(
     ----------
     datafile : Path
         Absolute path to the datafile.
-    file_format : FIFileFormatEnum
-        Format of datafile.
     metafile : Path | None, optional
         Optional metafile name (will check correctness). If None, will generate and return.
 
@@ -1681,7 +1718,19 @@ def _apply_serialized_dtypes(df: pd.DataFrame, serialized_dtypes: dict):
 
 
 def _serialize_index_to_metainfo_index(idx: pd.Index) -> FIBaseIndex:
-    """Serializes a Pandas index into one of our FI*Index classes"""
+    """Serializes a Pandas index into one of our FI*Index classes
+
+    Parameters
+    ----------
+    idx : pd.Index
+        The index, e.g. a pd.MultiIndex, to serialize to one of our FI*Index
+        objects.
+
+    Returns
+    -------
+    FIBaseIndex
+        The instantiated object, which will be a descendent of FIBaseIndex.
+    """
 
     if not isinstance(idx, pd.Index):
         error_msg = f"Must pass a Pandas Index. Got a {type(idx)}"
@@ -1763,7 +1812,18 @@ def _serialize_index_to_metainfo_index(idx: pd.Index) -> FIBaseIndex:
 
 
 def _deserialize_index_dict_to_fi_index(index: dict) -> FIBaseIndex:
-    """Deserializes an index stored as a dictionary (from YAML file) into on of our FI*Indexes"""
+    """Deserializes an index stored as a dictionary (from YAML file) into on of our FI*Indexes
+
+    Parameters
+    ----------
+    index : dict
+        The dictionary that is storing the index.
+
+    Returns
+    -------
+    FIBaseIndex
+        The instantiated object, which will be a descendent of the FIBaseIndex class.
+    """
 
     index_type = index.get("index_type", None)
     if index_type is None or index_type == "":
@@ -1894,8 +1954,6 @@ def _read_from_csv(
     Returns
     -------
     pd.DataFrame
-        _description_
-
     """
 
     # We always put our index column(s) first (row labels)
@@ -1953,7 +2011,6 @@ def _read_from_parquet(input_datafile: Path, encoding: FIEncoding) -> pd.DataFra
     Returns
     -------
     pd.DataFrame
-        _description_
     """
 
     df = pd.read_parquet(input_datafile, engine="pyarrow")
@@ -1991,7 +2048,17 @@ def _write_metafile(datafile: Path, metafile: Path, metainfo: FIMetainfo):
 def _read_metafile(metafile: Path, context: dict | None = None) -> FIMetainfo:
     """Reads in metainfo from file
 
-    We may need a context to construct the custom info properly.
+    Parameters
+    ----------
+    metafile : Path
+        The location of the metafile.
+    context : dict | None, optional
+        If manually supplying a context to decode the structured custom info, by
+        default None (in which was subclass type checks are used).
+
+    Returns
+    -------
+    FIMetainfo
     """
 
     # Read metainfo from file
@@ -2048,7 +2115,7 @@ def write_df_to_file(
         loc_file_format = FIFileFormatEnum(file_format)
 
     # Determine metafile name
-    loc_metafile = _check_metafile_name(datafile, loc_file_format, metafile)
+    loc_metafile = _check_metafile_name(datafile, metafile)
 
     # If we've got encoding parameters, use them; otherwise use defaults
     if encoding is None:
@@ -2129,6 +2196,7 @@ def write_df_to_csv(
     Returns
     -------
     Path
+        A Path object with the metainfo filename in it.
     """
 
     return write_df_to_file(
@@ -2167,6 +2235,7 @@ def write_df_to_parquet(
     Returns
     -------
     Path
+        A Path object with the metainfo filename in it.
     """
 
     return write_df_to_file(
@@ -2195,7 +2264,10 @@ def read_df(
         The YAML file that is associated with the datafile.
     strict_hash_check : bool, optional
         Whether we raise an exception if the hash is wrong.
-
+    context : dict | None, optional
+        If manually supplying a context to decode the structured custom info, by
+        default None (in which was subclass type checks are used).
+        
     Returns
     -------
     tuple[pd.DataFrame, FIMetainfo]:
