@@ -69,8 +69,8 @@ from pandas._typing import AnyArrayLike, ArrayLike, Dtype, DtypeObj, IntervalClo
 
 # DO NOT try to remove these. It's required by Pydantic to resolve forward
 # references, I think. Anyway, it raises an exception without these.
-from pandas import Index, Series    # noqa: F401
-from pandas.api.extensions import ExtensionArray, ExtensionDtype    # noqa: F401
+from pandas import Index, Series  # noqa: F401
+from pandas.api.extensions import ExtensionArray, ExtensionDtype  # noqa: F401
 
 # Pydantic imports
 from pydantic import (
@@ -90,10 +90,10 @@ from ..ci.base import FIBaseCustomInfo
 # Import custom info stuff. DO NOT remove these. They're required when
 # dynamically checking inheritance of the structured info/unit classes when
 # instantiating.
-from ..ci.structured import FIStdExtraInfo, FIStructuredCustomInfo    # noqa: F401
-from ..ci.unit.base import FIBaseUnit    # noqa: F401
-from ..ci.unit.currency import FICurrencyUnit    # noqa: F401
-from ..ci.unit.population import FIPopulationUnit    # noqa: F401
+from ..ci.structured import FIStdExtraInfo, FIStructuredCustomInfo  # noqa: F401
+from ..ci.unit.base import FIBaseUnit  # noqa: F401
+from ..ci.unit.currency import FICurrencyUnit  # noqa: F401
+from ..ci.unit.population import FIPopulationUnit  # noqa: F401
 
 
 # Setup YAML
@@ -1402,9 +1402,9 @@ def _detect_file_format_from_filename(datafile: Path) -> FIFileFormatEnum:
 
     extension = datafile.suffix.lower()
 
-    if extension == "csv":
+    if extension == ".csv":
         return FIFileFormatEnum.csv
-    elif extension == "parq" or extension == "parquet":
+    elif extension == ".parq" or extension == ".parquet":
         return FIFileFormatEnum.parquet
     else:
         error_msg = (

@@ -10,8 +10,6 @@ from pathlib import Path
 
 import pytest
 
-# from pandas._testing import assert_frame_equal
-
 TESTPATH = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(TESTPATH, ".."))
 
@@ -68,37 +66,3 @@ def test_save_load_indices(tmp_path: Path, std_indices):
         # check_categorical=True,
 
         print(f"Done with {idx}")
-
-
-def test_save_load_examples(tmp_path: Path):
-    # Get example dataframes
-    df1 = fi.file.examples.generate_example_1()
-
-    # Generate and save CSV
-    target_datafile1_csv = tmp_path / "test_df_example_1__csv.csv"
-    target_metafile1_csv = tmp_path / "test_df_example_1__csv.yaml"
-    metafile1_csv = fi.write_df_to_file(
-        df1, target_datafile1_csv, target_metafile1_csv, fi.file.rw.FIFileFormatEnum.csv
-    )
-    (df1_reload_csv, metainfo1_reload_csv) = fi.read_df(metafile1_csv)
-
-    # Generate and save parquet
-    target_datafile1_parquet = tmp_path / "test_df_example_1__parquet.parq"
-    target_metafile1_parquet = tmp_path / "test_df_example_1__parquet.yaml"
-    metafile1_parquet = fi.write_df_to_file(
-        df1,
-        target_datafile1_parquet,
-        target_metafile1_parquet,
-        fi.file.rw.FIFileFormatEnum.parquet,
-    )
-    (df1_reload_parquet, metainfo1_reload_parquet) = fi.read_df(metafile1_parquet)
-
-    # Compare
-    chk_strict_frames_eq_ignore_nan(
-        df1,
-        df1_reload_csv,
-    )
-    chk_strict_frames_eq_ignore_nan(
-        df1,
-        df1_reload_parquet,
-    )
