@@ -1,0 +1,7 @@
+site_name: DataFrames File Interchange
+nav:
+  - Home: index.md
+  - Technical Background: background.md
+  - YAML Fields: yaml_fields.md
+  - About: about.md
+theme: readthedocs

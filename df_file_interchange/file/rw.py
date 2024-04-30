@@ -90,10 +90,12 @@ from ..ci.base import FIBaseCustomInfo
 # Import custom info stuff. DO NOT remove these. They're required when
 # dynamically checking inheritance of the structured info/unit classes when
 # instantiating.
-from ..ci.structured import FIStdExtraInfo, FIStructuredCustomInfo  # noqa: F401
+from ..ci.extra.base import FIBaseExtraInfo  # noqa: F401
+from ..ci.extra.std_extra import FIStdExtraInfo  # noqa: F401
 from ..ci.unit.base import FIBaseUnit  # noqa: F401
 from ..ci.unit.currency import FICurrencyUnit  # noqa: F401
 from ..ci.unit.population import FIPopulationUnit  # noqa: F401
+from ..ci.structured import FIStructuredCustomInfo  # noqa: F401
 
 
 # Setup YAML

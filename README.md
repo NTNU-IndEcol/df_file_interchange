@@ -1,48 +1,65 @@
 # df_file_interchange
 
-This package is designed to store complete specification DataFrames (including indexes) along with structured custom metadata in CSV or Parquet, as an "interchange format". In other words, if a an application such as a data pipeline must store intermediate DataFrames to disc then this would be a nice solution.
+For data pipelines, it's often advantageous to be able to "round trip" a dataframe to disc: the results of what is proccessed at one stage being required by independent stages afterwards. Pandas can store and manipulate various structures on top of a basic table including indexes and dtype specifications. These indexes can be generated from a small number of parameters that cannot naturally be encoded in a column, e.g. a `pd.RangeIndex`. When saving to a CSV file, these indexes are typically enumerated. Therefore, when reading back in the dataframe it is not actually the same as the original. Although this is handled better when writing to Parquet format, there are still a few issues such as all entries in a column, and so an index, being required to have the same dtype. Similarly, it's often desirable to store some custom structured metadata along with the dataframe, e.g. the author or columnwise metadata such as what unit each column is expressed in.
 
-When saving a DataFrame to CSV, specification of the indexes and dtypes are often lost, e.g. a `RangeIndex` is merely encoded as the enumerated elements, a `DatetimeIndex` ends up losing the `freq` attribute, etc. When saving in Parquet format with `pyarrow` some restrictions apply: in general, an `Index` can only be stored if the elements are all of the same type. Ad hoc work-arounds can be used but these soon start to become messy.
+`df_file_interchange` is a wrapper around Pandas that tries to address these requirements. It stores additional metadata that (mostly) ensures the indexes are recreated properly, column dtypes are specified properly, and that the dataframe read from disc is actually the same as what was written. It also manages the storage of additional custom metadata.
 
-The other aspect is the storage of additional metadata. Even temporary tabular data storage within an application can benefit from having associated metadata. The aim is that this is done in a structured manner and that it's extensible, in the sense that some simple examples are included here but the user can easily define their own custom metadata structure. So, for example, in a economics setting, one may wish to denoate some columns as being a currency (USD, EUR, etc) with multiplier (millions of EUR, say). In a different setting, one might want physical units, say.
+In the future, the intention is also to opportunistically serialise columns when required since there are some dtypes that are not supported by Parquet.
 
-We do not try to reinvent-the-wheel, only supplement existing functionality found in Pandas.
+This is not trying to reinvent-the-wheel, only supplement existing functionality found in Pandas.
 
 
 ## Usage
 
 ### Basic Usage for Writing+Reading CSV/Parquet
 
-`import df_file_interchange as fi`
+```python
+import df_file_interchange as fi
+```
 
 Then do something like (autodetect of target file format from `datafile_path` extension):
 
-`metafile = fi.write_df_to_file(df, datafile_path)`
+```python
+metafile = fi.write_df_to_file(df, datafile_path)
+```
 
 or to specify the datafile format explicitly:
 
-`metafile = fi.write_df_to_csv(df, datafile_path)`
+```python
+metafile = fi.write_df_to_csv(df, datafile_path)
+```
 
-`metafile = fi.write_df_to_parquet(df, datafile_path)`
+```python
+metafile = fi.write_df_to_parquet(df, datafile_path)
+```
 
 where `metafile` will return a `Path` object for the YAML file path, `datafile_path` is a `Path` object.
 
 Additional parameters can be used, e.g. `metafile` to specify the YAML file manually (must be same dir) and `custom_info`.
 
+```python
+metafile = fi.write_df_to_file(
+    df, datafile_path, metafile_path, "csv"
+)
+```
+
+Additional encoding options can be specified using the `encoding` argument (as a `FIEncoding` object) but this is unnecessary and probably unwise.
+
 To read:
 
-`(df, metainfo) = fi.read_df(yamlfile_path)`
+```python
+(df, metainfo) = fi.read_df(yamlfile_path)
+```
 
 the `df` is of course the dataframe and `metainfo` is a Pydantic object containing all the metainfo associated with the file encoding, indexes, dtypes, etc, and also the user-supplied custom info.
 
-Additional encoding options can be specified using the `encoding` argument (as a `FIEncoding` object) but this is unnecessary and probably unwise.
 
 
 ### Structured Metadata
 
 There's support for storing custom metadata, in the sense that it both can be validated using Pydantic models and is extensible.
 
-_NOTE_: for development purposes, we currently use a very "loose" validation, which may result in 'missing' info/units, and a warning; later, this will be made strict and so would raise an exception.
+_NOTE_: for development purposes, we currently use a "loose" validation, which may result in 'missing' info/units, and a warning; later, this will be made strict and so would raise an exception.
 
 In principle, we can store any custom information that is derived from the `FIBaseCustomInfo` class. However, it's strongly advised to use `FIStructuredCustomInfo`. At time of writing, this supports general 'table-wide' information (as `FIBaseExtraInfo` or `FIStdExtraInfo`), and columnwise units (derived from `FIBaseUnit`).
 
@@ -63,7 +80,7 @@ unit_cur_d = fi.ci.unit.currency.FICurrencyUnit(unit_desc="USD", unit_multiplier
 unit_pop = fi.ci.unit.population.FIPopulationUnit(unit_desc="people", unit_multiplier=1)
 
 # Create extra info
-extra_info = fi.ci.structured.FIStdExtraInfo(author="Spud", source="Potato")
+extra_info = fi.ci.structured.extra.FIStdExtraInfo(author="Spud", source="Potato")
 
 # Create custom info with these
 custom_info = fi.ci.structured.FIStructuredCustomInfo(
@@ -98,15 +115,5 @@ If you were extending the extra info or units, you'll probably have to include a
 
 * Some of the newer or more esoteric features of Pandas are not yet accounted for.
 
-
-## Technical Reasonings
-
-### Storing Index and Columns (also an Index) in the YAML File
-
-This all sounds a bit dubious at first. However, consider that Pandas has several types of `Index` including `Index`, `RangeIndex`, `DatetimeIndex`, `MultiIndex`, `CategoricalIndex`, etc. Some of these, such as `Index`, represent the index explicitly with list(s) of elements. Others represent the index in a shorthand way, using only a few parameters needed to reconstruct the index, e.g. `RangeIndex`. The former could fit nicely as an additional column or row in the tabluar data but the latter cannot and is better stored in the YAML file.
-
-Ok, so we could, and may eventually, do just that but it adds complexity to the code. Also, the `columns` in Pandas act as the unique identifier for the columns and, unfortuantely, the columns need not be a simple list of str or ints: it can be a `MultiIndex` or such, i.e. something that requires deserialization and instantiation (this has to happen before applying dtypes, for example). There are also further complications in how Pandas handles some of this internally in the sense that it's not entirely consistent.
-
-This arrangement is not ideal but, for now at least, storing the serialized row index and column index in the YAML file seems a reasonably "clean" way to resolve the problem even if this means a much bigger file. We're not storing massive DataFrames so this should be fine since the files are written+read programatically.
 
 

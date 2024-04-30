@@ -4,7 +4,8 @@ import numpy as np
 import pandas as pd
 
 
-from .structured import FIStdExtraInfo, FIStructuredCustomInfo
+from .extra.std_extra import FIStdExtraInfo
+from .structured import FIStructuredCustomInfo
 
 from .unit.currency import FICurrencyUnit
 from .unit.population import FIPopulationUnit
