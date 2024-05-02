@@ -1,7 +1,13 @@
 site_name: DataFrames File Interchange
 nav:
   - Home: index.md
+  - Tutorials:
+    - Getting Started: getting_started.md
+    - Notebook Simple Write and Read: notebooks/tutorial_simple_write_read.ipynb
   - Technical Background: background.md
   - YAML Fields: yaml_fields.md
   - About: about.md
+plugins:
+  # - mkdocs-jupyter
+  - mknotebooks
 theme: readthedocs

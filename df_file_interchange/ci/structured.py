@@ -145,7 +145,7 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
             # complained on the .get() later if we don't do this (or similar)
             cur_value = value[idx]
 
-            # Skip if already instantiated            
+            # Skip if already instantiated
             if not isinstance(cur_value, dict):
                 loc_value[idx] = value[idx]
                 continue

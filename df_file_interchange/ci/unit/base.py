@@ -53,7 +53,7 @@ class FIBaseUnit(BaseModel):
 
 
 class FIGenericUnit(FIBaseUnit):
-    """A generic unit, not sure using this now but will keep as placeholder for now..."""    
+    """A generic unit, not sure using this now but will keep as placeholder for now..."""
 
     # Override so we can specify arbitrary strings
     unit_desc: Literal[None] | str = None

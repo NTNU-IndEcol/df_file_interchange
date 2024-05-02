@@ -1,0 +1,67 @@
+# Metadata for data/tutorial_tring_out_a_save_new_sep.csv
+---
+
+columns:
+  data:
+    el:
+    - el: a
+      eltype: str
+    - el: b
+      eltype: str
+    - el: c
+      eltype: str
+    - el: d
+      eltype: str
+    eltype: list
+  dtype: object
+  index_type: idx
+  name: null
+custom_info:
+  classname: FIBaseCustomInfo
+  unstructured_data: {}
+datafile: tutorial_tring_out_a_save_new_sep.csv
+encoding:
+  auto_convert_int_to_intna: true
+  csv:
+    csv_allowed_na:
+    - <NA>
+    doublequote: true
+    float_precision: round_trip
+    keep_default_na: false
+    na_rep: <NA>
+    quoting: 2
+    sep: ;
+  parq:
+    engine: pyarrow
+    index: null
+file_format: csv
+format_version: 1
+hash: 9fa3d08b0fb6649fd7f75d48e92aa1fe0c3ef9dc38cdafccf070f440e79c86a0
+index:
+  dtype: int64
+  index_type: range
+  name: null
+  start: 10
+  step: 1
+  stop: 15
+serialized_dtypes:
+  a:
+    dtype_str: int64
+    serialized_col_name:
+      el: a
+      eltype: str
+  b:
+    dtype_str: object
+    serialized_col_name:
+      el: b
+      eltype: str
+  c:
+    dtype_str: float64
+    serialized_col_name:
+      el: c
+      eltype: str
+  d:
+    dtype_str: datetime64[ns]
+    serialized_col_name:
+      el: d
+      eltype: str

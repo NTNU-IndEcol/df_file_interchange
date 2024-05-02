@@ -1,0 +1,67 @@
+# Metadata for data/tutorial_trying_out_a_save.parq
+---
+
+columns:
+  data:
+    el:
+    - el: a
+      eltype: str
+    - el: b
+      eltype: str
+    - el: c
+      eltype: str
+    - el: d
+      eltype: str
+    eltype: list
+  dtype: object
+  index_type: idx
+  name: null
+custom_info:
+  classname: FIBaseCustomInfo
+  unstructured_data: {}
+datafile: tutorial_trying_out_a_save.parq
+encoding:
+  auto_convert_int_to_intna: true
+  csv:
+    csv_allowed_na:
+    - <NA>
+    doublequote: true
+    float_precision: round_trip
+    keep_default_na: false
+    na_rep: <NA>
+    quoting: 2
+    sep: ','
+  parq:
+    engine: pyarrow
+    index: null
+file_format: parquet
+format_version: 1
+hash: 7948f838d0e2216bbb43be11635e986c0a95b90801a6b43000d3736397eb2fb1
+index:
+  dtype: int64
+  index_type: range
+  name: null
+  start: 10
+  step: 1
+  stop: 15
+serialized_dtypes:
+  a:
+    dtype_str: int64
+    serialized_col_name:
+      el: a
+      eltype: str
+  b:
+    dtype_str: object
+    serialized_col_name:
+      el: b
+      eltype: str
+  c:
+    dtype_str: float64
+    serialized_col_name:
+      el: c
+      eltype: str
+  d:
+    dtype_str: datetime64[ns]
+    serialized_col_name:
+      el: d
+      eltype: str

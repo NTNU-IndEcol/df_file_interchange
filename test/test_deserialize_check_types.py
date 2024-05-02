@@ -2,16 +2,9 @@
 Tests the basic type checking in deserialize
 """
 
-# ruff: noqa: E402
-
-import os
-import sys
-
 import numpy as np
 import pytest
 
-TESTPATH = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(TESTPATH, ".."))
 
 from df_file_interchange.file.rw import (
     InvalidValueForFieldError,

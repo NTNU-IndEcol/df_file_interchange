@@ -2,16 +2,8 @@
 Tests custom info units
 """
 
-# ruff: noqa: E402
-
-import os
-import sys
 
 import pytest
-
-TESTPATH = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(TESTPATH, ".."))
-
 
 from pydantic import (
     ValidationError,
