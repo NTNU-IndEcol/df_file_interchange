@@ -18,6 +18,11 @@ dependencies:
   - pyyaml
   - ruff
   - mkdocs
+  - mkdocs-material
   - mknotebooks
   - mkdocstrings
+  - mkdocstrings-python
+  - mkdocstrings-python-xref
+  - mkdocs-gen-files
+  - mkdocs-literate-nav
   - pip
