@@ -643,7 +643,7 @@ class FIEncodingCSV(BaseModel):
         conventions might suggest. If you must be awkward, try ["-NaN", "-nan",
         "<NA>", "N/A", "NA", "NULL", "NaN", "None", "n/a", "nan", "null"] noting
         that "" is not in that list (that does cause problems).
- 
+
     sep : str
         Default ",". Explictly define field separator
 
@@ -692,7 +692,7 @@ class FIEncodingCSV(BaseModel):
 
 class FIEncodingParquet(BaseModel):
     """The parameters we used for writing parquet files
-    
+
     Again, there's really no need to change these.
 
     Attributes
@@ -712,7 +712,7 @@ class FIEncodingParquet(BaseModel):
 
 class FIEncoding(BaseModel):
     """General encoding options, includes CSV and Parquet encoding
-    
+
     Attributes
     ----------
     csv : FIEncodingCSV
@@ -721,7 +721,7 @@ class FIEncoding(BaseModel):
     parq : FIEncodingParquet
         Default FIEncodingParquet(). Extra options that depend on format
 
-    auto_convert_int_to_intna : bool 
+    auto_convert_int_to_intna : bool
         Default True. Whether to automatically convert standard int dtypes to
         Pandas's Int64Dtype (which can also encode NA values), if there are one
         or more NAs or None(s) in the column
@@ -735,7 +735,7 @@ class FIEncoding(BaseModel):
 
 class FIBaseIndex(BaseModel):
     """Base class for our custom classes to be able to serialize/deserialize/instantiate Pandas indexes
-        
+
     This is derived from Pydantic `BaseModel`, so we can (and do) use those
     facilities.
     """
@@ -775,7 +775,7 @@ class FIIndex(FIBaseIndex):
     """Corresonds to pd.Index
 
     See https://pandas.pydata.org/docs/reference/api/pandas.Index.html
-    
+
     Attributes
     ----------
 
@@ -853,7 +853,7 @@ class FIRangeIndex(FIBaseIndex):
 
     Attributes
     ----------
-    
+
     start : int
         Where index starts counting from.
 
@@ -868,7 +868,7 @@ class FIRangeIndex(FIBaseIndex):
 
     dtype : DtypeObj | pd.api.extensions.ExtensionDtype | str | None
         Dtype of the index.
-    
+
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -915,7 +915,7 @@ class FIRangeIndex(FIBaseIndex):
 
 class FICategoricalIndex(FIBaseIndex):
     """Corresonds to pd.CategoricalIndex
-    
+
     See https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.CategoricalIndex.html
 
     Attributes
@@ -932,7 +932,7 @@ class FICategoricalIndex(FIBaseIndex):
 
     name : str | None
         Optional name. Default None.
-    
+
     dtype : DtypeObj | pd.api.extensions.ExtensionDtype | pd.CategoricalDtype | str | None
         Dtype of elements.
 
@@ -1015,13 +1015,13 @@ class FICategoricalIndex(FIBaseIndex):
 
 class FIMultiIndex(FIBaseIndex):
     """Corresponds to pd.MultiIndex
-    
+
     See https://pandas.pydata.org/docs/reference/api/pandas.MultiIndex.html and
     https://pandas.pydata.org/docs/user_guide/advanced.html
 
     Attributes
     ----------
-    
+
     levels : list
         The number of levels in the multiindex.
 
@@ -1156,7 +1156,7 @@ class FIMultiIndex(FIBaseIndex):
 
 class FIIntervalIndex(FIBaseIndex):
     """Corresponds to pd.IntervalIndex
-    
+
     See https://pandas.pydata.org/docs/reference/api/pandas.IntervalIndex.html
 
     Attributes
@@ -1164,7 +1164,7 @@ class FIIntervalIndex(FIBaseIndex):
 
     data : pd.arrays.IntervalArray | np.ndarray
         The data array (of intervals!).
-        
+
     closed : IntervalClosedType
         How each interval is closed or not: "left", "right", "closed", "neither".
 
@@ -1239,7 +1239,7 @@ class FIIntervalIndex(FIBaseIndex):
 
 class FIDatetimeIndex(FIBaseIndex):
     """Corresponds to pd.DatetimeIndex
-    
+
     See https://pandas.pydata.org/docs/reference/api/pandas.DatetimeIndex.html
 
     Attributes
@@ -1339,7 +1339,7 @@ class FIDatetimeIndex(FIBaseIndex):
 
 class FITimedeltaIndex(FIBaseIndex):
     """Corresponds to pd.TimedeltaIndex
-    
+
     See https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.TimedeltaIndex.html
 
     Attributes
@@ -1433,7 +1433,7 @@ class FIPeriodIndex(FIBaseIndex):
 
     data: ArrayLike | AnyArrayLike | list | tuple
         Array of periods.
-    
+
     freq: _Frequency | None = None
         Optional frequency. See Pandas docs.
 

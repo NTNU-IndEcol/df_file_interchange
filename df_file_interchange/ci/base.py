@@ -18,7 +18,7 @@ class FIBaseCustomInfo(BaseModel):
     provided dictionary!
 
     A descendent of this is usually supplied as an object when writing a file to
-    include additional metadata.        
+    include additional metadata.
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
