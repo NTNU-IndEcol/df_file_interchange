@@ -1,3 +1,9 @@
+# We don't want to save temp data files in docs
+docs/notebooks/data
+
+
+# --------
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

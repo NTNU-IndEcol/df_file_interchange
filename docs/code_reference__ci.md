@@ -6,7 +6,6 @@ The base class for custom info is defined here.
 
 ::: df_file_interchange.ci.base.FIBaseCustomInfo
 
-
 ## df_file_interchange.ci.structured
 
 The "standard" class for custom info is defined here along with a standard context (mostly to given an example of the format).
@@ -14,7 +13,6 @@ The "standard" class for custom info is defined here along with a standard conte
 ::: df_file_interchange.ci.structured.FIStructuredCustomInfo
 
 ::: df_file_interchange.ci.structured.generate_default_context
-
 
 ## df_file_interchange.ci.examples
 
