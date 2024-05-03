@@ -2,7 +2,6 @@
 Tests custom info units
 """
 
-
 import pytest
 
 from pydantic import (

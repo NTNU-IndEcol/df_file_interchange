@@ -17,12 +17,39 @@ from .base import FIBaseUnit
 
 
 class FICurrencyUnit(FIBaseUnit):
-    # Currency codes can be obtained from https://treasury.un.org/operationalrates/OperationalRates.php
-    # Download the EXCEL file, copy the column into a text file, then run
-    # `cat currency_abbreviations.txt | sed 's/ //g;s/^/"/;s/$/",/' | sort | uniq  > currency_abbreviations_processed.txt`
-    # and then you'll need to manually remove the "USDollar" entry.
+    """(Pydantic) class that defines currencies as a unit
 
-    # Supplemented with Taiwan dollar, "TWD"
+    Notes
+    -----
+
+    For defining these (dev), currency codes can be obtained from
+    https://treasury.un.org/operationalrates/OperationalRates.php Download the
+    EXCEL file, copy the column into a text file, then run
+    `cat currency_abbreviations.txt | sed 's/ //g;s/^/"/;s/$/",/' | sort | uniq  > currency_abbreviations_processed.txt`
+    and then you'll need to manually remove the "USDollar" entry.
+
+    Supplemented with Taiwan dollar, "TWD"
+
+    Attributes
+    ----------
+    unit_desc : Literal
+        What currency, e.g. "USD, "EUR", etc.
+
+    unit_multiplier : float
+        How many of `unit_desc` at one time, e.g. 1_000_000 USD. Default 1.0.
+
+    unit_year : int or None
+        Sometimes we want the currency to be pegged to a specific year, e.g.
+        "EUR" in 2004. If using this attribute, must also specify whether its
+        average, year end, etc. Default None.
+    unit_year_method: Literal["AVG", "END"] | None
+        Whether currency has been calculated as an average over a period or is
+        end of period. Default None.
+
+    unit_date: datetime | date | None
+        Sometimes we might want to specify currency against a fixed date.
+        Default None.
+    """
 
     # The various currencies we can use.
     unit_desc: Literal[
@@ -190,7 +217,7 @@ class FICurrencyUnit(FIBaseUnit):
     unit_year: int | None = None
     unit_year_method: Literal["AVG", "END"] | None = None
 
-    # Sometimes we might want tosspecify currency against a fixed date.
+    # Sometimes we might want to specify currency against a fixed date.
     unit_date: datetime | date | None = None
 
     @model_validator(mode="after")

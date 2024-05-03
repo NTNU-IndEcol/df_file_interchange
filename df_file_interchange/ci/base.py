@@ -18,8 +18,7 @@ class FIBaseCustomInfo(BaseModel):
     provided dictionary!
 
     A descendent of this is usually supplied as an object when writing a file to
-    include additional metadata. When reading, a class is passed as a parameter
-    and an object will be instantiated upon reading.
+    include additional metadata.        
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -28,12 +27,24 @@ class FIBaseCustomInfo(BaseModel):
 
     @classmethod
     def get_classname(cls) -> str:
+        """Returns the classname
+
+        Fairly prosaic but we use this for serialization and deserialization.
+
+        Returns
+        -------
+        str
+            The classname.
+        """
         return cls.__name__
 
     @computed_field
     @property
     def classname(self) -> str:
         """Ensures classname is included in serialization
+
+        By defining this as a computed Pydantic attribute, it's included in any
+        serialization.
 
         Returns
         -------

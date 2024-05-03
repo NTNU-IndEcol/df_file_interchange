@@ -23,9 +23,6 @@ class FIBaseUnit(BaseModel):
     unit_multiplier : float
         Default 1.0. Used when, for example, we need to say "millions of (a
         unit)".
-    unit_type : str (computed field)
-        Override this in descendent classes to return what this is, e.g.
-        "currency".
     """
 
     # The unit description , e.g. "kg", "USD", "hamsters"

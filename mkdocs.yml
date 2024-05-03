@@ -7,6 +7,8 @@ nav:
   - Code Reference:
     - file (read & write): code_reference__file.md
     - ci (custom information): code_reference__ci.md
+    - ci.extra (extra df info): code_reference__ci_extra.md
+    - ci.unit (columnwise units): code_reference__ci_unit.md
   - Technical Background: background.md
   - YAML Fields: yaml_fields.md
   # - About: about.md

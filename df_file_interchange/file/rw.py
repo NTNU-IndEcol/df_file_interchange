@@ -632,32 +632,46 @@ class FIEncodingCSV(BaseModel):
 
     NOTE! You almost certainly do not have any reason to change these defaults.
     They were tested to ensure that the roundtrip write-read is exactly correct.
+
+    Attributes
+    ----------
+    csv_allowed_na : list[str]
+        Default ["<NA>"]. WE write all our files, so we can be more restrictive
+        to reduce window for ambiguity when reading a file. In particualr, it's
+        a bad idea to confuse NaN with a null value with a missing value with an
+        empty value -- these are NOT the same, despite what "data science"
+        conventions might suggest. If you must be awkward, try ["-NaN", "-nan",
+        "<NA>", "N/A", "NA", "NULL", "NaN", "None", "n/a", "nan", "null"] noting
+        that "" is not in that list (that does cause problems).
+ 
+    sep : str
+        Default ",". Explictly define field separator
+
+    na_rep: str
+        Default "<NA>". This must be in the csv_allowed_na list. What's used as
+        the default na.
+
+    keep_default_na: bool
+        Default False.
+
+    doublequote: bool
+        Default True. How we're escaping quotes in a str.
+
+    quoting: int
+        Default csv.QUOTE_NONNUMERIC. i.e. we only quote non-numeric values.
+
+    float_precision: Literal["high", "legacy", "round_trip"]
+        Default "round_trip". Weirdly, Pandas's other options, including the
+        default, don't actually return what was written with floats.
+
     """
 
-    # WE write all our files, so we can be more restrictive to reduce window for
-    # ambiguity when reading a file. In particualr, it's a bad idea to confuse
-    # NaN with a null value with a missing value with an empty value -- these
-    # are NOT the same, despite what "data science" conventions might suggest.
-    # If you must be awkward, try
-    #   ["-NaN", "-nan", "<NA>", "N/A", "NA", "NULL", "NaN", "None", "n/a", "nan", "null"]
-    #   noting that "" is not in that list (that does cause problems).
     csv_allowed_na: list[str] = ["<NA>"]
-
-    # Explictly define field separator
     sep: str = ","
-
-    # This must be in the csv_allowed_na list
     na_rep: str = "<NA>"
     keep_default_na: bool = False
-
-    # How we're escaping quotes in a str
     doublequote: bool = True
-
-    # We only quote non-numeric values
     quoting: int = csv.QUOTE_NONNUMERIC
-
-    # Weirdly, Pandas's other options, including the default, don't actually
-    # return what was written with floats.
     float_precision: Literal["high", "legacy", "round_trip"] = "round_trip"
 
     # Do logic checks now that we've got the fields sorted
@@ -677,33 +691,54 @@ class FIEncodingCSV(BaseModel):
 
 
 class FIEncodingParquet(BaseModel):
-    """The parameters we used for writing parquet files"""
+    """The parameters we used for writing parquet files
+    
+    Again, there's really no need to change these.
 
-    # Engine to use. Has to be consistent and was tested with pyarrow
+    Attributes
+    ----------
+    engine : str
+        Default "pyarrow". Engine to use. Has to be consistent and was tested
+        with pyarrow
+
+    index : str | None
+        Default None. See
+        https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_parquet.html#pandas.DataFrame.to_parquet
+    """
+
     engine: str = "pyarrow"
-
-    # Needs to be True. If None (default), Pandas will store a RangeIndex in the
-    # Parquet meta, which makes it harder to import from other software. See
-    # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_parquet.html#pandas.DataFrame.to_parquet
     index: str | None = None
 
 
 class FIEncoding(BaseModel):
-    """General encoding options, includes CSV and Parquet encoding"""
+    """General encoding options, includes CSV and Parquet encoding
+    
+    Attributes
+    ----------
+    csv : FIEncodingCSV
+        Default FIEncodingCSV(). Extra options that depend on format
 
-    # Extra options that depend on format
+    parq : FIEncodingParquet
+        Default FIEncodingParquet(). Extra options that depend on format
+
+    auto_convert_int_to_intna : bool 
+        Default True. Whether to automatically convert standard int dtypes to
+        Pandas's Int64Dtype (which can also encode NA values), if there are one
+        or more NAs or None(s) in the column
+
+    """
+
     csv: FIEncodingCSV = FIEncodingCSV()
     parq: FIEncodingParquet = FIEncodingParquet()
-
-    # Whether to automatically convert standard int dtypes to Pandas's
-    # Int64Dtype (which can also encode NA values), if there are one or more NAs
-    # or None(s) in the column
     auto_convert_int_to_intna: bool = True
 
 
 class FIBaseIndex(BaseModel):
-    """Base class for defining our custom classes to be able to
-    serialize/deserialize/instantiate Pandas indexes"""
+    """Base class for our custom classes to be able to serialize/deserialize/instantiate Pandas indexes
+        
+    This is derived from Pydantic `BaseModel`, so we can (and do) use those
+    facilities.
+    """
 
     # TODO factory code to instantiate itself? (if possible from Pydantic model)
 
@@ -722,6 +757,11 @@ class FIBaseIndex(BaseModel):
     def get_as_index(self, **kwargs) -> pd.Index:
         """Creates corresponding Pandas index
 
+        Params
+        ------
+        **kwargs : dict
+            Not used at current time.
+
         Returns
         -------
         pd.Index
@@ -732,7 +772,23 @@ class FIBaseIndex(BaseModel):
 
 
 class FIIndex(FIBaseIndex):
-    """Corresonds to pd.Index"""
+    """Corresonds to pd.Index
+
+    See https://pandas.pydata.org/docs/reference/api/pandas.Index.html
+    
+    Attributes
+    ----------
+
+    data : ArrayLike | AnyArrayLike | list | tuple
+        The enumerated elements in the index.
+
+    name : str | None = None
+        Optional name.
+
+    dtype : Dtype | DtypeObj | pd.api.extensions.ExtensionDtype | None
+        Dtype of the elemenets.
+
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -791,7 +847,29 @@ class FIIndex(FIBaseIndex):
 
 
 class FIRangeIndex(FIBaseIndex):
-    """Corresonds to pd.RangeIndex"""
+    """Corresonds to pd.RangeIndex
+
+    See https://pandas.pydata.org/docs/reference/api/pandas.RangeIndex.html
+
+    Attributes
+    ----------
+    
+    start : int
+        Where index starts counting from.
+
+    stop : int
+        Where index stops counting.
+
+    step : int
+        Step that index counts in.
+
+    name : str | None
+        Optional name. Default None.
+
+    dtype : DtypeObj | pd.api.extensions.ExtensionDtype | str | None
+        Dtype of the index.
+    
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -836,7 +914,29 @@ class FIRangeIndex(FIBaseIndex):
 
 
 class FICategoricalIndex(FIBaseIndex):
-    """Corresonds to pd.CategoricalIndex"""
+    """Corresonds to pd.CategoricalIndex
+    
+    See https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.CategoricalIndex.html
+
+    Attributes
+    ----------
+
+    data : ArrayLike | AnyArrayLike | list | tuple
+        Elements in index.
+
+    categories : ArrayLike | AnyArrayLike | list | tuple
+        List from which elements in data must belong.
+
+    ordered : bool
+        Whether data should be ordered?
+
+    name : str | None
+        Optional name. Default None.
+    
+    dtype : DtypeObj | pd.api.extensions.ExtensionDtype | pd.CategoricalDtype | str | None
+        Dtype of elements.
+
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -914,7 +1014,30 @@ class FICategoricalIndex(FIBaseIndex):
 
 
 class FIMultiIndex(FIBaseIndex):
-    """Corresponds to pd.MultiIndex"""
+    """Corresponds to pd.MultiIndex
+    
+    See https://pandas.pydata.org/docs/reference/api/pandas.MultiIndex.html and
+    https://pandas.pydata.org/docs/user_guide/advanced.html
+
+    Attributes
+    ----------
+    
+    levels : list
+        The number of levels in the multiindex.
+
+    codes : list
+        The list of lists (I think), of the elements in the index.
+
+    sortorder : int | None
+        Default None.
+
+    names : list
+        List of names for the levels.
+
+    dtypes : pd.Series | list
+        Dtype specifications.
+
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -1032,7 +1155,25 @@ class FIMultiIndex(FIBaseIndex):
 
 
 class FIIntervalIndex(FIBaseIndex):
-    """Corresponds to pd.IntervalIndex"""
+    """Corresponds to pd.IntervalIndex
+    
+    See https://pandas.pydata.org/docs/reference/api/pandas.IntervalIndex.html
+
+    Attributes
+    ----------
+
+    data : pd.arrays.IntervalArray | np.ndarray
+        The data array (of intervals!).
+        
+    closed : IntervalClosedType
+        How each interval is closed or not: "left", "right", "closed", "neither".
+
+    name : str or None
+        Optional name. Default None.
+
+    dtype : pd.IntervalDtype | str | None
+
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -1097,7 +1238,28 @@ class FIIntervalIndex(FIBaseIndex):
 
 
 class FIDatetimeIndex(FIBaseIndex):
-    """Corresponds to pd.DatetimeIndex"""
+    """Corresponds to pd.DatetimeIndex
+    
+    See https://pandas.pydata.org/docs/reference/api/pandas.DatetimeIndex.html
+
+    Attributes
+    ----------
+
+    data: ArrayLike | AnyArrayLike | list | tuple
+        Array of datetimes.
+
+    freq: _Frequency | None = None
+        Optional frequency. See Pandas docs for what this means.
+
+    tz: tzinfo | str | None
+        Optional tz.
+
+    name: str | None = None
+        Optional name.
+
+    dtype: Dtype | str | None
+
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -1176,7 +1338,25 @@ class FIDatetimeIndex(FIBaseIndex):
 
 
 class FITimedeltaIndex(FIBaseIndex):
-    """Corresponds to pd.TimedeltaIndex"""
+    """Corresponds to pd.TimedeltaIndex
+    
+    See https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.TimedeltaIndex.html
+
+    Attributes
+    ----------
+
+    data : ArrayLike | AnyArrayLike | list | tuple
+        Array of timedeltas.
+
+    freq : str | BaseOffset | None = None
+        Optional frequency. See Pandas docs for details.
+
+    name : str | None = None
+        Optional name.
+
+    dtype : DtypeObj | np.dtypes.TimeDelta64DType | Literal["<m8[ns]"] | str | None
+
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -1247,7 +1427,22 @@ class FITimedeltaIndex(FIBaseIndex):
 
 
 class FIPeriodIndex(FIBaseIndex):
-    """Corresponds to pd.PeriodIndex"""
+    """Corresponds to pd.PeriodIndex
+
+    See https://pandas.pydata.org/docs/reference/api/pandas.PeriodIndex.html
+
+    data: ArrayLike | AnyArrayLike | list | tuple
+        Array of periods.
+    
+    freq: _Frequency | None = None
+        Optional frequency. See Pandas docs.
+
+    name: str | None = None
+        Optional name
+
+    dtype: DtypeObj | pd.PeriodDtype | str | None  # Hmmm.
+
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -1322,6 +1517,37 @@ class FIMetainfo(BaseModel):
     serialization automatically preserves the order, and then `yaml.dump()` does
     too. This means we can make the YAML file a little easier to read/parse by a
     human.
+
+    Attributes
+    ----------
+
+    datafile : Path
+        Ironically, this should always just be the filename with no paths
+
+    file_format : FIFileFormatEnum
+        The file format of datafile.
+
+    format_version: int
+        Default 1. Not really used yet but we might need to version the YAML file.
+
+    hash: str | None
+        SHA256 hash of the datafile.
+
+    encoding: FIEncoding
+        How the datafile was or is to be encoded.
+
+    custom_info: SerializeAsAny[FIBaseCustomInfo]
+        Structured custom info. Can just be an empty FIBaseCustomInfo object.
+
+    serialized_dtypes: dict
+        Dtypes of the dataframe.
+
+    index: FIBaseIndex
+        Index information encoded as a FIBaseIndex object (descendent thereof).
+
+    columns: FIBaseIndex
+        Columns, again, specified as an FIIndex object
+
     """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -1563,6 +1789,15 @@ def _serialize_df_dtypes_to_dict(df: pd.DataFrame) -> dict:
     This isn't quite as obvious as it seems because the column label isn't
     necessarily a string. Indeed, it can be a tuple (if a MultiIndex is used for
     columns).
+
+    Params
+    ------
+    df : pd.DataFrame
+
+    Returns
+    -------
+    dict
+
     """
 
     serialized_dtypes = {}
