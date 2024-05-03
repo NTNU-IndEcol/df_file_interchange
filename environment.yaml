@@ -25,4 +25,5 @@ dependencies:
   - mkdocstrings-python-xref
   - mkdocs-gen-files
   - mkdocs-literate-nav
+  - pygments
   - pip

@@ -2507,7 +2507,7 @@ def read_df(
         The YAML file that is associated with the datafile.
     strict_hash_check : bool, optional
         Whether we raise an exception if the hash is wrong.
-    context : dict | None, optional
+    context_metainfo : dict | None, optional
         If manually supplying a context to decode the structured custom info, by
         default None (in which was subclass type checks are used).
 
