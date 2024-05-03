@@ -3,6 +3,7 @@ nav:
   - Home: index.md
   - Tutorials:
     - Getting Started: getting_started.md
+    - Custom Structured Info: custom_info.md
     - Notebook Simple Write and Read: notebooks/tutorial_simple_write_read.ipynb
   - Code Reference:
     - file (read & write): code_reference__file.md
