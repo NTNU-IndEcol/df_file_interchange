@@ -8,15 +8,14 @@ dependencies:
   - numpy
   - pandas
   - pyarrow
-  - ipykernel
   - loguru
-  # - black
-  # - black-jupyter
-  - pytest
-  # - isort
-  - mypy
   - pyyaml
+# dev
   - ruff
+  - pytest
+  - mypy
+  - ipykernel
+# docs
   - mkdocs
   - mkdocs-material
   - mknotebooks
@@ -26,4 +25,5 @@ dependencies:
   - mkdocs-gen-files
   - mkdocs-literate-nav
   - pygments
+# pip goes last
   - pip
