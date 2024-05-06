@@ -674,10 +674,8 @@ class FIEncodingCSV(BaseModel):
     quoting: int = csv.QUOTE_NONNUMERIC
     float_precision: Literal["high", "legacy", "round_trip"] = "round_trip"
 
-    # Do logic checks now that we've got the fields sorted
     @model_validator(mode="after")
     def check_logic(self):
-        # Check if oid set then must be in correct format
         if self.na_rep != "":
             if self.na_rep not in self.csv_allowed_na:
                 error_msg = (
@@ -685,7 +683,7 @@ class FIEncodingCSV(BaseModel):
                     f" csv_allowed_na={self.csv_allowed_na}"
                 )
                 logger.error(error_msg)
-                raise Exception(error_msg)
+                raise LookupError(error_msg)
 
         return self
 
@@ -1635,7 +1633,7 @@ class FIMetainfo(BaseModel):
         else:
             error_msg = f"Neither context for supplied classname nor is it a subclass of FIBaseCustomInfo. classname={value_classname}"
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise TypeError(error_msg)
 
         assert issubclass(custom_info_class, FIBaseCustomInfo)
         return custom_info_class.model_validate(value, context=info.context)
@@ -1686,7 +1684,7 @@ def _detect_file_format_from_filename(datafile: Path) -> FIFileFormatEnum:
             f" Filename={datafile.name}"
         )
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise ValueError(error_msg)
 
 
 def _check_metafile_name(
@@ -1716,13 +1714,13 @@ def _check_metafile_name(
         if loc_metafile.suffix not in [".yaml", ".yml"]:
             error_msg = f"File extension for metadata file must be .yaml. Got {loc_metafile.suffix}"
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise ValueError(error_msg)
 
     # Check path for datafile and metafile are the same
     if datafile.parent != loc_metafile.parent:
         error_msg = f"Path for datafile and metafile must be the same. datafile={datafile}, loc_metafile={metafile}"
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise ValueError(error_msg)
 
     return loc_metafile
 
@@ -1738,7 +1736,7 @@ def _preprocess_common(df: pd.DataFrame, encoding: FIEncoding):
     if not df.columns.is_unique:
         error_msg = "Column names must be unique! (This is a tighter restriction than Pandas but avoids a lot of stupid mistakes, so we enforce it)"
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise ValueError(error_msg)
 
 
 def _preprocess_inplace(df: pd.DataFrame, encoding: FIEncoding):
@@ -1858,7 +1856,7 @@ def _deserialize_df_types(serialized_dtypes: dict) -> dict:
                 f"Got column in serialized dtypes without a dtype_str field. col={col}"
             )
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise ValueError(error_msg)
 
         deserialized_dtypes[loc_col_name] = {}
         deserialized_dtypes[loc_col_name]["dtype_str"] = dtype_str
@@ -1906,7 +1904,7 @@ def _deserialize_dtypes_for_read_csv(serialized_dtypes: dict) -> dict:
                 f"Got column in serialized dtypes without a dtype_str field. col={col}"
             )
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise ValueError(error_msg)
 
         # Try to apply dtypes. Usually we just "pass through" but there are some
         # that need a more permissive default (str or object) so that the column
@@ -1978,7 +1976,7 @@ def _serialize_index_to_metainfo_index(idx: pd.Index) -> FIBaseIndex:
     if not isinstance(idx, pd.Index):
         error_msg = f"Must pass a Pandas Index. Got a {type(idx)}"
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise TypeError(error_msg)
 
     if isinstance(idx, pd.RangeIndex):
         assert isinstance(idx.start, int)
@@ -2051,7 +2049,7 @@ def _serialize_index_to_metainfo_index(idx: pd.Index) -> FIBaseIndex:
     else:
         error_msg = f"Unrecognised index type: {type(idx)}"
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise TypeError(error_msg)
 
 
 def _deserialize_index_dict_to_fi_index(index: dict) -> FIBaseIndex:
@@ -2072,7 +2070,7 @@ def _deserialize_index_dict_to_fi_index(index: dict) -> FIBaseIndex:
     if index_type is None or index_type == "":
         error_msg = "index_type cannot be empty or None when deserializing."
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise ValueError(error_msg)
 
     if index_type == FIIndexType.idx:
         return FIIndex(**index)
@@ -2093,7 +2091,7 @@ def _deserialize_index_dict_to_fi_index(index: dict) -> FIBaseIndex:
     else:
         error_msg = f"index_type not recognised. index_type={index_type}"
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise ValueError(error_msg)
 
 
 def _compile_metainfo(
@@ -2381,7 +2379,7 @@ def write_df_to_file(
     elif isinstance(custom_info, FIBaseCustomInfo):
         loc_custom_info = custom_info
     else:
-        raise Exception("custom_info must be a dict or descendent of FIBaseCustomInfo")
+        raise TypeError("custom_info must be a dict or descendent of FIBaseCustomInfo")
 
     # Write to the data file
     if loc_file_format == FIFileFormatEnum.csv:
@@ -2391,7 +2389,7 @@ def write_df_to_file(
     else:
         error_msg = "Output format not supported. This shouldn't happen."
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise ValueError(error_msg)
 
     # Calculate the file's hash
     with open(datafile, "rb") as h_datafile:
@@ -2529,7 +2527,7 @@ def read_df(
         error_msg = f"Hash comparison failed. metainfo.hash={metainfo.hash}, calcualted hash={hash}."
         if strict_hash_check:
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise ValueError(error_msg)
         else:
             logger.warning(error_msg)
 
@@ -2556,9 +2554,9 @@ def read_df(
     elif metainfo.file_format == FIFileFormatEnum.parquet:
         df = _read_from_parquet(datafile_abs, metainfo.encoding)
     else:
-        error_msg = "Input format not supported. This shouldn't happen."
+        error_msg = f"Input format ({metainfo.file_format}) not supported. We only support CSV and Parquet."
         logger.error(error_msg)
-        raise Exception(error_msg)
+        raise ValueError(error_msg)
 
     # Apply index and columns
     df.index = metainfo.index.get_as_index()

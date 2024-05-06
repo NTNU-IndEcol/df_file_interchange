@@ -99,7 +99,7 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
         else:
             error_msg = f"Neither context for supplied classname nor is it a subclass of FIBaseExtraInfo. classname={value_classname}"
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise ValueError(error_msg)
 
         assert issubclass(extra_info_class, FIBaseExtraInfo)
         return extra_info_class.model_validate(value, context=info.context)
@@ -124,7 +124,7 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
         if not isinstance(value, dict):
             error_msg = f"col_units should always be a dictionary. Got type={type(value)}, value={value}"
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise TypeError(error_msg)
 
         # By default we don't use a context
         clss_col_units = None
@@ -165,7 +165,7 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
             else:
                 error_msg = f"Neither context supplied nor is subclass of FIBaseUnit. classname={value_classname}"
                 logger.error(error_msg)
-                raise Exception(error_msg)
+                raise TypeError(error_msg)
 
             assert issubclass(units_class, FIBaseUnit)
             loc_value[idx] = units_class.model_validate(

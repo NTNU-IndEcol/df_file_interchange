@@ -67,7 +67,7 @@ This is just a wrapper around `pd._testing.assert_frame_equal()` where we instea
 
 ## Variations on a Theme
 
-There are convenience functions that specify the output type when writing (`fi.write_df_to_parquet()` and `fi.write_df_to_csv()`).
+For writing a df to file, there are convenience functions that specify the output type (`fi.write_df_to_parquet()` and `fi.write_df_to_csv()`).
 
 ```python
 datafile_parq_path = Path(data_dir / "tutorial_trying_out_a_save.parq")
