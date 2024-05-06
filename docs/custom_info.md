@@ -8,7 +8,7 @@ The  `df_file_interchange.ci.structured.FIStructuredCustomInfo` class is the can
 
 ## Basic Example
 
-A basic example is included here and also in the relevant notebook.
+A basic example is included here and also in the corresponding [notebook on using custom info](./notebooks/tutorial_simple_structured_custom_info.ipynb).
 
 ```python
 import pandas as pd

@@ -8,6 +8,8 @@ TODO describe installalling from the ether.
 
 Ok, lets first import NumPy, Pandas, pathlib, and df_file_interchange.
 
+There's a copy of this tutorial in the handy [notebook on simple write and write](./notebooks/tutorial_simple_write_read.ipynb).
+
 ```python
 import numpy as np
 import pandas as pd
