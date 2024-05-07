@@ -19,17 +19,17 @@ jobs:
     - name: Check out repository code
       uses: actions/checkout@v4
 
-    - name: Cache conda
-      uses: actions/cache@v3
-      env:
-        # Increase this value to reset cache if environment.yaml has not changed
-        CACHE_NUMBER: 0
-      with:
-        path: ~/conda_pkgs_dir
-        # Note (EsmeMaxwell: make sure to change environment.yaml below to match what you're using!)
-        key:
-          ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
-          hashFiles('environment.yaml') }}
+    # - name: Cache conda
+    #   uses: actions/cache@v3
+    #   env:
+    #     # Increase this value to reset cache if environment.yaml has not changed
+    #     CACHE_NUMBER: 0
+    #   with:
+    #     path: ~/conda_pkgs_dir
+    #     # Note (EsmeMaxwell: make sure to change environment.yaml below to match what you're using!)
+    #     key:
+    #       ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+    #       hashFiles('environment.yaml') }}
 
     - name: Setup conda and environment
       uses: conda-incubator/setup-miniconda@v3
@@ -43,7 +43,7 @@ jobs:
           channel-priority: strict
           activate-environment: df-file-interchange
           environment-file: environment.yaml
-          use-only-tar-bz2: true   # required for caching
+          # use-only-tar-bz2: true   # required for caching
 
     - name: List environment
       run: |
