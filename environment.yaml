@@ -1,6 +1,7 @@
 name: df-file-interchange
 channels:
   - conda-forge
+  - nodefaults
 dependencies:
   - python=3.11
   - pydantic >= 2.7
