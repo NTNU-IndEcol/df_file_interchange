@@ -1,56 +1,62 @@
-# name: do_tests
+name: do_tests
 
-# on: ["pull_request"]
+# Will setup a proper branch process soon but leaving this as "push" on main for now so can get it working...
+# CHANGE THIS TO MANUAL!
+# on: ["push", "pull_request"]
+on: workflow_dispatch
 
-# jobs: 
+jobs: 
 
-#  test_development:
-#   # Testing in development environment: functionality and code-format
-#   # From https://github.com/marketplace/actions/setup-miniconda#caching-packages  
-#     runs-on: ubuntu-latest
-#     defaults:
-#       run:
-#         shell: bash -l {0}
+ test_development:
+  # Testing in development environment: functionality and code-format
+  # From https://github.com/marketplace/actions/setup-miniconda#caching-packages  
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
 
-#     steps:
-#     - name: Check out repository code
-#       uses: actions/checkout@v4
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v4
 
-#     - name: Cache conda
-#       uses: actions/cache@v3
-#       env:
-#         # Increase this value to reset cache if environment.yaml has not changed
-#         CACHE_NUMBER: 0
-#       with:
-#         path: ~/conda_pkgs_dir
-#         # Note (EsmeMaxwell: make sure to change environment.yaml below to match what you're using!)
-#         key:
-#           ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
-#           hashFiles('environment.yaml') }}
+    - name: Cache conda
+      uses: actions/cache@v3
+      env:
+        # Increase this value to reset cache if environment.yaml has not changed
+        CACHE_NUMBER: 0
+      with:
+        path: ~/conda_pkgs_dir
+        # Note (EsmeMaxwell: make sure to change environment.yaml below to match what you're using!)
+        key:
+          ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+          hashFiles('environment.yaml') }}
 
-#     - name: Setup conda and environment
-#       uses: conda-incubator/setup-miniconda@v3
-#       with:
-#           auto-update-conda: true
-#           miniforge-variant: Mambaforge
-#           miniforge-version: latest
-#           use-mamba: true
-#           channels: conda-forge
-#           mamba-version: "*"
-#           channel-priority: strict
-#           activate-environment: df-file-interchange
-#           environment-file: environment.yaml
-#           use-only-tar-bz2: true   # required for caching
+    - name: Setup conda and environment
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+          auto-update-conda: true
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          channels: conda-forge
+          mamba-version: "*"
+          channel-priority: strict
+          activate-environment: df-file-interchange
+          environment-file: environment.yaml
+          use-only-tar-bz2: true   # required for caching
 
-#     - name: List environment
-#       run: |
-#         mamba info
-#         mamba list
+    - name: List environment
+      run: |
+        mamba info
+        mamba list
 
-#     - name: Run tests
-#       run: |
-#          isort --check-only .
-#          coverage run --source=country_converter -m pytest --black -vv
+    - name: Run pytest
+      run: pytest -s
+
+    # - name: Run tests
+    #   run: |
+    #      isort --check-only .
+    #      coverage run --source=country_converter -m pytest --black -vv
 
 
 

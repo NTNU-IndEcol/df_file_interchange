@@ -10,7 +10,7 @@ dependencies:
   - pyarrow
   - loguru
   - pyyaml
-# dev
+# dev/test
   - ruff
   - pytest
   - mypy

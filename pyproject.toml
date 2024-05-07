@@ -41,6 +41,12 @@ classifiers = [
 
 ]
 
+
+[project.optional-dependencies]
+test = [
+  pytest
+]
+
 [project.urls]
 Home = "https://github.com/EXIOBASE/df_file_interchange"
 Issues = "https://github.com/EXIOBASE/df_file_interchange/issues"
