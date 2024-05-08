@@ -10,8 +10,12 @@ In the future, the intention is also to opportunistically serialise columns when
 
 This is not trying to reinvent-the-wheel, only supplement existing functionality found in Pandas.
 
+## Documentation
 
-## Usage
+The [documentation is here](https://ntnu-indecol.github.io/df_file_interchange/).
+
+
+## Summary of Usage
 
 ### Basic Usage for Writing+Reading CSV/Parquet
 
