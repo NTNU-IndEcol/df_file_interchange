@@ -4,7 +4,7 @@ Any "extra info" classes must derive from this.
 """
 
 from typing import Any
-from loguru import logger
+from loguru import logger  # noqa: F401
 
 from pydantic import (
     BaseModel,

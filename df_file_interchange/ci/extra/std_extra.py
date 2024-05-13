@@ -1,18 +1,8 @@
 """Standard extra info"""
 
-from typing import Any
-from loguru import logger
+from loguru import logger  # noqa: F401
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    computed_field,
-    model_validator,
-    field_validator,
-    ValidationInfo,
-    SerializeAsAny,
-)
-
+from datetime import date, datetime
 from .base import FIBaseExtraInfo
 
 
@@ -29,3 +19,6 @@ class FIStdExtraInfo(FIBaseExtraInfo):
 
     author: str | None = None
     source: str | None = None
+    description: str | None = None
+    processed_date: date | datetime | None = None
+    processed_by: str | None = None
