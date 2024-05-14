@@ -10,6 +10,7 @@ Includes
 
 from typing import Any
 from loguru import logger
+from pprint import pprint
 
 from pydantic import (
     field_validator,
@@ -81,6 +82,7 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
 
         # Now process
         value_classname = value.get("classname", None)
+        pprint(globals())
         if (
             value_classname
             and clss_extra_info is not None
