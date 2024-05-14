@@ -79,7 +79,7 @@ def test_save_load_with_extend_extra_info(tmp_path: Path):
     # Read
     (df_reload, metainfo_reload) = fi.read_df(metafile, context_metainfo=context)
 
-    # Comapre dataframes
+    # Compare dataframes
     chk_strict_frames_eq_ignore_nan(
         df,
         df_reload,
