@@ -82,7 +82,6 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
 
         # Now process
         value_classname = value.get("classname", None)
-        pprint(globals())
         if (
             value_classname
             and clss_extra_info is not None
