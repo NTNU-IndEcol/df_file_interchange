@@ -206,14 +206,14 @@ class FICurrencyUnit(FIBaseUnit):
         "ZAR",
         "ZMW",
         "ZWL",
-    ]
+    ] = "USD"
 
     # Sometimes we have quantities in "millions of $", for example
     unit_multiplier: float = 1.0
 
     # Sometimes we need currency to be tagged to a specific year, e.g. "EUR" in
-    # 2004. If using this field, must also specify whether it's averaged, year
-    # end, or what in unit_year_method
+    # 2004. If using this field, can also specify whether it's averaged, year
+    # end, etc, in unit_year_method
     unit_year: int | None = None
     unit_year_method: Literal["AVG", "END"] | None = None
 
@@ -222,16 +222,18 @@ class FICurrencyUnit(FIBaseUnit):
 
     @model_validator(mode="after")
     def model_validator_after(self) -> Self:
-        # Check if unit_year not None then unit_year_method must also be not
-        # None
-        if self.unit_year is not None and self.unit_year_method is None:
-            error_msg = "Validator error: if unit_year is not None then unit_year_method must be defined."
-            logger.error(error_msg)
-            raise ValueError(error_msg)
 
-        # Check that both unit_year and unit_date are not both set at once
-        if self.unit_year is not None and self.unit_date is not None:
-            error_msg = "Validation error: cannot have both unit_year and unit_date not None at same time."
+        # 20240522: this doesn't necessarily make sense, so have commented it out...
+        # # Check if unit_year not None then unit_year_method must also be not
+        # # None
+        # if self.unit_year is not None and self.unit_year_method is None:
+        #     error_msg = "Validator error: if unit_year is not None then unit_year_method must be defined."
+        #     logger.error(error_msg)
+        #     raise ValueError(error_msg)
+
+        # Check that if unit_year_method not None then unit_year is not None
+        if self.unit_year_method is not None and self.unit_year is None:
+            error_msg = "Validation error: if unit_year_method not None then unit_year must also be not None."
             logger.error(error_msg)
             raise ValueError(error_msg)
 
