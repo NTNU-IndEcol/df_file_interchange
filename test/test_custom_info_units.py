@@ -27,5 +27,5 @@ def test_unit_currency():
             unit_multiplier=1.0,
             unit_year=2004,
             unit_year_method="AVG",
-            unit_date="2032-04-23T10:20:30.400+02:30",
+            unit_date="2032-04-23T10:20:30.400+02:30",  # type: ignore
         )

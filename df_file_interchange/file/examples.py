@@ -90,9 +90,9 @@ def generate_example_indices():
         tz="UTC",
     )
 
-    fi_periodindex_1 = pd.PeriodIndex.from_fields(
+    fi_periodindex_1 = pd.PeriodIndex.from_fields(  # type: ignore   (for some reason, pylance can't see .from_fields())
         year=[2000, 2002, 2004], quarter=[1, 3, 2]
-    )  # type: ignore
+    )
     fi_periodindex_2 = pd.period_range(start="2017-01-01", end="2018-01-01", freq="M")
 
     return {

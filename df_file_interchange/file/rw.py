@@ -448,11 +448,11 @@ def _deserialize_element(
             _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
         )
     elif eltype == "pd.arrays.DatetimeArray":
-        return pd.arrays.DatetimeArray._from_sequence(
+        return pd.arrays.DatetimeArray._from_sequence(  # type: ignore  (look, this isn't my fault, see example in https://pandas.pydata.org/docs/reference/api/pandas.arrays.DatetimeArray.html )
             _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
         )  # type: ignore
     elif eltype == "pd.arrays.PeriodArray":
-        return pd.arrays.PeriodArray._from_sequence(
+        return pd.arrays.PeriodArray._from_sequence(    # type: ignore
             _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
         )  # type: ignore
     elif eltype == "pd.Timestamp":
