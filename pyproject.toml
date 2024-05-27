@@ -7,7 +7,7 @@ name = "df_file_interchange"
 authors = [{name = "Esmé Maxwell", email = "peter.maxwell@ntnu.no"}]
 description = "Ensures exactly round-trip saves with Pandas (CSV/Parquet) and storage of validatable metadata"
 readme = "README.md"
-dynamic = ["version"]
+dynamic = ["version", "desccription"]
 requires-python = ">= 3.11"
 dependencies = [
     "pydantic >= 2.7, < 3",
@@ -30,7 +30,7 @@ classifiers = [
   "Intended Audience :: Science/Research",
 
   # Pick your license as you wish (see also "license" above)
-  # "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: BSD License",
 
   # Specify the Python versions you support here.
   "Programming Language :: Python :: 3",
@@ -50,3 +50,4 @@ test = [
 [project.urls]
 Home = "https://github.com/EXIOBASE/df_file_interchange"
 Issues = "https://github.com/EXIOBASE/df_file_interchange/issues"
+Documentation = "https://ntnu-indecol.github.io/df_file_interchange/"

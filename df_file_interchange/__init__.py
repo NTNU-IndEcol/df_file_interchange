@@ -2,7 +2,11 @@
 EXIOBASE/df_file_interchange
 ============================
 
-Import a la ```import df_file_interchange as fi```.
+Wrapper for Pandas to round-trip write+read to CSV/Parquet in a manner that
+preserves indexes and dtypes, and allows storage of custom structured
+meta-information.
+
+Import in the style of ```import df_file_interchange as fi```.
 
 """
 
@@ -10,20 +14,6 @@ from loguru import logger
 from . import file  # noqa: F401
 
 from .file.rw import (
-    # FICategoricalIndex,
-    # FIDatetimeIndex,
-    # FIEncoding,
-    # FIEncodingCSV,
-    # FIEncodingParquet,
-    # FIFileFormatEnum,
-    # FIIndex,
-    # FIIndexType,
-    # FIIntervalIndex,
-    # FIMetainfo,
-    # FIMultiIndex,
-    # FIPeriodIndex,
-    # FIRangeIndex,
-    # FITimedeltaIndex,
     chk_strict_frames_eq_ignore_nan,  # noqa: F401
     read_df,  # noqa: F401
     write_df_to_csv,  # noqa: F401

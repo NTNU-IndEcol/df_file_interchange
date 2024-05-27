@@ -1,4 +1,4 @@
-name: df-file-interchange
+name: df_file_interchange
 channels:
   - conda-forge
   - nodefaults
@@ -26,5 +26,7 @@ dependencies:
   - mkdocs-gen-files
   - mkdocs-literate-nav
   - pygments
+# package build
+  - flit
 # pip goes last
   - pip
