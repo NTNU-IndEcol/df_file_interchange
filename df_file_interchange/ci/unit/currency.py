@@ -236,4 +236,10 @@ class FICurrencyUnit(FIBaseUnit):
             logger.error(error_msg)
             raise ValueError(error_msg)
 
+        # Check unit_year and unit_date aren't both set at the same time
+        if self.unit_year is not None and self.unit_date is not None:
+            error_msg = "Validation error: unit_year and unit_date cannot both be not None at the same time"
+            logger.error(error_msg)
+            raise ValueError(error_msg)
+
         return self
