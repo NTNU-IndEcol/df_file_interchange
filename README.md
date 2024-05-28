@@ -19,45 +19,47 @@ The [documentation is here](https://ntnu-indecol.github.io/df_file_interchange/)
 
 ### Basic Usage for Writing+Reading CSV/Parquet
 
+The import should be done as,
+
 ```python
 import df_file_interchange as fi
 ```
 
-Then do something like (autodetect of target file format from `datafile_path` extension):
+Next, lets write a dataframe to file. In simple form, this can be done as,
 
 ```python
-metafile = fi.write_df_to_file(df, datafile_path)
+metafile = fi.write_df_to_file(df, datafile)
 ```
 
-or to specify the datafile format explicitly:
+where `datafile` should be a `Path` object (str is converted to Path) and the extension of `datafile` determines whether a CSV or Parquet file is created. To specify the datafile format explicitly, there are convenience functions,
 
 ```python
-metafile = fi.write_df_to_csv(df, datafile_path)
+metafile = fi.write_df_to_csv(df, datafile)
 ```
 
 ```python
-metafile = fi.write_df_to_parquet(df, datafile_path)
+metafile = fi.write_df_to_parquet(df, datafile)
 ```
 
-where `metafile` will return a `Path` object for the YAML file path, `datafile_path` is a `Path` object.
+The returned `metafile` is a `Path` object pointing to the YAML file containing additional metadata.
 
-Additional parameters can be used, e.g. `metafile` to specify the YAML file manually (must be same dir) and `custom_info`.
+Additional parameters can be used, e.g. `metafile` to specify the YAML filename explicitly, or `custom_info`. `metafile` must be in the same directory as `datafile` so can be specified either as only the filename or with the directory part matching `datafile`. The file format can also be specified in the parameters.
 
 ```python
 metafile = fi.write_df_to_file(
-    df, datafile_path, metafile_path, "csv"
+    df, datafile, metafile, file_format="csv"
 )
 ```
 
-Additional encoding options can be specified using the `encoding` argument (as a `FIEncoding` object) but this is unnecessary and probably unwise.
+Additional encoding options can be specified using the `encoding` argument (as a `FIEncoding` object) but this is unnecessary and usually unwise.
 
 To read:
 
 ```python
-(df, metainfo) = fi.read_df(yamlfile_path)
+(df, metainfo) = fi.read_df(metafile)
 ```
 
-the `df` is of course the dataframe and `metainfo` is a Pydantic object containing all the metainfo associated with the file encoding, indexes, dtypes, etc, and also the user-supplied custom info.
+where `metafile` is the location of the YAML metafile that accompanies the datafile (returned from the write functions). The returned `df` is of course the dataframe and `metainfo` is a Pydantic object containing all the metainfo associated with the file encoding, indexes, dtypes, etc, and also the user-supplied custom info.
 
 
 
@@ -115,7 +117,7 @@ If you were extending the extra info or units, you'll probably have to include a
 
 ## Known Problems
 
-* Pyarrow won't encode numpy's complex64. So, we've disabled this in the tests for now although the functionality will work in CSV. Solution would be to serialize the actual data column when necessary but that's new functionality.
+* Pyarrow won't encode numpy's complex64. So, we've disabled this in the tests for now although the functionality will work in CSV. Solution would be to serialize the actual data column when necessary but that'd be new functionality.
 
 * Float16s won't work properly and will never work, due to Pandas decision.
 
