@@ -125,8 +125,6 @@ class InvalidValueForFieldError(Exception):
     pass
 
 
-
-
 def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
     """Check whether two dataframes are equal, ignoring NaNs
 
@@ -438,7 +436,7 @@ def _deserialize_element(
             _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
         )  # type: ignore
     elif eltype == "pd.arrays.PeriodArray":
-        return pd.arrays.PeriodArray._from_sequence(    # type: ignore
+        return pd.arrays.PeriodArray._from_sequence(  # type: ignore
             _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
         )  # type: ignore
     elif eltype == "pd.Timestamp":
@@ -542,9 +540,7 @@ def _deserialize_element(
             logger.error(error_msg)
             raise TypeError(error_msg)
         else:
-            warning_msg = (
-                f"In deserialize element, got unknown type. Got eltype={safe_str_output(eltype)}"
-            )
+            warning_msg = f"In deserialize element, got unknown type. Got eltype={safe_str_output(eltype)}"
             logger.warning(warning_msg)
             return el
 
@@ -1841,9 +1837,7 @@ def _deserialize_df_types(serialized_dtypes: dict) -> dict:
         # Get string representation of dtype
         dtype_str = serialized_dtypes[col].get("dtype_str", None)
         if dtype_str is None:
-            error_msg = (
-                f"Got column in serialized dtypes without a dtype_str field. col={safe_str_output(col)}"
-            )
+            error_msg = f"Got column in serialized dtypes without a dtype_str field. col={safe_str_output(col)}"
             logger.error(error_msg)
             raise ValueError(error_msg)
 
@@ -1889,9 +1883,7 @@ def _deserialize_dtypes_for_read_csv(serialized_dtypes: dict) -> dict:
         # Get string representation of dtype
         dtype_str = serialized_dtypes[col].get("dtype_str", None)
         if dtype_str is None:
-            error_msg = (
-                f"Got column in serialized dtypes without a dtype_str field. col={safe_str_output(col)}"
-            )
+            error_msg = f"Got column in serialized dtypes without a dtype_str field. col={safe_str_output(col)}"
             logger.error(error_msg)
             raise ValueError(error_msg)
 
@@ -2078,7 +2070,9 @@ def _deserialize_index_dict_to_fi_index(index: dict) -> FIBaseIndex:
     elif index_type == FIIndexType.period:
         return FIPeriodIndex(**index)
     else:
-        error_msg = f"index_type not recognised. index_type={safe_str_output(index_type)}"
+        error_msg = (
+            f"index_type not recognised. index_type={safe_str_output(index_type)}"
+        )
         logger.error(error_msg)
         raise ValueError(error_msg)
 
@@ -2356,7 +2350,7 @@ def write_df_to_file(
         datafile = Path(datafile)
 
     if isinstance(metafile, str):
-        metafile = Path(metafile)    
+        metafile = Path(metafile)
 
     # Determine output format
     if file_format is None:
@@ -2529,7 +2523,7 @@ def read_df(
         error_msg = f"metafile must be a Path or str. Got type={type(metafile)}, value={safe_str_output(metafile)}"
         logger.error(error_msg)
         raise TypeError(error_msg)
-    
+
     if isinstance(metafile, str):
         metafile = Path(metafile)
 

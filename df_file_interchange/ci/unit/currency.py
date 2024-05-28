@@ -222,7 +222,6 @@ class FICurrencyUnit(FIBaseUnit):
 
     @model_validator(mode="after")
     def model_validator_after(self) -> Self:
-
         # 20240522: this doesn't necessarily make sense, so have commented it out...
         # # Check if unit_year not None then unit_year_method must also be not
         # # None

@@ -3,7 +3,6 @@ Common functions that don't fit anywhere else.
 """
 
 
-
 def str_n(in_str):
     """Does a simple str cast but if None converts to empty str
 
@@ -21,7 +20,6 @@ def str_n(in_str):
         return ""
     else:
         return str(in_str)
-    
 
 
 def safe_str_output(in_qty, truncate_len: int = 200):
@@ -46,7 +44,7 @@ def safe_str_output(in_qty, truncate_len: int = 200):
         secured_output = str(in_qty)
         if len(secured_output) > truncate_len:
             secured_output = secured_output[0:truncate_len]
-    except:
+    except Exception:
         pass
 
     return safe_str_output

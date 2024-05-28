@@ -73,7 +73,11 @@ def generate_example_indices():
         name="intervalindex3",
     )
     fi_intervalindex_4 = pd.interval_range(
-        start=-3.0, end=11.0, freq=0.5, closed="neither", name="intervalindex4" # type: ignore
+        start=-3.0,
+        end=11.0,
+        freq=0.5,
+        closed="neither",
+        name="intervalindex4",  # type: ignore
     )
 
     fi_datetimeindex_1 = pd.DatetimeIndex(
