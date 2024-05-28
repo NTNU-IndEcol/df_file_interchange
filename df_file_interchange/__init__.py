@@ -11,6 +11,7 @@ Import in the style of ```import df_file_interchange as fi```.
 """
 
 from loguru import logger
+from . import common # noqa: F401
 from . import file  # noqa: F401
 
 from .file.rw import (

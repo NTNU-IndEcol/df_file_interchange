@@ -18,6 +18,7 @@ from pydantic import (
     SerializeAsAny,
 )
 
+from ..util.common import safe_str_output
 from .base import FIBaseCustomInfo
 from .extra.base import FIBaseExtraInfo
 from .extra.std_extra import FIStdExtraInfo
@@ -94,7 +95,7 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
         ):
             extra_info_class = globals()[value_classname]
         else:
-            error_msg = f"Neither context for supplied classname nor is it a subclass of FIBaseExtraInfo. classname={value_classname}"
+            error_msg = f"Neither context for supplied classname nor is it a subclass of FIBaseExtraInfo. classname={safe_str_output(value_classname)}"
             logger.error(error_msg)
             raise ValueError(error_msg)
 
@@ -119,7 +120,7 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
 
         # If this happens, we really need to fail.
         if not isinstance(value, dict):
-            error_msg = f"col_units should always be a dictionary. Got type={type(value)}, value={value}"
+            error_msg = f"col_units should always be a dictionary. Got type={type(value)}, value={safe_str_output(value)}"
             logger.error(error_msg)
             raise TypeError(error_msg)
 
@@ -160,7 +161,7 @@ class FIStructuredCustomInfo(FIBaseCustomInfo):
             ):
                 units_class = globals()[value_classname]
             else:
-                error_msg = f"Neither context supplied nor is subclass of FIBaseUnit. classname={value_classname}"
+                error_msg = f"Neither context supplied nor is subclass of FIBaseUnit. classname={safe_str_output(value_classname)}"
                 logger.error(error_msg)
                 raise TypeError(error_msg)
 
