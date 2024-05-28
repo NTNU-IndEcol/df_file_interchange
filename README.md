@@ -112,7 +112,7 @@ and to read (we use the default context)
 (df_reload, metainfo_reload) = fi.read_df(metafile)
 ```
 
-If you were extending the extra info or units, you'll probably have to include a context. TODO: document this.
+If you were extending the extra info or units, you'll probably have to include a context. Please see the documentation for an explanation of how to do this.
 
 
 ## Known Problems
