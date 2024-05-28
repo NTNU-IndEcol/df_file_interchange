@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.20">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.24">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
       
       
 
@@ -625,8 +625,8 @@
 
 <h1 id="using-custom-structured-info">Using Custom Structured Info</h1>
 <p>There's support for storing both unstructured and custom structured (verifiable) metadata in the metafile. This is under <code>df_file_interchange.ci</code> ("custom info"). </p>
-<p>Strictly speaking, the user can pass any object that inherits from <code>FIBaseCustomInfo</code> (a Pydantic model) and which can fully serialize itself. There are, however, is a standard set of these classes already defined to cover most use-cases.</p>
-<p>The  <code>df_file_interchange.ci.structured.FIStructuredCustomInfo</code> class is the canonical way to proceed. It has two attributes: <code>extra_info: FIBaseExtraInto</code> and <code>col_units: dict[Any, FIBaseUnit]</code>. The <code>extra_info</code> is for stroing metadata that applies to the whole dataframe such as author or its source. The <code>col_units</code> is a dictionary that specifies the units, such as currencies, each column is in. There are useful classes for both of these under <code>df_file_interchange.ci.extra</code> and <code>df_file_interchange.ci.unit</code>, respectively.</p>
+<p>Strictly speaking, the user can pass any object that inherits from <code>FIBaseCustomInfo</code> (a Pydantic model), which can fully serialize itself. There is, however, a standard set of these classes already defined to cover most use-cases.</p>
+<p>The  <code>df_file_interchange.ci.structured.FIStructuredCustomInfo</code> class is the canonical way to proceed. It has two attributes: <code>extra_info: FIBaseExtraInto</code> and <code>col_units: dict[Any, FIBaseUnit]</code>. The <code>extra_info</code> is for stroing metadata that applies to the whole dataframe such as author or its source. The <code>col_units</code> is a dictionary that specifies the unit, such as currency, columnwise. There are useful classes for both of these under <code>df_file_interchange.ci.extra</code> and <code>df_file_interchange.ci.unit</code>, respectively.</p>
 <h2 id="basic-example">Basic Example</h2>
 <p>A basic example is included here and also in the corresponding <a href="../notebooks/tutorial_simple_structured_custom_info/">notebook on using custom info</a>.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -669,12 +669,12 @@
 <p>We write it to a file.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./data/&quot;</span><span class="p">)</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">data_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">datafile_csv_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_dir</span> <span class="o">/</span> <span class="s2">&quot;tutorial_simple_structured_custom_info.csv&quot;</span><span class="p">)</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">datafile_csv</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_dir</span> <span class="o">/</span> <span class="s2">&quot;tutorial_simple_structured_custom_info.csv&quot;</span><span class="p">)</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">metafile_yaml</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">write_df_to_file</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">datafile_csv_path</span><span class="p">,</span> <span class="n">custom_info</span><span class="o">=</span><span class="n">custom_info</span><span class="p">)</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">metafile</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">write_df_to_file</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">datafile_csv</span><span class="p">,</span> <span class="n">custom_info</span><span class="o">=</span><span class="n">custom_info</span><span class="p">)</span>
 </span></code></pre></div>
 <p>Read it in again.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">(</span><span class="n">df_reload</span><span class="p">,</span> <span class="n">metainfo_reload</span><span class="p">)</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">read_df</span><span class="p">(</span><span class="n">metafile_yaml</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">(</span><span class="n">df_reload</span><span class="p">,</span> <span class="n">metainfo_reload</span><span class="p">)</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">read_df</span><span class="p">(</span><span class="n">metafile</span><span class="p">)</span>
 </span></code></pre></div>
 <p>And, we can inspect the custom info we have read back in.</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">metainfo_reload</span><span class="o">.</span><span class="n">custom_info</span>
@@ -846,7 +846,7 @@
     <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      <script src="../assets/javascripts/bundle.081f42fc.min.js"></script>
       
     
   </body>

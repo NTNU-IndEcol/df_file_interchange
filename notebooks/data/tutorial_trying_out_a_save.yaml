@@ -1,4 +1,4 @@
-# Metadata for data/tutorial_trying_out_a_save.parq
+# Metadata for <function safe_str_output at 0x7f5d696004a0>
 ---
 
 columns:
@@ -36,7 +36,7 @@ encoding:
     index: null
 file_format: parquet
 format_version: 1
-hash: 7948f838d0e2216bbb43be11635e986c0a95b90801a6b43000d3736397eb2fb1
+hash: 9293f5b0da6512efdfbbea30bf1e2968650a57aefb51585e95433de3c5d22d8c
 index:
   dtype: int64
   index_type: range

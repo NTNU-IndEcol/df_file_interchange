@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.20">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.24">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
       
       
 
@@ -753,62 +753,61 @@
 
 
 <h2 id="df_file_interchange.ci.unit.base.FIBaseUnit" class="doc doc-heading">
-          <code>df_file_interchange.ci.unit.base.FIBaseUnit</code>
+            <code>df_file_interchange.ci.unit.base.FIBaseUnit</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
-  
+
       <p>Base class for units</p>
 <p>You have to derive from this to define your own unit.</p>
 
 
-
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="df_file_interchange.ci.unit.base.FIBaseUnit.unit_desc">unit_desc</span></code></td>
-          <td>
-                <code>str literal</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>For example, if the unit is a currency then this would be a literal of
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="df_file_interchange.ci.unit.base.FIBaseUnit.unit_desc">unit_desc</span></code></td>
+            <td>
+                  <code>str literal</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>For example, if the unit is a currency then this would be a literal of
 strs of the possible currencies. See <code>FICurrencyUnit</code> for this example.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="df_file_interchange.ci.unit.base.FIBaseUnit.unit_multiplier">unit_multiplier</span></code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Default 1.0. Used when, for example, we need to say "millions of (a
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="df_file_interchange.ci.unit.base.FIBaseUnit.unit_multiplier">unit_multiplier</span></code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Default 1.0. Used when, for example, we need to say "millions of (a
 unit)".</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-            <details class="quote">
-              <summary>Source code in <code>df_file_interchange/ci/unit/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-13">13</a></span>
+              <details class="quote">
+                <summary>Source code in <code>df_file_interchange/ci/unit/base.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
 <span class="normal"><a href="#__codelineno-0-15">15</a></span>
 <span class="normal"><a href="#__codelineno-0-16">16</a></span>
@@ -882,9 +881,9 @@ unit)".</p>
 </span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a>
 </span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_classname</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -899,8 +898,8 @@ unit)".</p>
 
 
 <h3 id="df_file_interchange.ci.unit.base.FIBaseUnit.classname" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">classname</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">classname</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -908,34 +907,33 @@ unit)".</p>
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
+    <div class="doc doc-contents ">
+
       <p>Ensures classname is included in serialization</p>
 
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Our classname</p>
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
-  </div>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Our classname</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+    </div>
 
 </div>
 
@@ -945,8 +943,7 @@ unit)".</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -955,22 +952,22 @@ unit)".</p>
 
 
 <h2 id="df_file_interchange.ci.unit.base.FIGenericUnit" class="doc doc-heading">
-          <code>df_file_interchange.ci.unit.base.FIGenericUnit</code>
+            <code>df_file_interchange.ci.unit.base.FIGenericUnit</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="df_file_interchange.ci.unit.base.FIBaseUnit" href="#df_file_interchange.ci.unit.base.FIBaseUnit">FIBaseUnit</a></code></p>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="df_file_interchange.ci.unit.base.FIBaseUnit" href="#df_file_interchange.ci.unit.base.FIBaseUnit">FIBaseUnit</a></code></p>
 
-  
+
       <p>A generic unit, not sure using this now but will keep as placeholder for now...</p>
 
-            <details class="quote">
-              <summary>Source code in <code>df_file_interchange/ci/unit/base.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-52">52</a></span>
+              <details class="quote">
+                <summary>Source code in <code>df_file_interchange/ci/unit/base.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-52">52</a></span>
 <span class="normal"><a href="#__codelineno-0-53">53</a></span>
 <span class="normal"><a href="#__codelineno-0-54">54</a></span>
 <span class="normal"><a href="#__codelineno-0-55">55</a></span>
@@ -980,9 +977,9 @@ unit)".</p>
 </span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="c1"># Override so we can specify arbitrary strings</span>
 </span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>    <span class="n">unit_desc</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -998,8 +995,7 @@ unit)".</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div><h2 id="df_file_interchangeciunitcurrency">df_file_interchange.ci.unit.currency</h2>
 
@@ -1009,18 +1005,19 @@ unit)".</p>
 
 
 <h2 id="df_file_interchange.ci.unit.currency.FICurrencyUnit" class="doc doc-heading">
-          <code>df_file_interchange.ci.unit.currency.FICurrencyUnit</code>
+            <code>df_file_interchange.ci.unit.currency.FICurrencyUnit</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="df_file_interchange.ci.unit.base.FIBaseUnit" href="#df_file_interchange.ci.unit.base.FIBaseUnit">FIBaseUnit</a></code></p>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="df_file_interchange.ci.unit.base.FIBaseUnit" href="#df_file_interchange.ci.unit.base.FIBaseUnit">FIBaseUnit</a></code></p>
 
-  
+
       <p>(Pydantic) class that defines currencies as a unit</p>
+
 
 <details class="note" open>
   <summary>Notes</summary>
@@ -1032,82 +1029,81 @@ and then you'll need to manually remove the "USDollar" entry.</p>
 <p>Supplemented with Taiwan dollar, "TWD"</p>
 </details>
 
-
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="df_file_interchange.ci.unit.currency.FICurrencyUnit.unit_desc">unit_desc</span></code></td>
-          <td>
-                <code><span title="typing.Literal">Literal</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>What currency, e.g. "USD, "EUR", etc.</p>
-            </div>
-          </td>
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="df_file_interchange.ci.unit.currency.FICurrencyUnit.unit_multiplier">unit_multiplier</span></code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>How many of <code>unit_desc</code> at one time, e.g. 1_000_000 USD. Default 1.0.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="df_file_interchange.ci.unit.currency.FICurrencyUnit.unit_year">unit_year</span></code></td>
-          <td>
-                <code>int or None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Sometimes we want the currency to be pegged to a specific year, e.g.
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="df_file_interchange.ci.unit.currency.FICurrencyUnit.unit_desc">unit_desc</span></code></td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>What currency, e.g. "USD, "EUR", etc.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="df_file_interchange.ci.unit.currency.FICurrencyUnit.unit_multiplier">unit_multiplier</span></code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>How many of <code>unit_desc</code> at one time, e.g. 1_000_000 USD. Default 1.0.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="df_file_interchange.ci.unit.currency.FICurrencyUnit.unit_year">unit_year</span></code></td>
+            <td>
+                  <code>int or None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sometimes we want the currency to be pegged to a specific year, e.g.
 "EUR" in 2004. If using this attribute, must also specify whether its
 average, year end, etc. Default None.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="df_file_interchange.ci.unit.currency.FICurrencyUnit.unit_year_method">unit_year_method</span></code></td>
-          <td>
-                <code><span title="typing.Literal">Literal</span>[&#39;AVG&#39;, &#39;END&#39;] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether currency has been calculated as an average over a period or is
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="df_file_interchange.ci.unit.currency.FICurrencyUnit.unit_year_method">unit_year_method</span></code></td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span>[&#39;AVG&#39;, &#39;END&#39;] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether currency has been calculated as an average over a period or is
 end of period. Default None.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="df_file_interchange.ci.unit.currency.FICurrencyUnit.unit_date">unit_date</span></code></td>
-          <td>
-                <code><span title="datetime.datetime">datetime</span> | <span title="datetime.date">date</span> | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Sometimes we might want to specify currency against a fixed date.
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="df_file_interchange.ci.unit.currency.FICurrencyUnit.unit_date">unit_date</span></code></td>
+            <td>
+                  <code><span title="datetime.datetime">datetime</span> | <span title="datetime.date">date</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Sometimes we might want to specify currency against a fixed date.
 Default None.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-            <details class="quote">
-              <summary>Source code in <code>df_file_interchange/ci/unit/currency.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-19"> 19</a></span>
+              <details class="quote">
+                <summary>Source code in <code>df_file_interchange/ci/unit/currency.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-19"> 19</a></span>
 <span class="normal"><a href="#__codelineno-0-20"> 20</a></span>
 <span class="normal"><a href="#__codelineno-0-21"> 21</a></span>
 <span class="normal"><a href="#__codelineno-0-22"> 22</a></span>
@@ -1326,7 +1322,14 @@ Default None.</p>
 <span class="normal"><a href="#__codelineno-0-235">235</a></span>
 <span class="normal"><a href="#__codelineno-0-236">236</a></span>
 <span class="normal"><a href="#__codelineno-0-237">237</a></span>
-<span class="normal"><a href="#__codelineno-0-238">238</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="k">class</span> <span class="nc">FICurrencyUnit</span><span class="p">(</span><span class="n">FIBaseUnit</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-238">238</a></span>
+<span class="normal"><a href="#__codelineno-0-239">239</a></span>
+<span class="normal"><a href="#__codelineno-0-240">240</a></span>
+<span class="normal"><a href="#__codelineno-0-241">241</a></span>
+<span class="normal"><a href="#__codelineno-0-242">242</a></span>
+<span class="normal"><a href="#__codelineno-0-243">243</a></span>
+<span class="normal"><a href="#__codelineno-0-244">244</a></span>
+<span class="normal"><a href="#__codelineno-0-245">245</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="k">class</span> <span class="nc">FICurrencyUnit</span><span class="p">(</span><span class="n">FIBaseUnit</span><span class="p">):</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;(Pydantic) class that defines currencies as a unit</span>
 </span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a>
 </span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">    Notes</span>
@@ -1516,14 +1519,14 @@ Default None.</p>
 </span><span id="__span-0-206"><a id="__codelineno-0-206" name="__codelineno-0-206"></a>        <span class="s2">&quot;ZAR&quot;</span><span class="p">,</span>
 </span><span id="__span-0-207"><a id="__codelineno-0-207" name="__codelineno-0-207"></a>        <span class="s2">&quot;ZMW&quot;</span><span class="p">,</span>
 </span><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a>        <span class="s2">&quot;ZWL&quot;</span><span class="p">,</span>
-</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a>    <span class="p">]</span>
+</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a>    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;USD&quot;</span>
 </span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a>
 </span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a>    <span class="c1"># Sometimes we have quantities in &quot;millions of $&quot;, for example</span>
 </span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a>    <span class="n">unit_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
 </span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213"></a>
 </span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214"></a>    <span class="c1"># Sometimes we need currency to be tagged to a specific year, e.g. &quot;EUR&quot; in</span>
-</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a>    <span class="c1"># 2004. If using this field, must also specify whether it&#39;s averaged, year</span>
-</span><span id="__span-0-216"><a id="__codelineno-0-216" name="__codelineno-0-216"></a>    <span class="c1"># end, or what in unit_year_method</span>
+</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a>    <span class="c1"># 2004. If using this field, can also specify whether it&#39;s averaged, year</span>
+</span><span id="__span-0-216"><a id="__codelineno-0-216" name="__codelineno-0-216"></a>    <span class="c1"># end, etc, in unit_year_method</span>
 </span><span id="__span-0-217"><a id="__codelineno-0-217" name="__codelineno-0-217"></a>    <span class="n">unit_year</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a>    <span class="n">unit_year_method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;AVG&quot;</span><span class="p">,</span> <span class="s2">&quot;END&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 </span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a>
@@ -1532,24 +1535,31 @@ Default None.</p>
 </span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a>
 </span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a>    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
 </span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a>    <span class="k">def</span> <span class="nf">model_validator_after</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a>        <span class="c1"># Check if unit_year not None then unit_year_method must also be not</span>
-</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a>        <span class="c1"># None</span>
-</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_year</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_year_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a>            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Validator error: if unit_year is not None then unit_year_method must be defined.&quot;</span>
-</span><span id="__span-0-229"><a id="__codelineno-0-229" name="__codelineno-0-229"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
-</span><span id="__span-0-230"><a id="__codelineno-0-230" name="__codelineno-0-230"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
-</span><span id="__span-0-231"><a id="__codelineno-0-231" name="__codelineno-0-231"></a>
-</span><span id="__span-0-232"><a id="__codelineno-0-232" name="__codelineno-0-232"></a>        <span class="c1"># Check that both unit_year and unit_date are not both set at once</span>
-</span><span id="__span-0-233"><a id="__codelineno-0-233" name="__codelineno-0-233"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_year</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-234"><a id="__codelineno-0-234" name="__codelineno-0-234"></a>            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Validation error: cannot have both unit_year and unit_date not None at same time.&quot;</span>
-</span><span id="__span-0-235"><a id="__codelineno-0-235" name="__codelineno-0-235"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
-</span><span id="__span-0-236"><a id="__codelineno-0-236" name="__codelineno-0-236"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
-</span><span id="__span-0-237"><a id="__codelineno-0-237" name="__codelineno-0-237"></a>
-</span><span id="__span-0-238"><a id="__codelineno-0-238" name="__codelineno-0-238"></a>        <span class="k">return</span> <span class="bp">self</span>
+</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a>        <span class="c1"># 20240522: this doesn&#39;t necessarily make sense, so have commented it out...</span>
+</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a>        <span class="c1"># # Check if unit_year not None then unit_year_method must also be not</span>
+</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a>        <span class="c1"># # None</span>
+</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a>        <span class="c1"># if self.unit_year is not None and self.unit_year_method is None:</span>
+</span><span id="__span-0-229"><a id="__codelineno-0-229" name="__codelineno-0-229"></a>        <span class="c1">#     error_msg = &quot;Validator error: if unit_year is not None then unit_year_method must be defined.&quot;</span>
+</span><span id="__span-0-230"><a id="__codelineno-0-230" name="__codelineno-0-230"></a>        <span class="c1">#     logger.error(error_msg)</span>
+</span><span id="__span-0-231"><a id="__codelineno-0-231" name="__codelineno-0-231"></a>        <span class="c1">#     raise ValueError(error_msg)</span>
+</span><span id="__span-0-232"><a id="__codelineno-0-232" name="__codelineno-0-232"></a>
+</span><span id="__span-0-233"><a id="__codelineno-0-233" name="__codelineno-0-233"></a>        <span class="c1"># Check that if unit_year_method not None then unit_year is not None</span>
+</span><span id="__span-0-234"><a id="__codelineno-0-234" name="__codelineno-0-234"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_year_method</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_year</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-235"><a id="__codelineno-0-235" name="__codelineno-0-235"></a>            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Validation error: if unit_year_method not None then unit_year must also be not None.&quot;</span>
+</span><span id="__span-0-236"><a id="__codelineno-0-236" name="__codelineno-0-236"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+</span><span id="__span-0-237"><a id="__codelineno-0-237" name="__codelineno-0-237"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+</span><span id="__span-0-238"><a id="__codelineno-0-238" name="__codelineno-0-238"></a>
+</span><span id="__span-0-239"><a id="__codelineno-0-239" name="__codelineno-0-239"></a>        <span class="c1"># Check unit_year and unit_date aren&#39;t both set at the same time</span>
+</span><span id="__span-0-240"><a id="__codelineno-0-240" name="__codelineno-0-240"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_year</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-241"><a id="__codelineno-0-241" name="__codelineno-0-241"></a>            <span class="n">error_msg</span> <span class="o">=</span> <span class="s2">&quot;Validation error: unit_year and unit_date cannot both be not None at the same time&quot;</span>
+</span><span id="__span-0-242"><a id="__codelineno-0-242" name="__codelineno-0-242"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+</span><span id="__span-0-243"><a id="__codelineno-0-243" name="__codelineno-0-243"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+</span><span id="__span-0-244"><a id="__codelineno-0-244" name="__codelineno-0-244"></a>
+</span><span id="__span-0-245"><a id="__codelineno-0-245" name="__codelineno-0-245"></a>        <span class="k">return</span> <span class="bp">self</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1565,8 +1575,7 @@ Default None.</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div><h2 id="df_file_interchangeciunitpopulation">df_file_interchange.ci.unit.population</h2>
 
@@ -1576,61 +1585,60 @@ Default None.</p>
 
 
 <h2 id="df_file_interchange.ci.unit.population.FIPopulationUnit" class="doc doc-heading">
-          <code>df_file_interchange.ci.unit.population.FIPopulationUnit</code>
+            <code>df_file_interchange.ci.unit.population.FIPopulationUnit</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents first">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="df_file_interchange.ci.unit.base.FIBaseUnit" href="#df_file_interchange.ci.unit.base.FIBaseUnit">FIBaseUnit</a></code></p>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="df_file_interchange.ci.unit.base.FIBaseUnit" href="#df_file_interchange.ci.unit.base.FIBaseUnit">FIBaseUnit</a></code></p>
 
-  
+
       <p>(Pydantic) class that defines population as a unit</p>
 <p>Includes possibility to define not only as persons but as 'adults',
 'children', 'women', 'men', etc.</p>
 
 
-
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="df_file_interchange.ci.unit.population.FIPopulationUnit.unit_desc">unit_desc</span></code></td>
-          <td>
-                <code><span title="typing.Literal">Literal</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether we're talking about 'people', 'adults', etc.</p>
-            </div>
-          </td>
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="df_file_interchange.ci.unit.population.FIPopulationUnit.unit_multiplier">unit_multiplier</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>How many of <code>unit_desc</code> at one time, e.g. 1_000_000 persons. Default 1.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="df_file_interchange.ci.unit.population.FIPopulationUnit.unit_desc">unit_desc</span></code></td>
+            <td>
+                  <code><span title="typing.Literal">Literal</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether we're talking about 'people', 'adults', etc.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="df_file_interchange.ci.unit.population.FIPopulationUnit.unit_multiplier">unit_multiplier</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>How many of <code>unit_desc</code> at one time, e.g. 1_000_000 persons. Default 1.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-            <details class="quote">
-              <summary>Source code in <code>df_file_interchange/ci/unit/population.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
+              <details class="quote">
+                <summary>Source code in <code>df_file_interchange/ci/unit/population.py</code></summary>
+                <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
@@ -1679,14 +1687,14 @@ Default None.</p>
 </span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>        <span class="s2">&quot;pensioners&quot;</span><span class="p">,</span>
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="s2">&quot;women&quot;</span><span class="p">,</span>
 </span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a>        <span class="s2">&quot;men&quot;</span><span class="p">,</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="p">]</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;people&quot;</span>
 </span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="c1"># This is probably what will be changed rather than unit_desc</span>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="n">unit_multiplier</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 </span></code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1702,8 +1710,7 @@ Default None.</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -1755,7 +1762,7 @@ Default None.</p>
     <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      <script src="../assets/javascripts/bundle.081f42fc.min.js"></script>
       
     
   </body>

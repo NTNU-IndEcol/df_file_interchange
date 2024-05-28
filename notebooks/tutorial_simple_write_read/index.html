@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.20">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.24">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6543a935.min.css">
       
       
 
@@ -693,7 +693,7 @@
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">datafile_csv_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_dir</span> <span class="o">/</span> <span class="s2">&quot;tutorial_trying_out_a_save.csv&quot;</span><span class="p">)</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># Write to a CSV file (file format determined by extension of datafile_csv_path)</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">metafile_yaml</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">write_df_to_file</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">datafile_csv_path</span><span class="p">)</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">metafile</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">write_df_to_file</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">datafile_csv_path</span><span class="p">)</span>
 </span></code></pre></div>
 
 </div>
@@ -701,7 +701,7 @@
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">metafile_yaml</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">metafile</span>
 </span></code></pre></div>
 
 </div>
@@ -721,7 +721,7 @@
 <div class="input">
 
 <div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Read the dataframe back into df_reload along with metainfo in metainfo_reload</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="p">(</span><span class="n">df_reload</span><span class="p">,</span> <span class="n">metainfo_reload</span><span class="p">)</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">read_df</span><span class="p">(</span><span class="n">metafile_yaml</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="p">(</span><span class="n">df_reload</span><span class="p">,</span> <span class="n">metainfo_reload</span><span class="p">)</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">read_df</span><span class="p">(</span><span class="n">metafile</span><span class="p">)</span>
 </span></code></pre></div>
 
 </div>
@@ -831,7 +831,7 @@
 
 <div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Lets have a quick look at what the YAML file contains (we&#39;ll come back to this</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1"># in a different tutorial)</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">metafile_yaml</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h_file</span><span class="p">:</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">metafile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h_file</span><span class="p">:</span>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">h_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 </span></code></pre></div>
 
@@ -841,7 +841,7 @@
 <div class="output_area">
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
-<code># Metadata for data/tutorial_trying_out_a_save.parq
+<code># Metadata for &lt;function safe_str_output at 0x7f5d696004a0&gt;
 ---
 
 columns:
@@ -862,7 +862,7 @@ columns:
 custom_info:
   classname: FIBaseCustomInfo
   unstructured_data: {}
-datafile: tutorial_trying_out_a_save.parq
+datafile: tutorial_trying_out_a_save.csv
 encoding:
   auto_convert_int_to_intna: true
   csv:
@@ -877,9 +877,9 @@ encoding:
   parq:
     engine: pyarrow
     index: null
-file_format: parquet
+file_format: csv
 format_version: 1
-hash: 7948f838d0e2216bbb43be11635e986c0a95b90801a6b43000d3736397eb2fb1
+hash: 980eae93340cbcef0d111da0b439a5f8b58f64cf6ab6f923ecb3ce0e0da84e18
 index:
   dtype: int64
   index_type: range
@@ -1013,77 +1013,6 @@ serialized_dtypes:
 </span></code></pre></div>
 
 </div>
-<div class="output_wrapper">
-<div class="output">
-<div class="output_area">
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-<thead>
-<tr style="text-align: right;">
-<th></th>
-<th>a</th>
-<th>b</th>
-<th>c</th>
-<th>d</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th>10</th>
-<td>1</td>
-<td>apples</td>
-<td>3.141593</td>
-<td>2010-01-31 10:23:01</td>
-</tr>
-<tr>
-<th>11</th>
-<td>2</td>
-<td>pears</td>
-<td>6.283185</td>
-<td>2014-01-01 10:23:01</td>
-</tr>
-<tr>
-<th>12</th>
-<td>3</td>
-<td>oranges</td>
-<td>9.424778</td>
-<td>2018-02-28 10:23:01</td>
-</tr>
-<tr>
-<th>13</th>
-<td>4</td>
-<td>bananas</td>
-<td>12.566371</td>
-<td>2024-01-31 10:23:01</td>
-</tr>
-<tr>
-<th>14</th>
-<td>5</td>
-<td>bears</td>
-<td>15.707963</td>
-<td>1999-01-31 23:59:59</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -1142,7 +1071,7 @@ serialized_dtypes:
     <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      <script src="../../assets/javascripts/bundle.081f42fc.min.js"></script>
       
     
   </body>

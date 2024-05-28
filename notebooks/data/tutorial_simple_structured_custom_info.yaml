@@ -1,4 +1,4 @@
-# Metadata for data/tutorial_simple_structured_custom_info.csv
+# Metadata for <function safe_str_output at 0x7f77dbf88360>
 ---
 
 columns:
@@ -56,6 +56,9 @@ custom_info:
   extra_info:
     author: Spud
     classname: FIStdExtraInfo
+    description: null
+    processed_by: null
+    processed_date: null
     source: Potato
   unstructured_data: {}
 datafile: tutorial_simple_structured_custom_info.csv
@@ -75,7 +78,7 @@ encoding:
     index: null
 file_format: csv
 format_version: 1
-hash: 69361ee548b5ea3fc2b1bf4262fd16eefeb12fad3f27ec96365e20654906bd76
+hash: a20b3b0f0e83133eae4605cd3e332950d0b998dc03ed00c5bad5acc1b65fc7ba
 index:
   dtype: int64
   index_type: range
