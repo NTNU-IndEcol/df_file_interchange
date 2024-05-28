@@ -5,7 +5,7 @@ nav:
     - Getting Started: getting_started.md
     - Custom Structured Info: custom_info.md
     - Notebook Simple Write and Read: notebooks/tutorial_simple_write_read.ipynb
-    - Notebook Simple Custom Info: notebooks/tutorial_simple_structured_custom_info/ipynb
+    - Notebook Simple Custom Info: notebooks/tutorial_simple_structured_custom_info.ipynb
   - Code Reference:
     - file (read & write): code_reference__file.md
     - ci (custom information): code_reference__ci.md

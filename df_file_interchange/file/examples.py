@@ -73,8 +73,12 @@ def generate_example_indices():
         name="intervalindex3",
     )
     fi_intervalindex_4 = pd.interval_range(
-        start=-3.0, end=11.0, freq=0.5, closed="neither", name="intervalindex4"
-    )  # type: ignore
+        start=-3.0,
+        end=11.0,
+        freq=0.5,   # type: ignore
+        closed="neither",
+        name="intervalindex4",
+    )
 
     fi_datetimeindex_1 = pd.DatetimeIndex(
         data=["2024-01-01 10:00:00", "2024-01-02 10:00:00", "2024-01-03 10:00:00"],
@@ -90,9 +94,9 @@ def generate_example_indices():
         tz="UTC",
     )
 
-    fi_periodindex_1 = pd.PeriodIndex.from_fields(
+    fi_periodindex_1 = pd.PeriodIndex.from_fields(  # type: ignore   (for some reason, pylance can't see .from_fields())
         year=[2000, 2002, 2004], quarter=[1, 3, 2]
-    )  # type: ignore
+    )
     fi_periodindex_2 = pd.period_range(start="2017-01-01", end="2018-01-01", freq="M")
 
     return {

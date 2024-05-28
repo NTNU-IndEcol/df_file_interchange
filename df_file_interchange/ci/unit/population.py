@@ -31,7 +31,7 @@ class FIPopulationUnit(FIBaseUnit):
         "pensioners",
         "women",
         "men",
-    ]
+    ] = "people"
 
     # This is probably what will be changed rather than unit_desc
     unit_multiplier: int = 1

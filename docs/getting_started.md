@@ -2,7 +2,7 @@
 
 ## Installation
 
-TODO describe installalling from the ether.
+Install from PyPi or conda-forge.
 
 ## Simple Write and Read
 
@@ -41,19 +41,19 @@ Now, lets save the dataframe as a CSV. Minimally, only the dataframe and the fil
 ```python
 data_dir = Path("./data/")
 data_dir.mkdir(exist_ok=True)
-datafile_path = Path(data_dir / "tutorial_trying_out_a_save.csv")
+datafile = Path(data_dir / "tutorial_trying_out_a_save.csv")
 
-metafile_yaml = fi.write_df_to_file(df, datafile_path)
+metafile = fi.write_df_to_file(df, datafile)
 ```
 
 This will create two files: `tutorial_trying_out_a_save.csv` and `tutorial_trying_out_a_save.yaml`. The YAML file describes how the CSV file was encoded, the indexes, the dtypes, ancillary data like the hash of the data file, and (more generally) any custom metadata provided.
 
-The `metafile_yaml` variable returned is a `Path` object pointing to the location of the YAML file.
+The `metafile` variable returned is a `Path` object pointing to the location of the YAML file.
 
 Lets read that file back in.
 
 ```python
-(df_reload, metainfo_reload) = fi.read_df(metafile_yaml)
+(df_reload, metainfo_reload) = fi.read_df(metafile)
 ```
 The `df_reload` variable is the dataframe as read in from the file. The `metainfo_reload` is a `FIMetaInfo` object.
 
@@ -70,15 +70,15 @@ This is just a wrapper around `pd._testing.assert_frame_equal()` where we instea
 For writing a df to file, there are convenience functions that specify the output type (`fi.write_df_to_parquet()` and `fi.write_df_to_csv()`).
 
 ```python
-datafile_parq_path = Path(data_dir / "tutorial_trying_out_a_save.parq")
-fi.write_df_to_parquet(df, datafile_parq_path)
+datafile_parq = Path(data_dir / "tutorial_trying_out_a_save.parq")
+fi.write_df_to_parquet(df, datafile_parq)
 ```
 
 Additional parameters can be used, e.g. `metafile` to specify the YAML file manually (must be same dir) and `custom_info`.
 
 ```python
 metafile = fi.write_df_to_file(
-    df, datafile_path, metafile_path, "csv"
+    df, datafile, metafile, "csv"
 )
 ```
 

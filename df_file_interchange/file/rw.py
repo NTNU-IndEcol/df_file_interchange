@@ -84,6 +84,9 @@ from pydantic import (
     SerializeAsAny,
 )
 
+# Import common functions
+from ..util.common import str_n, safe_str_output
+
 # Import custom info stuff
 from ..ci.base import FIBaseCustomInfo
 
@@ -120,25 +123,6 @@ class InvalidValueForFieldError(Exception):
     """Used to indicate a value has been passed to a field of unsuitable type, e.g. passing int to a float dtype field"""
 
     pass
-
-
-def str_n(in_str):
-    """Does a simple str cast but if None converts to empty str
-
-    Parameters
-    ----------
-    in_str : Any
-
-    Returns
-    -------
-    str
-        str(in_str) or "" if in_str == None
-    """
-
-    if in_str is None:
-        return ""
-    else:
-        return str(in_str)
 
 
 def chk_strict_frames_eq_ignore_nan(df1: pd.DataFrame, df2: pd.DataFrame):
@@ -219,7 +203,7 @@ def _check_valid_scalar_generic_cast(val, dtype):
     """
 
     if dtype(val) != val:
-        error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"
+        error_msg = f"Value is not of target type. val={safe_str_output(val)}, target dtype={safe_str_output(dtype)}"
         logger.error(error_msg)
         raise InvalidValueForFieldError(error_msg)
 
@@ -245,7 +229,7 @@ def _check_valid_scalar_np_cast(val, dtype):
     """
 
     if not np.can_cast(val, dtype):
-        error_msg = f"Value is not of target type. val={val}, target dtype={dtype}"
+        error_msg = f"Value is not of target type. val={safe_str_output(val)}, target dtype={safe_str_output(dtype)}"
         logger.error(error_msg)
         raise InvalidValueForFieldError(error_msg)
 
@@ -432,7 +416,7 @@ def _deserialize_element(
     # Basic sanity checks. This shouldn't happen in normal operation but have
     # done stupid stuff when writing tests, debugging, etc.
     if not isinstance(eltype, str):
-        error_msg = f"Need eltype to be a string. Got type(eltype)={type(eltype)}, eltype={eltype}"
+        error_msg = f"Need eltype to be a string. Got type(eltype)={type(eltype)}, eltype={safe_str_output(eltype)}"
         logger.error(error_msg)
         raise TypeError(error_msg)
 
@@ -448,11 +432,11 @@ def _deserialize_element(
             _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
         )
     elif eltype == "pd.arrays.DatetimeArray":
-        return pd.arrays.DatetimeArray._from_sequence(
+        return pd.arrays.DatetimeArray._from_sequence(  # type: ignore  (look, this isn't my fault, see example in https://pandas.pydata.org/docs/reference/api/pandas.arrays.DatetimeArray.html )
             _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
         )  # type: ignore
     elif eltype == "pd.arrays.PeriodArray":
-        return pd.arrays.PeriodArray._from_sequence(
+        return pd.arrays.PeriodArray._from_sequence(  # type: ignore
             _deserialize_list_with_types(el["elements"]), dtype=el["dtype"], copy=True
         )  # type: ignore
     elif eltype == "pd.Timestamp":
@@ -552,13 +536,11 @@ def _deserialize_element(
         return np.clongdouble(el)
     else:
         if b_only_known_types:
-            error_msg = f"We only deserialize types we know. Got eltype={eltype}"
+            error_msg = f"We only deserialize types we know. Got eltype={safe_str_output(eltype)}"
             logger.error(error_msg)
             raise TypeError(error_msg)
         else:
-            warning_msg = (
-                f"In deserialize element, got unknown type. Got eltype={eltype}"
-            )
+            warning_msg = f"In deserialize element, got unknown type. Got eltype={safe_str_output(eltype)}"
             logger.warning(warning_msg)
             return el
 
@@ -679,8 +661,8 @@ class FIEncodingCSV(BaseModel):
         if self.na_rep != "":
             if self.na_rep not in self.csv_allowed_na:
                 error_msg = (
-                    f"na_rep must be in csv_allowed_na. na_rep={self.na_rep};"
-                    f" csv_allowed_na={self.csv_allowed_na}"
+                    f"na_rep must be in csv_allowed_na. na_rep={safe_str_output(self.na_rep)};"
+                    f" csv_allowed_na={safe_str_output(self.csv_allowed_na)}"
                 )
                 logger.error(error_msg)
                 raise LookupError(error_msg)
@@ -1631,7 +1613,7 @@ class FIMetainfo(BaseModel):
         ):
             custom_info_class = globals()[value_classname]
         else:
-            error_msg = f"Neither context for supplied classname nor is it a subclass of FIBaseCustomInfo. classname={value_classname}"
+            error_msg = f"Neither context for supplied classname nor is it a subclass of FIBaseCustomInfo. classname={safe_str_output(value_classname)}"
             logger.error(error_msg)
             raise TypeError(error_msg)
 
@@ -1680,8 +1662,8 @@ def _detect_file_format_from_filename(datafile: Path) -> FIFileFormatEnum:
         return FIFileFormatEnum.parquet
     else:
         error_msg = (
-            f"Couldn't find FIFileFormatEnum for {extension}."
-            f" Filename={datafile.name}"
+            f"Couldn't find FIFileFormatEnum for {safe_str_output(extension)}."
+            f" Filename={safe_str_output(datafile.name, 1024)}"
         )
         logger.error(error_msg)
         raise ValueError(error_msg)
@@ -1712,13 +1694,16 @@ def _check_metafile_name(
     else:
         loc_metafile = metafile
         if loc_metafile.suffix not in [".yaml", ".yml"]:
-            error_msg = f"File extension for metadata file must be .yaml. Got {loc_metafile.suffix}"
+            error_msg = f"File extension for metadata file must be .yaml. Got {safe_str_output(loc_metafile.suffix)}"
             logger.error(error_msg)
             raise ValueError(error_msg)
 
-    # Check path for datafile and metafile are the same
-    if datafile.parent != loc_metafile.parent:
-        error_msg = f"Path for datafile and metafile must be the same. datafile={datafile}, loc_metafile={metafile}"
+    # Check path for datafile and metafile have the same parent directory
+    if len(loc_metafile.parents) <= 1:
+        # In this instance, loc_metafile is just a filename so we can prefix the dir from datafile
+        loc_metafile = datafile.parent / loc_metafile
+    elif datafile.parent != loc_metafile.parent:
+        error_msg = f"Path for datafile and metafile must be the same. datafile={safe_str_output(datafile)}, loc_metafile={safe_str_output(metafile)}"
         logger.error(error_msg)
         raise ValueError(error_msg)
 
@@ -1852,9 +1837,7 @@ def _deserialize_df_types(serialized_dtypes: dict) -> dict:
         # Get string representation of dtype
         dtype_str = serialized_dtypes[col].get("dtype_str", None)
         if dtype_str is None:
-            error_msg = (
-                f"Got column in serialized dtypes without a dtype_str field. col={col}"
-            )
+            error_msg = f"Got column in serialized dtypes without a dtype_str field. col={safe_str_output(col)}"
             logger.error(error_msg)
             raise ValueError(error_msg)
 
@@ -1900,9 +1883,7 @@ def _deserialize_dtypes_for_read_csv(serialized_dtypes: dict) -> dict:
         # Get string representation of dtype
         dtype_str = serialized_dtypes[col].get("dtype_str", None)
         if dtype_str is None:
-            error_msg = (
-                f"Got column in serialized dtypes without a dtype_str field. col={col}"
-            )
+            error_msg = f"Got column in serialized dtypes without a dtype_str field. col={safe_str_output(col)}"
             logger.error(error_msg)
             raise ValueError(error_msg)
 
@@ -2089,7 +2070,9 @@ def _deserialize_index_dict_to_fi_index(index: dict) -> FIBaseIndex:
     elif index_type == FIIndexType.period:
         return FIPeriodIndex(**index)
     else:
-        error_msg = f"index_type not recognised. index_type={index_type}"
+        error_msg = (
+            f"index_type not recognised. index_type={safe_str_output(index_type)}"
+        )
         logger.error(error_msg)
         raise ValueError(error_msg)
 
@@ -2279,7 +2262,7 @@ def _write_metafile(datafile: Path, metafile: Path, metainfo: FIMetainfo):
 
     # Write to the YAML file
     with open(metafile, "w") as h_targetfile:
-        h_targetfile.write(f"# Metadata for {str(datafile)}\n")
+        h_targetfile.write(f"# Metadata for {safe_str_output(datafile, 1024)}\n")
         h_targetfile.write("---\n\n")
 
         # Write out the rest of the file now
@@ -2314,8 +2297,8 @@ def _read_metafile(metafile: Path, context: dict | None = None) -> FIMetainfo:
 
 def write_df_to_file(
     df: pd.DataFrame,
-    datafile: Path,
-    metafile: Path | None = None,
+    datafile: Path | str,
+    metafile: Path | str | None = None,
     file_format: FIFileFormatEnum | Literal["csv", "parquet"] | None = None,
     encoding: FIEncoding | None = None,
     custom_info: FIBaseCustomInfo | dict = {},
@@ -2327,10 +2310,12 @@ def write_df_to_file(
     ----------
     df : pd.DataFrame
         The dataframe to save.
-    datafile : Path
+    datafile : Path or str
         The datafile to save the dataframe to.
-    metafile : Path | None, optional
-        Metafile name. If not supplied will be determined automatically.
+    metafile : Path or str or None (optional)
+        Metafile name, can be only the filename or with a path (which must be
+        the same as for datafile). If not supplied or None, will be determined
+        automatically.
     file_format : FIFileFormatEnum | Literal['csv', 'parquet'] | None
         The file format. If not supplied will be determined automatically.
     encoding : FIEncoding | None, optional
@@ -2348,6 +2333,24 @@ def write_df_to_file(
         A Path object with the metainfo filename in it.
 
     """
+
+    # Check types and existence correct for datafile and metafile
+    if not isinstance(datafile, (Path, str)):
+        error_msg = f"datafile must be a Path or str. Got type={type(datafile)}, value={safe_str_output(datafile)}"
+        logger.error(error_msg)
+        raise TypeError(error_msg)
+
+    if metafile is not None and not isinstance(metafile, (Path, str)):
+        error_msg = "When metafile given (not None), it must be a Path or str."
+        logger.error(error_msg)
+        raise TypeError(error_msg)
+
+    # Cast datafile and metafile to str
+    if isinstance(datafile, str):
+        datafile = Path(datafile)
+
+    if isinstance(metafile, str):
+        metafile = Path(metafile)
 
     # Determine output format
     if file_format is None:
@@ -2396,7 +2399,7 @@ def write_df_to_file(
         digest = hashlib.file_digest(h_datafile, "sha256")
     hash = digest.hexdigest()
 
-    # Compile all the metainfo into a dictionary TODO need other metainfo here!
+    # Compile all the metainfo into a dictionary
     metainfo = _compile_metainfo(
         datafile=datafile,
         file_format=loc_file_format,
@@ -2414,7 +2417,7 @@ def write_df_to_file(
 
 def write_df_to_csv(
     df: pd.DataFrame,
-    datafile: Path,
+    datafile: Path | str,
     encoding: FIEncoding | None = None,
     custom_info: FIBaseCustomInfo | dict = {},
     preprocess_inplace=True,
@@ -2425,7 +2428,7 @@ def write_df_to_csv(
     ----------
     df : pd.DataFrame
         The dataframe.
-    datafile : Path
+    datafile : Path or str
         Target datafile.
     encoding : FIEncoding | None, optional
         Encoding specs, can be left None for defaults.
@@ -2453,7 +2456,7 @@ def write_df_to_csv(
 
 def write_df_to_parquet(
     df: pd.DataFrame,
-    datafile: Path,
+    datafile: Path | str,
     encoding: FIEncoding | None = None,
     custom_info: FIBaseCustomInfo | dict = {},
     preprocess_inplace=True,
@@ -2464,7 +2467,7 @@ def write_df_to_parquet(
     ----------
     df : pd.DataFrame
         The dataframe.
-    datafile : Path
+    datafile : Path or str
         Target datafile.
     encoding : FIEncoding | None, optional
         Encoding specs, can be left None for defaults.
@@ -2491,7 +2494,7 @@ def write_df_to_parquet(
 
 
 def read_df(
-    metafile: Path,
+    metafile: Path | str,
     strict_hash_check: bool = True,
     context_metainfo: dict | None = None,
 ) -> tuple[pd.DataFrame, FIMetainfo]:
@@ -2515,6 +2518,15 @@ def read_df(
         A tuple with the dataframe and the metainfo object.
     """
 
+    # Check metafile not empty and correct types
+    if not isinstance(metafile, (Path, str)):
+        error_msg = f"metafile must be a Path or str. Got type={type(metafile)}, value={safe_str_output(metafile)}"
+        logger.error(error_msg)
+        raise TypeError(error_msg)
+
+    if isinstance(metafile, str):
+        metafile = Path(metafile)
+
     # Load metainfo
     metainfo = _read_metafile(metafile, context=context_metainfo)
 
@@ -2524,7 +2536,7 @@ def read_df(
         digest = hashlib.file_digest(h_datafile, "sha256")
     hash = digest.hexdigest()
     if hash != metainfo.hash:
-        error_msg = f"Hash comparison failed. metainfo.hash={metainfo.hash}, calcualted hash={hash}."
+        error_msg = f"Hash comparison failed. metainfo.hash={safe_str_output(metainfo.hash)}, calcualted hash={safe_str_output(hash)}."
         if strict_hash_check:
             logger.error(error_msg)
             raise ValueError(error_msg)
@@ -2554,7 +2566,7 @@ def read_df(
     elif metainfo.file_format == FIFileFormatEnum.parquet:
         df = _read_from_parquet(datafile_abs, metainfo.encoding)
     else:
-        error_msg = f"Input format ({metainfo.file_format}) not supported. We only support CSV and Parquet."
+        error_msg = f"Input format ({safe_str_output(metainfo.file_format)}) not supported. We only support CSV and Parquet."
         logger.error(error_msg)
         raise ValueError(error_msg)
 

@@ -2,9 +2,9 @@
 
 There's support for storing both unstructured and custom structured (verifiable) metadata in the metafile. This is under `df_file_interchange.ci` ("custom info"). 
 
-Strictly speaking, the user can pass any object that inherits from `FIBaseCustomInfo` (a Pydantic model) and which can fully serialize itself. There are, however, is a standard set of these classes already defined to cover most use-cases.
+Strictly speaking, the user can pass any object that inherits from `FIBaseCustomInfo` (a Pydantic model), which can fully serialize itself. There is, however, a standard set of these classes already defined to cover most use-cases.
 
-The  `df_file_interchange.ci.structured.FIStructuredCustomInfo` class is the canonical way to proceed. It has two attributes: `extra_info: FIBaseExtraInto` and `col_units: dict[Any, FIBaseUnit]`. The `extra_info` is for stroing metadata that applies to the whole dataframe such as author or its source. The `col_units` is a dictionary that specifies the units, such as currencies, each column is in. There are useful classes for both of these under `df_file_interchange.ci.extra` and `df_file_interchange.ci.unit`, respectively.
+The  `df_file_interchange.ci.structured.FIStructuredCustomInfo` class is the canonical way to proceed. It has two attributes: `extra_info: FIBaseExtraInto` and `col_units: dict[Any, FIBaseUnit]`. The `extra_info` is for stroing metadata that applies to the whole dataframe such as author or its source. The `col_units` is a dictionary that specifies the unit, such as currency, columnwise. There are useful classes for both of these under `df_file_interchange.ci.extra` and `df_file_interchange.ci.unit`, respectively.
 
 ## Basic Example
 
@@ -57,15 +57,15 @@ We write it to a file.
 ```python
 data_dir = Path("./data/")
 data_dir.mkdir(exist_ok=True)
-datafile_csv_path = Path(data_dir / "tutorial_simple_structured_custom_info.csv")
+datafile_csv = Path(data_dir / "tutorial_simple_structured_custom_info.csv")
 
-metafile_yaml = fi.write_df_to_file(df, datafile_csv_path, custom_info=custom_info)
+metafile = fi.write_df_to_file(df, datafile_csv, custom_info=custom_info)
 ```
 
 Read it in again.
 
 ```python
-(df_reload, metainfo_reload) = fi.read_df(metafile_yaml)
+(df_reload, metainfo_reload) = fi.read_df(metafile)
 ```
 
 And, we can inspect the custom info we have read back in.
