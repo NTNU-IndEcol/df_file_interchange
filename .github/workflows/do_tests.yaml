@@ -44,7 +44,7 @@ jobs:
           channels: conda-forge
           mamba-version: "*"
           channel-priority: strict
-          activate-environment: df-file-interchange
+          activate-environment: df_file_interchange
           environment-file: environment.yaml
           # use-only-tar-bz2: true   # required for caching
 
