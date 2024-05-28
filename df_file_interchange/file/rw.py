@@ -1702,8 +1702,11 @@ def _check_metafile_name(
             logger.error(error_msg)
             raise ValueError(error_msg)
 
-    # Check path for datafile and metafile are the same
-    if datafile.parent != loc_metafile.parent:
+    # Check path for datafile and metafile have the same parent directory
+    if len(loc_metafile.parents) <= 1:
+        # In this instance, loc_metafile is just a filename so we can prefix the dir from datafile
+        loc_metafile = datafile.parent / loc_metafile
+    elif datafile.parent != loc_metafile.parent:
         error_msg = f"Path for datafile and metafile must be the same. datafile={safe_str_output(datafile)}, loc_metafile={safe_str_output(metafile)}"
         logger.error(error_msg)
         raise ValueError(error_msg)
@@ -2316,7 +2319,8 @@ def write_df_to_file(
     datafile : Path or str
         The datafile to save the dataframe to.
     metafile : Path or str or None (optional)
-        Metafile name. If not supplied or None, will be determined
+        Metafile name, can be only the filename or with a path (which must be
+        the same as for datafile). If not supplied or None, will be determined
         automatically.
     file_format : FIFileFormatEnum | Literal['csv', 'parquet'] | None
         The file format. If not supplied will be determined automatically.
