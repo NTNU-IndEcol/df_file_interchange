@@ -8,7 +8,7 @@ authors = [{name = "Esmé Maxwell", email = "osdev@allicient.co.uk"}]
 description = "Ensures exact round-trip saves with Pandas (CSV/Parquet) and storage of validatable metadata"
 readme = "README.md"
 dynamic = ["version"]
-requires-python = ">= 3.11"
+requires-python = ">= 3.10"
 dependencies = [
     "pydantic >= 2.7, < 3",
     "pydantic-settings",
@@ -34,6 +34,7 @@ classifiers = [
 
   # Specify the Python versions you support here.
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
 

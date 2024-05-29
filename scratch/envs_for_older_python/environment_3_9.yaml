@@ -1,0 +1,32 @@
+name: df_file_interchange_3_9
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.9
+  - pydantic >= 2.7
+  - pydantic-settings
+  - numpy
+  - pandas
+  - pyarrow
+  - loguru
+  - pyyaml
+# dev/test
+  - ruff
+  - pytest
+  - mypy
+  - ipykernel
+# docs
+  - mkdocs
+  - mkdocs-material
+  - mknotebooks
+  - mkdocstrings
+  - mkdocstrings-python
+  - mkdocstrings-python-xref
+  - mkdocs-gen-files
+  - mkdocs-literate-nav
+  - pygments
+# package build
+  - flit
+# pip goes last
+  - pip
