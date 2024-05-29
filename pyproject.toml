@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "df_file_interchange"
-authors = [{name = "Esmé Maxwell", email = "peter.maxwell@ntnu.no"}]
+authors = [{name = "Esmé Maxwell", email = "osdev@allicient.co.uk"}]
 description = "Ensures exact round-trip saves with Pandas (CSV/Parquet) and storage of validatable metadata"
 readme = "README.md"
 dynamic = ["version"]
