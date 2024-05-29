@@ -48,7 +48,7 @@ properly serialise column dtype information.
 
 import copy
 import csv
-import hashlib
+import sys
 from datetime import tzinfo
 from enum import Enum
 from pathlib import Path
@@ -85,7 +85,7 @@ from pydantic import (
 )
 
 # Import common functions
-from ..util.common import str_n, safe_str_output
+from ..util.common import str_n, safe_str_output, hash_file
 
 # Import custom info stuff
 from ..ci.base import FIBaseCustomInfo
@@ -2394,10 +2394,14 @@ def write_df_to_file(
         logger.error(error_msg)
         raise ValueError(error_msg)
 
-    # Calculate the file's hash
-    with open(datafile, "rb") as h_datafile:
-        digest = hashlib.file_digest(h_datafile, "sha256")
-    hash = digest.hexdigest()
+    # Commented out because want to support Python 3.10 for a while, and
+    # hashlib.file_digest() didn't appear until 3.11.
+    # with open(datafile, "rb") as h_datafile:
+    #     digest = hashlib.file_digest(h_datafile, "sha256")
+    # hash = digest.hexdigest()
+
+    # Version safe version of file hashing (SHA256)
+    hash = hash_file(datafile)
 
     # Compile all the metainfo into a dictionary
     metainfo = _compile_metainfo(
@@ -2532,9 +2536,12 @@ def read_df(
 
     # Check datafile's hash
     datafile_abs = Path(metafile.parent / metainfo.datafile).resolve()
-    with open(datafile_abs, "rb") as h_datafile:
-        digest = hashlib.file_digest(h_datafile, "sha256")
-    hash = digest.hexdigest()
+    # Commented out to support Python 3.10 for a while (hashlib.file_digest() didn't appear until 3.11)
+    # with open(datafile_abs, "rb") as h_datafile:
+    #     digest = hashlib.file_digest(h_datafile, "sha256")
+    # hash = digest.hexdigest()
+    hash = hash_file(datafile_abs)
+
     if hash != metainfo.hash:
         error_msg = f"Hash comparison failed. metainfo.hash={safe_str_output(metainfo.hash)}, calcualted hash={safe_str_output(hash)}."
         if strict_hash_check:
